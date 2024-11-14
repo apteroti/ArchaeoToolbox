@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   height="512"
+   width="512"
+   xml:space="preserve"
+   viewBox="0 0 512 512"
+   y="0px"
+   x="0px"
+   id="Capa_1"
+   version="1.1"
+   sodipodi:docname="superimposition.svg"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1920"
+   inkscape:window-height="977"
+   id="namedview33"
+   showgrid="false"
+   inkscape:zoom="0.921875"
+   inkscape:cx="259.48175"
+   inkscape:cy="219.75352"
+   inkscape:window-x="0"
+   inkscape:window-y="28"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="Capa_1" /><metadata
+   id="metadata77"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+   id="defs75"><linearGradient
+   osb:paint="solid"
+   id="linearGradient2845"><stop
+     id="stop2843"
+     offset="0"
+     style="stop-color:#00ff00;stop-opacity:1;" /></linearGradient><linearGradient
+   osb:paint="solid"
+   id="linearGradient2381"><stop
+     id="stop2379"
+     offset="0"
+     style="stop-color:#00ff00;stop-opacity:1;" /></linearGradient>
+	
+	
+	
+<meshgradient
+   y="0.71230936"
+   x="1.1327668"
+   gradientUnits="userSpaceOnUse"
+   id="meshgradient2793"
+   gradientTransform="matrix(0.9240523,0,0,0.9240523,1.2467295,1.6681866)"><meshrow
+     id="meshrow2795"><meshpatch
+       id="meshpatch2797"><stop
+         id="stop2799"
+         style="stop-color:#ffffff;stop-opacity:1"
+         path="c 125.248,0  250.496,0  375.743,0" /><stop
+         id="stop2801"
+         style="stop-color:#ff2a2a;stop-opacity:1"
+         path="c 0,125.349  0,250.697  0,376.046" /><stop
+         id="stop2803"
+         style="stop-color:#ffffff;stop-opacity:1"
+         path="c -125.248,0  -250.496,0  -375.743,0" /><stop
+         id="stop2805"
+         style="stop-color:#ff2a2a;stop-opacity:1"
+         path="c 0,-125.349  0,-250.697  0,-376.046" /></meshpatch></meshrow></meshgradient></defs>
+
+<g
+   transform="translate(0,452)"
+   id="g42">
+</g>
+<g
+   transform="translate(0,452)"
+   id="g44">
+</g>
+<g
+   transform="translate(0,452)"
+   id="g46">
+</g>
+<g
+   transform="translate(0,452)"
+   id="g48">
+</g>
+<g
+   transform="translate(0,452)"
+   id="g50">
+</g>
+<g
+   transform="translate(0,452)"
+   id="g52">
+</g>
+<g
+   transform="translate(0,452)"
+   id="g54">
+</g>
+<g
+   transform="translate(0,452)"
+   id="g56">
+</g>
+<g
+   transform="translate(0,452)"
+   id="g58">
+</g>
+<g
+   transform="translate(0,452)"
+   id="g60">
+</g>
+<g
+   transform="translate(0,452)"
+   id="g62">
+</g>
+<g
+   transform="translate(0,452)"
+   id="g64">
+</g>
+<g
+   transform="translate(0,452)"
+   id="g66">
+</g>
+<g
+   transform="translate(0,452)"
+   id="g68">
+</g>
+<g
+   transform="translate(0,452)"
+   id="g70">
+</g>
+<g
+   id="g877"
+   transform="matrix(1.1609998,0,0,1.1609998,-89.691071,-95.500668)"><circle
+     r="114.41801"
+     cy="378.83432"
+     cx="215.06396"
+     id="path843"
+     style="opacity:0.919;fill:#ed3707;fill-opacity:1;stroke:#deeab5;stroke-width:38.13933945;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" /><circle
+     r="114.41801"
+     cy="378.14478"
+     cx="376.43762"
+     id="path843-3"
+     style="opacity:0.919;fill:#28c907;fill-opacity:1;stroke:#b3f7cb;stroke-width:38.13933945;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" /><circle
+     r="114.41801"
+     cy="228.08087"
+     cx="281.40948"
+     id="path843-6"
+     style="opacity:0.919;fill:#256eff;fill-opacity:1;stroke:#b8eafd;stroke-width:38.13933945;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" /></g></svg>
