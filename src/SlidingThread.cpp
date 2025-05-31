@@ -1,6 +1,6 @@
 /***********************************************************************************************
-                                                                    
-************************************************************************************************                                                                                       
+
+************************************************************************************************
 * ArchaeoToolbox                                                                               *
 * Geometric Morphometrics Software                                                             *
 *                                                                                              *
@@ -10,7 +10,7 @@
 *                                                                                              *
 * All rights reserved.                                                                         *
 *                                                                                              *
-* This program is free software; you can redistribute it and/or modify                         *   
+* This program is free software; you can redistribute it and/or modify                         *
 * it under the terms of the GNU General Public License as published by                         *
 * the Free Software Foundation; either version 2 of the License, or                            *
 * (at your option) any later version.                                                          *
@@ -22,48 +22,48 @@
 * for more details.                                                                            *
 *                                                                                              *
 
- ***********************************************************************************************                                                                                                                                                               
-                                                                               .          
-                                                  .                            =:         
-                                                  #                            +*         
-                                                 ##                            %@.        
-                                                =@@                            #@%        
-                                               .@@*                            @@@:       
-                                               %@@*                           #@@@=       
-                                               =@@@#-                     .:+#@@@#        
-                                                *@@@@@*=::.:=-=+*%%%+-=*%@@@@@@@=         
-                                                 -%@@@@@@@@@@@@@@@@@@@@@@@@%#+-           
-                                                   .-=+*#@@@@@@@@@@@@@@@@+.               
-                                                       =@@@@@@@@@@@@@@@@@@@@*.            
-                                                    .=%@@@@@@@@@@@@@@@@@@@@@@*            
-                                              -****%@@@@@@@@@@@@@@@@@@@@@%@@@=            
-                                             .@@@@@@@@@@@@@@@@@@@@@@@@@@%  -.             
-                                              -@@@@@@@@@@@@@@@@@@@@@@@@@*.                
-                                              %@@@@@@@@@@@@@@@@@@@@@@@@@@+                
-                                            :%@@@@@@@@@@@@@@@@@@@@@@@@@@%                 
-                                    .:=*#%%%@@@@@@@@@@@@@@@@@@@@@@@@@%-=.                 
-                                -+%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*                     
-                           .-+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                     
-                     .--=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                     
-                  :*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=                     
-                .#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+                     
-               :@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+                     
-               %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.                     
-               +@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                      
-                #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+.                       
-           .-+*@@@+:@@@@@@@@@@@@@@@%**+==-------===+@@@@@@@@@@@@@-                        
-         :#@@@%%%+ .@@@@@@@@@@@*-:                 +@@@@@@@@@@@@@@%+:                     
-       +%@@*.      -@@@@@@@@@=                    =@@@@**#*=--*%@@@@@@*                   
-       -*=.       :@@@@@@@@=                       @@@@         .-#@@@@.                  
-                 #@@@@@*@@@:                       *@@+            +@@%                   
-                 %@@@%  *%@@+                      @@@.            -@@@                   
-                 =@@@:    +@@%                    -@@@.            :@@@:                  
-                 *@@@      *@@%                   *@@@=            :@@@-                  
-                -@@@#      =@@@#                 :@@@@@            #@@@@.                 
-                #@@@@.     .###=                 .++++-           .*%%##:                 
-                %@@@@.                                                                    
-               .*%%%*                                                                     
-                      
+ ***********************************************************************************************
+                                                                               .
+                                                  .                            =:
+                                                  #                            +*
+                                                 ##                            %@.
+                                                =@@                            #@%
+                                               .@@*                            @@@:
+                                               %@@*                           #@@@=
+                                               =@@@#-                     .:+#@@@#
+                                                *@@@@@*=::.:=-=+*%%%+-=*%@@@@@@@=
+                                                 -%@@@@@@@@@@@@@@@@@@@@@@@@%#+-
+                                                   .-=+*#@@@@@@@@@@@@@@@@+.
+                                                       =@@@@@@@@@@@@@@@@@@@@*.
+                                                    .=%@@@@@@@@@@@@@@@@@@@@@@*
+                                              -****%@@@@@@@@@@@@@@@@@@@@@%@@@=
+                                             .@@@@@@@@@@@@@@@@@@@@@@@@@@%  -.
+                                              -@@@@@@@@@@@@@@@@@@@@@@@@@*.
+                                              %@@@@@@@@@@@@@@@@@@@@@@@@@@+
+                                            :%@@@@@@@@@@@@@@@@@@@@@@@@@@%
+                                    .:=*#%%%@@@@@@@@@@@@@@@@@@@@@@@@@%-=.
+                                -+%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+                           .-+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
+                     .--=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
+                  :*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=
+                .#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+
+               :@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+
+               %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.
+               +@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
+                #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+.
+           .-+*@@@+:@@@@@@@@@@@@@@@%**+==-------===+@@@@@@@@@@@@@-
+         :#@@@%%%+ .@@@@@@@@@@@*-:                 +@@@@@@@@@@@@@@%+:
+       +%@@*.      -@@@@@@@@@=                    =@@@@**#*=--*%@@@@@@*
+       -*=.       :@@@@@@@@=                       @@@@         .-#@@@@.
+                 #@@@@@*@@@:                       *@@+            +@@%
+                 %@@@%  *%@@+                      @@@.            -@@@
+                 =@@@:    +@@%                    -@@@.            :@@@:
+                 *@@@      *@@%                   *@@@=            :@@@-
+                -@@@#      =@@@#                 :@@@@@            #@@@@.
+                #@@@@.     .###=                 .++++-           .*%%##:
+                %@@@@.
+               .*%%%*
+
 ***********************************************************************************************/
 
 #include "../include/SlidingThread.h"
@@ -79,29 +79,29 @@ SlidingThread::SlidingThread(
     const Eigen::Ref<const Eigen::MatrixXd>& templateCoordinates,
     Eigen::MatrixXd& coordinates, int mode)
     : m_meshData(meshData),
-      //m_templateMesh(templateMesh),
-      m_typeINOL(typeINOL),
-      m_curveNOS(curveNOS),
-      m_curveNOC(curveNOC),
-      m_curveType(curveType),
-      m_surfaceNOS(surfaceNOS),
-      m_surfacePatchUNOS(surfacePatchUNOS),
-      m_surfacePatchVNOS(surfacePatchVNOS),
-      m_surfacePatchNOP(surfacePatchNOP),
-      m_curvePolyLineBlock(curvePolyLineBlock),
-      m_surfaceMaskBlock(surfaceMaskBlock),
-      m_coordinates(coordinates) {
+    //m_templateMesh(templateMesh),
+    m_typeINOL(typeINOL),
+    m_curveNOS(curveNOS),
+    m_curveNOC(curveNOC),
+    m_curveType(curveType),
+    m_surfaceNOS(surfaceNOS),
+    m_surfacePatchUNOS(surfacePatchUNOS),
+    m_surfacePatchVNOS(surfacePatchVNOS),
+    m_surfacePatchNOP(surfacePatchNOP),
+    m_curvePolyLineBlock(curvePolyLineBlock),
+    m_surfaceMaskBlock(surfaceMaskBlock),
+    m_coordinates(coordinates) {
     vtkNew<vtkPoints> tempTargetPts;
     vtkNew<vtkPoints> tempTemplatePts;
     vtkNew<vtkPolyData> tempTemplatePtsPoly;
     for (int i = 0; i < m_coordinates.rows(); i++) {
         tempTargetPts->InsertNextPoint(m_coordinates(i, 0), m_coordinates(i, 1),
-                                       m_coordinates(i, 2));
+            m_coordinates(i, 2));
     }
     for (int i = 0; i < templateCoordinates.rows(); i++) {
         tempTemplatePts->InsertNextPoint(templateCoordinates(i, 0),
-                                         templateCoordinates(i, 1),
-                                         templateCoordinates(i, 2));
+            templateCoordinates(i, 1),
+            templateCoordinates(i, 2));
     }
     tempTemplatePtsPoly->SetPoints(tempTemplatePts);
     vtkNew<vtkLandmarkTransform> linearLMTransform;
@@ -132,7 +132,7 @@ SlidingThread::SlidingThread(
     AssembleQ(m_templateCoordinates, m_Q);
     AssembleK(m_templateCoordinates, m_K);
     AssembleL(m_Q, m_K, m_L);
-    BEMatrix(m_L, m_Q.rows(), m_LK, m_BEMat);
+    BEMatrix(m_L, m_Q.rows(), m_SMat, m_BEMat);
 }
 
 void SlidingThread::run() {
@@ -152,22 +152,22 @@ void SlidingThread::run() {
         double BELastLoop = BEInitial;
         Eigen::MatrixXd gamma0 = m_coordinates;
         gamma0.resize(numTotalLndmrks * 3, 1);
-        Eigen::MatrixXd ULU = Uboundary.transpose() * m_LK * Uboundary;
-        Eigen::MatrixXd ULG =
-            (Uboundary.transpose() * m_LK * gamma0).sparseView();
+        Eigen::MatrixXd USU = Uboundary.transpose() * m_SMat * Uboundary;
+        Eigen::MatrixXd USG =
+            (Uboundary.transpose() * m_SMat * gamma0).sparseView();
         std::chrono::steady_clock
             sc;  // create an object of `steady_clock` class
         // auto start = sc.now();     // start timer
 
         Eigen::CompleteOrthogonalDecomposition<Eigen::MatrixXd> orthoSolver(
-            ULU.selfadjointView<Eigen::Lower>());
-        Eigen::MatrixXd T = orthoSolver.solve(ULG);
+            USU.selfadjointView<Eigen::Lower>());
+        Eigen::MatrixXd T = orthoSolver.solve(USG);
 
-        ULU.resize(0, 0);
-        ULG.resize(0, 0);
-        Eigen::MatrixXd ULUT = Uboundary * T;
+        USU.resize(0, 0);
+        USG.resize(0, 0);
+        Eigen::MatrixXd USUT = Uboundary * T;
         gamma0.resize(0, 0);
-        NaiveRefinement(m_coordinates, ULUT, numTotalLndmrks);
+        NaiveRefinement(m_coordinates, USUT, numTotalLndmrks);
 
         double BEXAfter =
             m_coordinates.col(0).transpose() * m_BEMat * m_coordinates.col(0);
@@ -183,7 +183,8 @@ void SlidingThread::run() {
             /* std::cout<< "Final Bending Energy:"<<std::endl;
             std::cout<< m_BEUpdated<<std::endl; */
             break;
-        } else {
+        }
+        else {
             /* std::cout<< "Bending Energy:"<<std::endl;
             std::cout<< m_BEUpdated<<std::endl; */
             reserveLndmrks.resize(0, 0);
@@ -193,7 +194,7 @@ void SlidingThread::run() {
             AssembleQ(m_templateCoordinates, m_Q);
             AssembleK(m_templateCoordinates, m_K);
             AssembleL(m_Q, m_K, m_L);
-            BEMatrix(m_L, m_Q.rows(), m_LK, m_BEMat);
+            BEMatrix(m_L, m_Q.rows(), m_SMat, m_BEMat);
             AssembleU(m_coordinates, Uboundary);
             emit CoordinateNotChanged(m_coordinates);
         }
@@ -205,8 +206,8 @@ void SlidingThread::run() {
 }
 
 void SlidingThread::NaiveRefinement(Eigen::MatrixXd& coordinates,
-                                    const Eigen::MatrixXd& ULUT,
-                                    int numLNDMRK) {
+    const Eigen::MatrixXd& USUT,
+    int numLNDMRK) {
     int numCurveSliders = 0;
     int numSurfaceSliders = 0;
     std::vector<double> BEVector;
@@ -221,10 +222,10 @@ void SlidingThread::NaiveRefinement(Eigen::MatrixXd& coordinates,
         mainpointTree->Update();
         scaleFactorVector.push_back(s);
         Eigen::MatrixXd tempCoord = coordinates;
-        Eigen::MatrixXd tempULUT = ULUT;
-        tempULUT = tempULUT * s;
+        Eigen::MatrixXd tempUSUT = USUT;
+        tempUSUT = tempUSUT * s;
         tempCoord.resize(numLNDMRK * 3, 1);
-        tempCoord = tempCoord - tempULUT;
+        tempCoord = tempCoord - tempUSUT;
         tempCoord.resize(numLNDMRK, 3);
         if (m_curveNOS != 0) {
             numCurveSliders = m_curveNOS * m_curveNOC;
@@ -246,28 +247,28 @@ void SlidingThread::NaiveRefinement(Eigen::MatrixXd& coordinates,
                     int curvePtID = start + (j * m_curveNOS) + k;
                     vtkNew<vtkPoints> tempPts;
                     tempPts->InsertPoint(0, tempCoord(curvePtID, 0),
-                                         tempCoord(curvePtID, 1),
-                                         tempCoord(curvePtID, 2));
+                        tempCoord(curvePtID, 1),
+                        tempCoord(curvePtID, 2));
                     double closestPoint[3];
                     vtkIdType closestCellId = -1;
                     int subId = -1;
                     double dist = -1;
                     pointTreeTemp->FindClosestPoint(tempPts->GetPoint(0),
-                                                    closestPoint, closestCellId,
-                                                    subId, dist);
+                        closestPoint, closestCellId,
+                        subId, dist);
                     tempCoord.operator()(curvePtID, 0) = closestPoint[0];
                     tempCoord.operator()(curvePtID, 1) = closestPoint[1];
                     tempCoord.operator()(curvePtID, 2) = closestPoint[2];
                     tempPts->SetPoint(0, tempCoord(curvePtID, 0),
-                                      tempCoord(curvePtID, 1),
-                                      tempCoord(curvePtID, 2));
+                        tempCoord(curvePtID, 1),
+                        tempCoord(curvePtID, 2));
                     double closestPoint2[3];
                     closestCellId = -1;
                     subId = -1;
                     dist = -1;
                     pointTree->FindClosestPoint(tempPts->GetPoint(0),
-                                                closestPoint2, closestCellId,
-                                                subId, dist);
+                        closestPoint2, closestCellId,
+                        subId, dist);
                     tempCoord.operator()(curvePtID, 0) = closestPoint2[0];
                     tempCoord.operator()(curvePtID, 1) = closestPoint2[1];
                     tempCoord.operator()(curvePtID, 2) = closestPoint2[2];
@@ -287,21 +288,21 @@ void SlidingThread::NaiveRefinement(Eigen::MatrixXd& coordinates,
                 pointTree->BuildLocator();
                 pointTree->Update();
                 for (int k = 0; k < (m_surfacePatchUNOS * m_surfacePatchVNOS);
-                     k++) {
+                    k++) {
                     int surfacePtID =
                         start +
                         (j * (m_surfacePatchUNOS * m_surfacePatchVNOS)) + k;
                     vtkNew<vtkPoints> tempPts;
                     tempPts->InsertPoint(0, tempCoord(surfacePtID, 0),
-                                         tempCoord(surfacePtID, 1),
-                                         tempCoord(surfacePtID, 2));
+                        tempCoord(surfacePtID, 1),
+                        tempCoord(surfacePtID, 2));
                     double closestPoint[3];
                     vtkIdType closestCellId = -1;
                     int subId = -1;
                     double dist = -1;
                     pointTree->FindClosestPoint(tempPts->GetPoint(0),
-                                                closestPoint, closestCellId,
-                                                subId, dist);
+                        closestPoint, closestCellId,
+                        subId, dist);
                     tempCoord.operator()(surfacePtID, 0) = closestPoint[0];
                     tempCoord.operator()(surfacePtID, 1) = closestPoint[1];
                     tempCoord.operator()(surfacePtID, 2) = closestPoint[2];
@@ -316,15 +317,15 @@ void SlidingThread::NaiveRefinement(Eigen::MatrixXd& coordinates,
                 int surfacePtID = start + i;
                 vtkNew<vtkPoints> tempPts;
                 tempPts->InsertPoint(0, tempCoord(surfacePtID, 0),
-                                     tempCoord(surfacePtID, 1),
-                                     tempCoord(surfacePtID, 2));
+                    tempCoord(surfacePtID, 1),
+                    tempCoord(surfacePtID, 2));
                 double closestPoint[3];
                 vtkIdType closestCellId = -1;
                 int subId = -1;
                 double dist = -1;
                 mainpointTree->FindClosestPoint(tempPts->GetPoint(0),
-                                                closestPoint, closestCellId,
-                                                subId, dist);
+                    closestPoint, closestCellId,
+                    subId, dist);
                 tempCoord.operator()(surfacePtID, 0) = closestPoint[0];
                 tempCoord.operator()(surfacePtID, 1) = closestPoint[1];
                 tempCoord.operator()(surfacePtID, 2) = closestPoint[2];
@@ -354,19 +355,19 @@ double SlidingThread::GetBE() { return m_BEUpdated; }
 double SlidingThread::GetScalingFactor() { return m_scaleFactor; }
 
 void SlidingThread::SuperImpose(Eigen::MatrixXd& templatePts,
-                                Eigen::MatrixXd& targetPts) {
+    Eigen::MatrixXd& targetPts) {
     vtkNew<vtkPoints> templateVtkPts;
     vtkNew<vtkPoints> targetVtkPts;
     vtkNew<vtkPolyData> targetVtkPtsPoly;
     for (int i = 0; i < templatePts.rows(); i++) {
         templateVtkPts->InsertNextPoint(templatePts(i, 0), templatePts(i, 1),
-                                        templatePts(i, 2));
+            templatePts(i, 2));
     }
     templateVtkPts->Modified();
 
     for (int i = 0; i < targetPts.rows(); i++) {
         targetVtkPts->InsertNextPoint(targetPts(i, 0), targetPts(i, 1),
-                                      targetPts(i, 2));
+            targetPts(i, 2));
     }
     targetVtkPts->Modified();
     targetVtkPtsPoly->SetPoints(targetVtkPts);
@@ -443,8 +444,8 @@ double SlidingThread::Optimizer(const Eigen::MatrixXd& x) {
             pointTree->Update();
             for (int j = 0; j < m_curveNOS; j++) {
                 auto ptId = pointTree->FindClosestPoint(curveSubBlock(j, 0),
-                                                        curveSubBlock(j, 1),
-                                                        curveSubBlock(j, 2));
+                    curveSubBlock(j, 1),
+                    curveSubBlock(j, 2));
                 auto tang = tangent.row(ptId);
                 curveTangent.row(start + j) = tang;
             }
@@ -491,11 +492,11 @@ double SlidingThread::Optimizer(const Eigen::MatrixXd& x) {
 
     auto possibleCoordinates = m_coordinates + outputU + outputV;
     auto BEX = possibleCoordinates.col(0).transpose() * m_BEMat *
-               possibleCoordinates.col(0);
+        possibleCoordinates.col(0);
     auto BEY = possibleCoordinates.col(1).transpose() * m_BEMat *
-               possibleCoordinates.col(1);
+        possibleCoordinates.col(1);
     auto BEZ = possibleCoordinates.col(2).transpose() * m_BEMat *
-               possibleCoordinates.col(2);
+        possibleCoordinates.col(2);
 
     return std::abs((BEX + BEY + BEZ)[0]);
 }
@@ -511,7 +512,7 @@ void SlidingThread::KillNow() { m_abort = true; }
 bool SlidingThread::Killing() { return m_abort; }
 
 void SlidingThread::AssembleU(Eigen::MatrixXd& targetLndmrks,
-                              Eigen::MatrixXd& outputU) {
+    Eigen::MatrixXd& outputU) {
     std::chrono::steady_clock sc;
     // auto start = sc.now();
 
@@ -580,9 +581,9 @@ void SlidingThread::AssembleU(Eigen::MatrixXd& targetLndmrks,
                 outputU.operator()(i + curveFirstIndx, sliderCounter) =
                     curveTangent(i, 0);
                 outputU.operator()(i + curveFirstIndx + totalNumLandmarks,
-                                   sliderCounter) = curveTangent(i, 1);
+                    sliderCounter) = curveTangent(i, 1);
                 outputU.operator()(i + curveFirstIndx + (2 * totalNumLandmarks),
-                                   sliderCounter) = curveTangent(i, 2);
+                    sliderCounter) = curveTangent(i, 2);
                 sliderCounter += 1;
             }
         }
@@ -601,15 +602,15 @@ void SlidingThread::AssembleU(Eigen::MatrixXd& targetLndmrks,
                 outputU.operator()(i + surfaceFirstIndx, sliderCounter) =
                     UVector(i, 0);
                 outputU.operator()(i + surfaceFirstIndx + totalNumLandmarks,
-                                   sliderCounter) = UVector(i, 1);
+                    sliderCounter) = UVector(i, 1);
                 outputU.operator()(
                     i + surfaceFirstIndx + (2 * totalNumLandmarks),
                     sliderCounter) = UVector(i, 2);
 
                 outputU.operator()(i + surfaceFirstIndx,
-                                   sliderCounter + numSliders) = VVector(i, 0);
+                    sliderCounter + numSliders) = VVector(i, 0);
                 outputU.operator()(i + surfaceFirstIndx + totalNumLandmarks,
-                                   sliderCounter + numSliders) = VVector(i, 1);
+                    sliderCounter + numSliders) = VVector(i, 1);
                 outputU.operator()(
                     i + surfaceFirstIndx + (2 * totalNumLandmarks),
                     sliderCounter + numSliders) = VVector(i, 2);
@@ -624,7 +625,7 @@ void SlidingThread::AssembleU(Eigen::MatrixXd& targetLndmrks,
 }
 
 void SlidingThread::AssembleQ(Eigen::MatrixXd& templatePoints,
-                              Eigen::MatrixXd& Q) {
+    Eigen::MatrixXd& Q) {
     Q.resize(0, 0);
     Q.setOnes(templatePoints.rows(), 4);
     for (int i = 0; i < templatePoints.rows(); i++) {
@@ -635,7 +636,7 @@ void SlidingThread::AssembleQ(Eigen::MatrixXd& templatePoints,
 }
 
 void SlidingThread::AssembleK(Eigen::MatrixXd& templatePoints,
-                              Eigen::MatrixXd& K) {
+    Eigen::MatrixXd& K) {
     K.resize(0, 0);
     K.setZero(templatePoints.rows(), templatePoints.rows());
     PDist(templatePoints, K);
@@ -643,7 +644,7 @@ void SlidingThread::AssembleK(Eigen::MatrixXd& templatePoints,
 }
 
 void SlidingThread::AssembleL(Eigen::MatrixXd& Q, Eigen::MatrixXd& K,
-                              Eigen::MatrixXd& OutputL) {
+    Eigen::MatrixXd& OutputL) {
     OutputL.resize(0, 0);
     Eigen::MatrixXd temp1(Q.rows() + 4, Q.rows());
     temp1 << K, Q.transpose();
@@ -658,9 +659,9 @@ void SlidingThread::AssembleL(Eigen::MatrixXd& Q, Eigen::MatrixXd& K,
 }
 
 void SlidingThread::BEMatrix(Eigen::MatrixXd& L, int numOfLandmarks,
-                             Eigen::MatrixXd& outputLK,
-                             Eigen::MatrixXd& outputBEMat) {
-    outputLK.resize(0, 0);
+    Eigen::MatrixXd& outputSMat,
+    Eigen::MatrixXd& outputBEMat) {
+    outputSMat.resize(0, 0);
     outputBEMat.resize(0, 0);
     std::chrono::steady_clock sc;  // create an object of `steady_clock` class
     // auto start = sc.now();     // start timer
@@ -676,14 +677,14 @@ void SlidingThread::BEMatrix(Eigen::MatrixXd& L, int numOfLandmarks,
     Eigen::MatrixXd temp(BEMat.rows() * 3, BEMat.cols() * 3);
     Eigen::MatrixXd zeros = Eigen::MatrixXd::Zero(BEMat.rows(), BEMat.cols());
     temp << BEMat, zeros, zeros, zeros, BEMat, zeros, zeros, zeros, BEMat;
-    outputLK = temp.sparseView();
+    outputSMat = temp.sparseView();
     zeros.resize(0, 0);
     temp.resize(0, 0);
     BEMat.resize(0, 0);
 }
 
 double SlidingThread::EucDist(double Ax, double Ay, double Az, double Bx,
-                              double By, double Bz) {
+    double By, double Bz) {
     double dx = Ax - Bx;
     double dy = Ay - By;
     double dz = Az - Bz;
@@ -697,8 +698,8 @@ void SlidingThread::PDist(vtkPoints* points, Eigen::MatrixXd& output) {
         for (int j = i + 1; j < dim; j++) {
             double dist =
                 EucDist(points->GetPoint(i)[0], points->GetPoint(i)[1],
-                        points->GetPoint(i)[2], points->GetPoint(j)[0],
-                        points->GetPoint(j)[1], points->GetPoint(j)[2]);
+                    points->GetPoint(i)[2], points->GetPoint(j)[0],
+                    points->GetPoint(j)[1], points->GetPoint(j)[2]);
             output.operator()(i, j) = dist;
         }
     }
@@ -710,26 +711,26 @@ void SlidingThread::PDist(Eigen::MatrixXd& points, Eigen::MatrixXd& output) {
     for (int i = 0; i < dim; i++) {
         for (int j = i + 1; j < dim; j++) {
             double dist = EucDist(points(i, 0), points(i, 1), points(i, 2),
-                                  points(j, 0), points(j, 1), points(j, 2));
+                points(j, 0), points(j, 1), points(j, 2));
             output.operator()(i, j) = dist;
         }
     }
     output.triangularView<Eigen::Lower>() = output.transpose();
 }
 
-void SlidingThread::PGeoDist(vtkPolyData* mesh, Eigen::MatrixXd& points, Eigen::MatrixXd& output){
+void SlidingThread::PGeoDist(vtkPolyData* mesh, Eigen::MatrixXd& points, Eigen::MatrixXd& output) {
     int dim = points.rows();
-    for (int i = 0; i < dim; i++){
-        for (int j = i + 1; j < dim; j++){
-            
+    for (int i = 0; i < dim; i++) {
+        for (int j = i + 1; j < dim; j++) {
+
             //output.operator()(i, j) = dist; //I might complete this later
         }
     }
 }
 
 void SlidingThread::CalculateTangent(vtkPolyData* polyMesh,
-                                     Eigen::MatrixXd& tangentU,
-                                     Eigen::MatrixXd& tangentV) {
+    Eigen::MatrixXd& tangentU,
+    Eigen::MatrixXd& tangentV) {
     vtkNew<vtkPolyDataNormals> normalsFilter;
     normalsFilter->SetInputData(polyMesh);
     normalsFilter->ConsistencyOn();
@@ -754,7 +755,7 @@ void SlidingThread::CalculateTangent(vtkPolyData* polyMesh,
         Eigen::Vector3d tempU;
         Eigen::Vector3d tempV;
         Eigen::Vector3d tempNorm(normalMatrix(i, 0), normalMatrix(i, 1),
-                                 normalMatrix(i, 2));
+            normalMatrix(i, 2));
         if ((tempNorm.array() == 0.0).any()) {
             tempU << 0.0, 0.0, 0.0;
             for (int j = 0; j < 3; j++) {
@@ -763,7 +764,8 @@ void SlidingThread::CalculateTangent(vtkPolyData* polyMesh,
                 }
             }
             tempU.operator/=(tempU.norm());
-        } else {
+        }
+        else {
             tempU << 1.0, 1.0, -(tempNorm(0) + tempNorm(1)) / tempNorm(2);
             tempU.operator/=(tempU.norm());
         }
@@ -779,7 +781,7 @@ void SlidingThread::CalculateTangent(vtkPolyData* polyMesh,
 }
 
 void SlidingThread::CalculateCurveTangent(vtkMultiBlockDataSet* inputCurve,
-                                          int id, Eigen::MatrixXd& outputU) {
+    int id, Eigen::MatrixXd& outputU) {
     outputU.resize(0, 0);
     vtkDataObject* dso = inputCurve->GetBlock(id);
     vtkPolyData* pd = dynamic_cast<vtkPolyData*>(dso);
@@ -797,7 +799,8 @@ void SlidingThread::CalculateCurveTangent(vtkMultiBlockDataSet* inputCurve,
                     outputU.operator()(i, 0) = x2 - x1;
                     outputU.operator()(i, 1) = y2 - y1;
                     outputU.operator()(i, 2) = z2 - z1;
-                } else {
+                }
+                else {
                     double x2 = pd->GetPoint(i + 1)[0];
                     double y2 = pd->GetPoint(i + 1)[1];
                     double z2 = pd->GetPoint(i + 1)[2];
@@ -809,7 +812,8 @@ void SlidingThread::CalculateCurveTangent(vtkMultiBlockDataSet* inputCurve,
                     outputU.operator()(i, 2) = z2 - z1;
                 }
             }
-        } else if (m_curveType->at(id) == 0) {  // open curve
+        }
+        else if (m_curveType->at(id) == 0) {  // open curve
             for (int i = 0; i < pd->GetNumberOfPoints(); i++) {
                 if (i == pd->GetNumberOfPoints() - 1) {
                     double x2 = pd->GetPoint(i - 1)[0];
@@ -821,7 +825,8 @@ void SlidingThread::CalculateCurveTangent(vtkMultiBlockDataSet* inputCurve,
                     outputU.operator()(i, 0) = x2 - x1;
                     outputU.operator()(i, 1) = y2 - y1;
                     outputU.operator()(i, 2) = z2 - z1;
-                } else {
+                }
+                else {
                     double x2 = pd->GetPoint(i + 1)[0];
                     double y2 = pd->GetPoint(i + 1)[1];
                     double z2 = pd->GetPoint(i + 1)[2];

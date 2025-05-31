@@ -111,7 +111,7 @@ void RegistrationThread::run() {
         vtkNew<vtkIterativeClosestPointTransform> icp;
         icp->SetSource(preAlignedMesh);
         icp->SetTarget(m_templateMesh);
-        double ptsSample = 300;
+        double ptsSample = m_res;
         if (preAlignedMesh->GetNumberOfPoints() < 300) {
             ptsSample = preAlignedMesh->GetNumberOfPoints() / 1.0;
         }

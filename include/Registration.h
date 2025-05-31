@@ -185,7 +185,7 @@ class Registration : public QMainWindow {
     vtkPoints* m_typeII;
     vtkSmartPointer<vtkPoints> m_curveSliders; */
     
-    int m_resampledRes = 200;
+    int m_resampledRes = 300;
     
     SlidingThread* m_slidingThread = nullptr;
     StatusReporterThread* m_slidingStatThread = nullptr;

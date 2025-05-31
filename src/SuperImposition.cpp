@@ -111,10 +111,10 @@ SuperImposition::SuperImposition(DataBase *dataBase, MainWindow *parent, QMutex*
     //---------------
     lmList = new QListWidget;
     lmAnchorList = new QListWidget;
-    QListWidgetItem *item1 = new QListWidgetItem("Available");
+    QListWidgetItem *item1 = new QListWidgetItem("Available To Use");
     item1->setFlags(item1->flags() & ~Qt::ItemIsSelectable);
     lmList->addItem(item1);
-    QListWidgetItem *item2 = new QListWidgetItem("   Use   ");
+    QListWidgetItem *item2 = new QListWidgetItem("Already Used");
     item2->setFlags(item2->flags() & ~Qt::ItemIsSelectable);
     lmAnchorList->addItem(item2);
 

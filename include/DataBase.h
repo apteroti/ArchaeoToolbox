@@ -1,6 +1,6 @@
 /***********************************************************************************************
-                                                                    
-************************************************************************************************                                                                                       
+
+************************************************************************************************
 * ArchaeoToolbox                                                                               *
 * Geometric Morphometrics Software                                                             *
 *                                                                                              *
@@ -10,7 +10,7 @@
 *                                                                                              *
 * All rights reserved.                                                                         *
 *                                                                                              *
-* This program is free software; you can redistribute it and/or modify                         *   
+* This program is free software; you can redistribute it and/or modify                         *
 * it under the terms of the GNU General Public License as published by                         *
 * the Free Software Foundation; either version 2 of the License, or                            *
 * (at your option) any later version.                                                          *
@@ -22,48 +22,48 @@
 * for more details.                                                                            *
 *                                                                                              *
 
- ***********************************************************************************************                                                                                                                                                               
-                                                                               .          
-                                                  .                            =:         
-                                                  #                            +*         
-                                                 ##                            %@.        
-                                                =@@                            #@%        
-                                               .@@*                            @@@:       
-                                               %@@*                           #@@@=       
-                                               =@@@#-                     .:+#@@@#        
-                                                *@@@@@*=::.:=-=+*%%%+-=*%@@@@@@@=         
-                                                 -%@@@@@@@@@@@@@@@@@@@@@@@@%#+-           
-                                                   .-=+*#@@@@@@@@@@@@@@@@+.               
-                                                       =@@@@@@@@@@@@@@@@@@@@*.            
-                                                    .=%@@@@@@@@@@@@@@@@@@@@@@*            
-                                              -****%@@@@@@@@@@@@@@@@@@@@@%@@@=            
-                                             .@@@@@@@@@@@@@@@@@@@@@@@@@@%  -.             
-                                              -@@@@@@@@@@@@@@@@@@@@@@@@@*.                
-                                              %@@@@@@@@@@@@@@@@@@@@@@@@@@+                
-                                            :%@@@@@@@@@@@@@@@@@@@@@@@@@@%                 
-                                    .:=*#%%%@@@@@@@@@@@@@@@@@@@@@@@@@%-=.                 
-                                -+%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*                     
-                           .-+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                     
-                     .--=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                     
-                  :*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=                     
-                .#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+                     
-               :@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+                     
-               %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.                     
-               +@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                      
-                #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+.                       
-           .-+*@@@+:@@@@@@@@@@@@@@@%**+==-------===+@@@@@@@@@@@@@-                        
-         :#@@@%%%+ .@@@@@@@@@@@*-:                 +@@@@@@@@@@@@@@%+:                     
-       +%@@*.      -@@@@@@@@@=                    =@@@@**#*=--*%@@@@@@*                   
-       -*=.       :@@@@@@@@=                       @@@@         .-#@@@@.                  
-                 #@@@@@*@@@:                       *@@+            +@@%                   
-                 %@@@%  *%@@+                      @@@.            -@@@                   
-                 =@@@:    +@@%                    -@@@.            :@@@:                  
-                 *@@@      *@@%                   *@@@=            :@@@-                  
-                -@@@#      =@@@#                 :@@@@@            #@@@@.                 
-                #@@@@.     .###=                 .++++-           .*%%##:                 
-                %@@@@.                                                                    
-               .*%%%*                                                                     
-                      
+ ***********************************************************************************************
+                                                                               .
+                                                  .                            =:
+                                                  #                            +*
+                                                 ##                            %@.
+                                                =@@                            #@%
+                                               .@@*                            @@@:
+                                               %@@*                           #@@@=
+                                               =@@@#-                     .:+#@@@#
+                                                *@@@@@*=::.:=-=+*%%%+-=*%@@@@@@@=
+                                                 -%@@@@@@@@@@@@@@@@@@@@@@@@%#+-
+                                                   .-=+*#@@@@@@@@@@@@@@@@+.
+                                                       =@@@@@@@@@@@@@@@@@@@@*.
+                                                    .=%@@@@@@@@@@@@@@@@@@@@@@*
+                                              -****%@@@@@@@@@@@@@@@@@@@@@%@@@=
+                                             .@@@@@@@@@@@@@@@@@@@@@@@@@@%  -.
+                                              -@@@@@@@@@@@@@@@@@@@@@@@@@*.
+                                              %@@@@@@@@@@@@@@@@@@@@@@@@@@+
+                                            :%@@@@@@@@@@@@@@@@@@@@@@@@@@%
+                                    .:=*#%%%@@@@@@@@@@@@@@@@@@@@@@@@@%-=.
+                                -+%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+                           .-+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
+                     .--=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
+                  :*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=
+                .#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+
+               :@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+
+               %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.
+               +@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
+                #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+.
+           .-+*@@@+:@@@@@@@@@@@@@@@%**+==-------===+@@@@@@@@@@@@@-
+         :#@@@%%%+ .@@@@@@@@@@@*-:                 +@@@@@@@@@@@@@@%+:
+       +%@@*.      -@@@@@@@@@=                    =@@@@**#*=--*%@@@@@@*
+       -*=.       :@@@@@@@@=                       @@@@         .-#@@@@.
+                 #@@@@@*@@@:                       *@@+            +@@%
+                 %@@@%  *%@@+                      @@@.            -@@@
+                 =@@@:    +@@%                    -@@@.            :@@@:
+                 *@@@      *@@%                   *@@@=            :@@@-
+                -@@@#      =@@@#                 :@@@@@            #@@@@.
+                #@@@@.     .###=                 .++++-           .*%%##:
+                %@@@@.
+               .*%%%*
+
 ***********************************************************************************************/
 
 #ifndef DATABASE_H
@@ -88,22 +88,22 @@ private:
     {
         string nodeName;
         string geometryType;
-        vtkSmartPointer<vtkPolyData> nodePoly 
-        = vtkSmartPointer<vtkPolyData>::New();
-        vtkSmartPointer<vtkStructuredGrid> nodeDICOM 
-        = vtkSmartPointer<vtkStructuredGrid>::New();
-        vtkSmartPointer<vtkPoints> typeI 
-        = vtkSmartPointer<vtkPoints>::New();
-        /* vtkSmartPointer<vtkPoints> slider 
+        vtkSmartPointer<vtkPolyData> nodePoly
+            = vtkSmartPointer<vtkPolyData>::New();
+        vtkSmartPointer<vtkStructuredGrid> nodeDICOM
+            = vtkSmartPointer<vtkStructuredGrid>::New();
+        vtkSmartPointer<vtkPoints> typeI
+            = vtkSmartPointer<vtkPoints>::New();
+        /* vtkSmartPointer<vtkPoints> slider
         = vtkSmartPointer<vtkPoints>::New(); */
-        vtkSmartPointer<vtkPoints> curveSlider 
-        = vtkSmartPointer<vtkPoints>::New();
-        vtkSmartPointer<vtkPoints> surfaceSlider 
-        = vtkSmartPointer<vtkPoints>::New();
-        vtkSmartPointer<vtkPolyData> totalLM 
-        = vtkSmartPointer<vtkPolyData>::New();
-        vtkSmartPointer<vtkDoubleArray> procDistance 
-        = vtkSmartPointer<vtkDoubleArray>::New();
+        vtkSmartPointer<vtkPoints> curveSlider
+            = vtkSmartPointer<vtkPoints>::New();
+        vtkSmartPointer<vtkPoints> surfaceSlider
+            = vtkSmartPointer<vtkPoints>::New();
+        vtkSmartPointer<vtkPolyData> totalLM
+            = vtkSmartPointer<vtkPolyData>::New();
+        vtkSmartPointer<vtkDoubleArray> procDistance
+            = vtkSmartPointer<vtkDoubleArray>::New();
 
         std::shared_ptr<node> next;
     };
@@ -138,12 +138,14 @@ public:
     vtkStructuredGrid* GetGridNode(string name);
     vtkDoubleArray* GetProcDistance(string name);
     string GetGeometryType(string name);
+    std::vector<std::string> GetNodeNames();
+    int GetNumberOfNodes();
     void DeleteNode(string name);
     void RenameNode(string name, string newName);
     void PrintNode();
-    std::vector<std::string> GetNodeNames();
+
     bool CheckMembership(string name);
-    
+
     ~DataBase();
 };
 

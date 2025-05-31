@@ -1,0 +1,5 @@
+Windows: 
+.\windeployqt.exe C:\cpp\ToolBox\build\Release\ArchaeoToolbox.exe 
+C:\cpp\ToolBox\Installer> C:\Qt\QtIFW-4.6.0\bin\binarycreator.exe -c config/config.xml -p packages ArchaeoToolBoxInstaller.exe
+
+.\qhelpgenerator.exe C:\cpp\ToolBox\build\documents\helpdocuments.qhcp -o C:\cpp\ToolBox\build\documents\helpdocuments.qhc

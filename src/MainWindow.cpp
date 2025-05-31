@@ -1,6 +1,6 @@
 /***********************************************************************************************
-                                                                    
-************************************************************************************************                                                                                       
+
+************************************************************************************************
 * ArchaeoToolbox                                                                               *
 * Geometric Morphometrics Software                                                             *
 *                                                                                              *
@@ -10,7 +10,7 @@
 *                                                                                              *
 * All rights reserved.                                                                         *
 *                                                                                              *
-* This program is free software; you can redistribute it and/or modify                         *   
+* This program is free software; you can redistribute it and/or modify                         *
 * it under the terms of the GNU General Public License as published by                         *
 * the Free Software Foundation; either version 2 of the License, or                            *
 * (at your option) any later version.                                                          *
@@ -22,48 +22,48 @@
 * for more details.                                                                            *
 *                                                                                              *
 
- ***********************************************************************************************                                                                                                                                                               
-                                                                               .          
-                                                  .                            =:         
-                                                  #                            +*         
-                                                 ##                            %@.        
-                                                =@@                            #@%        
-                                               .@@*                            @@@:       
-                                               %@@*                           #@@@=       
-                                               =@@@#-                     .:+#@@@#        
-                                                *@@@@@*=::.:=-=+*%%%+-=*%@@@@@@@=         
-                                                 -%@@@@@@@@@@@@@@@@@@@@@@@@%#+-           
-                                                   .-=+*#@@@@@@@@@@@@@@@@+.               
-                                                       =@@@@@@@@@@@@@@@@@@@@*.            
-                                                    .=%@@@@@@@@@@@@@@@@@@@@@@*            
-                                              -****%@@@@@@@@@@@@@@@@@@@@@%@@@=            
-                                             .@@@@@@@@@@@@@@@@@@@@@@@@@@%  -.             
-                                              -@@@@@@@@@@@@@@@@@@@@@@@@@*.                
-                                              %@@@@@@@@@@@@@@@@@@@@@@@@@@+                
-                                            :%@@@@@@@@@@@@@@@@@@@@@@@@@@%                 
-                                    .:=*#%%%@@@@@@@@@@@@@@@@@@@@@@@@@%-=.                 
-                                -+%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*                     
-                           .-+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                     
-                     .--=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                     
-                  :*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=                     
-                .#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+                     
-               :@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+                     
-               %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.                     
-               +@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                      
-                #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+.                       
-           .-+*@@@+:@@@@@@@@@@@@@@@%**+==-------===+@@@@@@@@@@@@@-                        
-         :#@@@%%%+ .@@@@@@@@@@@*-:                 +@@@@@@@@@@@@@@%+:                     
-       +%@@*.      -@@@@@@@@@=                    =@@@@**#*=--*%@@@@@@*                   
-       -*=.       :@@@@@@@@=                       @@@@         .-#@@@@.                  
-                 #@@@@@*@@@:                       *@@+            +@@%                   
-                 %@@@%  *%@@+                      @@@.            -@@@                   
-                 =@@@:    +@@%                    -@@@.            :@@@:                  
-                 *@@@      *@@%                   *@@@=            :@@@-                  
-                -@@@#      =@@@#                 :@@@@@            #@@@@.                 
-                #@@@@.     .###=                 .++++-           .*%%##:                 
-                %@@@@.                                                                    
-               .*%%%*                                                                     
-                      
+ ***********************************************************************************************
+                                                                               .
+                                                  .                            =:
+                                                  #                            +*
+                                                 ##                            %@.
+                                                =@@                            #@%
+                                               .@@*                            @@@:
+                                               %@@*                           #@@@=
+                                               =@@@#-                     .:+#@@@#
+                                                *@@@@@*=::.:=-=+*%%%+-=*%@@@@@@@=
+                                                 -%@@@@@@@@@@@@@@@@@@@@@@@@%#+-
+                                                   .-=+*#@@@@@@@@@@@@@@@@+.
+                                                       =@@@@@@@@@@@@@@@@@@@@*.
+                                                    .=%@@@@@@@@@@@@@@@@@@@@@@*
+                                              -****%@@@@@@@@@@@@@@@@@@@@@%@@@=
+                                             .@@@@@@@@@@@@@@@@@@@@@@@@@@%  -.
+                                              -@@@@@@@@@@@@@@@@@@@@@@@@@*.
+                                              %@@@@@@@@@@@@@@@@@@@@@@@@@@+
+                                            :%@@@@@@@@@@@@@@@@@@@@@@@@@@%
+                                    .:=*#%%%@@@@@@@@@@@@@@@@@@@@@@@@@%-=.
+                                -+%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+                           .-+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
+                     .--=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
+                  :*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=
+                .#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+
+               :@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+
+               %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.
+               +@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
+                #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+.
+           .-+*@@@+:@@@@@@@@@@@@@@@%**+==-------===+@@@@@@@@@@@@@-
+         :#@@@%%%+ .@@@@@@@@@@@*-:                 +@@@@@@@@@@@@@@%+:
+       +%@@*.      -@@@@@@@@@=                    =@@@@**#*=--*%@@@@@@*
+       -*=.       :@@@@@@@@=                       @@@@         .-#@@@@.
+                 #@@@@@*@@@:                       *@@+            +@@%
+                 %@@@%  *%@@+                      @@@.            -@@@
+                 =@@@:    +@@%                    -@@@.            :@@@:
+                 *@@@      *@@%                   *@@@=            :@@@-
+                -@@@#      =@@@#                 :@@@@@            #@@@@.
+                #@@@@.     .###=                 .++++-           .*%%##:
+                %@@@@.
+               .*%%%*
+
 ***********************************************************************************************/
 
 #include "../include/MainWindow.h"
@@ -83,10 +83,10 @@ MainWindow::MainWindow() {
     m_currentGrid = vtkSmartPointer<vtkStructuredGrid>::New();
     m_dataBase = new DataBase();
     mainRenderWindowWidget = new QVTKOpenGLWidget();
-    
+
     helpEngine = new QHelpEngine(QApplication::applicationDirPath() +
-                "/documents/helpdocuments.qhc");
-    helpEngine->setupData(); 
+        "/documents/helpdocuments.qhc");
+    helpEngine->setupData();
 
     helpTab = new QTabWidget();
     helpTab->setMaximumWidth(200);
@@ -95,23 +95,23 @@ MainWindow::MainWindow() {
 
     textViewer = new HelpBrowser(helpEngine);
     textViewer->setSource(
-                QUrl("qthelp://archaeotoolbox.helpdocument/doc/index.html"));
-     
+        QUrl("qthelp://archaeotoolbox.helpdocument/doc/index.html"));
+
     connect(helpEngine->contentWidget(),
-            SIGNAL(linkActivated(QUrl)),
-            textViewer, SLOT(setSource(QUrl)));
+        SIGNAL(linkActivated(QUrl)),
+        textViewer, SLOT(setSource(QUrl)));
 
     connect(helpEngine->indexWidget(),
-            SIGNAL(linkActivated(QUrl, QString)),
-            textViewer, SLOT(setSource(QUrl))); 
+        SIGNAL(linkActivated(QUrl, QString)),
+        textViewer, SLOT(setSource(QUrl)));
     horizSplitter = new QSplitter(Qt::Horizontal);
     horizSplitter->insertWidget(0, helpTab);
     horizSplitter->insertWidget(1, textViewer);
 
     helpWindow = new QMainWindow(this);
     helpWindow->setCentralWidget(horizSplitter);
-    helpWindow->hide(); 
-    
+    helpWindow->hide();
+
 
     mainTable = new QTableWidget();
     supImposedTable = new QTableWidget();
@@ -155,7 +155,7 @@ MainWindow::MainWindow() {
     m_scalarBar = vtkSmartPointer<vtkScalarBarActor>::New();
     vtkNew<vtkGenericRenderWindowInteractor> mainIRen;
     vtkNew<vtkInteractorStyleTrackballCamera> renderStyle;
-    vtkRenderWindow *mainRenWin = mainRenderWindowWidget->GetRenderWindow();
+    vtkRenderWindow* mainRenWin = mainRenderWindowWidget->GetRenderWindow();
     mainRenWin->AddRenderer(m_mainRenderer);
     renderStyle->SetCurrentRenderer(m_mainRenderer);
     mainIRen->SetInteractorStyle(renderStyle);
@@ -258,29 +258,29 @@ MainWindow::MainWindow() {
     //--------------
     mainTable->setRowCount(TableRowNum);
     mainTable->setColumnCount(TableColNum);
-    mainTable->setHorizontalHeaderLabels({"Specimen", "X", "Y", "Z"});
-    
-    
+    mainTable->setHorizontalHeaderLabels({ "Specimen", "X", "Y", "Z" });
+
+
     mainTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     mainTable->setFocusPolicy(Qt::NoFocus);
     mainTable->setSelectionMode(QAbstractItemView::NoSelection);
 
     supImposedTable->setRowCount(TableRowNum);
     supImposedTable->setColumnCount(TableColNum);
-    supImposedTable->setHorizontalHeaderLabels({"Specimen", "X", "Y", "Z"});
+    supImposedTable->setHorizontalHeaderLabels({ "Specimen", "X", "Y", "Z" });
     supImposedTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     supImposedTable->setFocusPolicy(Qt::NoFocus);
     supImposedTable->setSelectionMode(QAbstractItemView::NoSelection);
 
     procResTable->setRowCount(TableRowNum);
     procResTable->setColumnCount(TableColNum);
-    procResTable->setHorizontalHeaderLabels({"Specimen", "X", "Y", "Z"});
+    procResTable->setHorizontalHeaderLabels({ "Specimen", "X", "Y", "Z" });
     procResTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     procResTable->setFocusPolicy(Qt::NoFocus);
     procResTable->setSelectionMode(QAbstractItemView::NoSelection);
 
     mainTabWidget->addTab(mainRenderWindowWidget, tr("Renderer"));
-    mainTabWidget->addTab(mainTable, tr("Digitized"));
+    mainTabWidget->addTab(mainTable, tr("Digitised"));
     mainTabWidget->addTab(supImposedTable, tr("SuperImposed"));
     mainTabWidget->addTab(procResTable, tr("Procrustes Residual"));
     // setCentralWidget(mainTable);
@@ -328,17 +328,17 @@ MainWindow::MainWindow() {
 
     helpMenu = menuBar()->addMenu("&Help");
     aboutAction = new QAction("About", this);
-    aboutAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_H));
     helpMenu->addAction(aboutAction);
 
     helpAction = new QAction("Documentation", this);
+    helpAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_H));
     helpMenu->addAction(helpAction);
     //--------------------------------------------------------
 
     // Setting up Toolbar for content tree
     dockedToolbar = new QDockWidget;
     dockedToolbar->setFeatures(QDockWidget::DockWidgetFloatable |
-                               QDockWidget::DockWidgetMovable);
+        QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::LeftDockWidgetArea, dockedToolbar);
     //---------------------------------------
     toolbar = addToolBar("Main Toolbar");
@@ -354,11 +354,11 @@ MainWindow::MainWindow() {
     meshPlotToolbarAction->setEnabled(0);
     superImpositionToolbarAction =
         toolbar->addAction(QIcon(":/icons/graphics/icons/superimposition.svg"),
-                           "Super Imposition");
+            "Super Imposition");
     superImpositionToolbarAction->setEnabled(0);
     pcaToolbarAction =
         toolbar->addAction(QIcon(":/icons/graphics/icons/PCAicon.svg"),
-                           "Principal Component Analysis");
+            "Principal Component Analysis");
     pcaToolbarAction->setEnabled(0);
     templatePlotToolbarAction = toolbar->addAction(
         QIcon(":/icons/graphics/icons/template.svg"), "Plot Template");
@@ -387,29 +387,29 @@ MainWindow::MainWindow() {
     connect(importMeshAction, &QAction::triggered, this, &MainWindow::LoadOBJ);
     connect(exportCSVAction, &QAction::triggered, this, &MainWindow::ExportCSV);
     connect(exportVTKAction, &QAction::triggered, this,
-            &MainWindow::ExportGeometry);
+        &MainWindow::ExportGeometry);
     connect(saveProjectAction, &QAction::triggered, this,
-            &MainWindow::SaveProject);
+        &MainWindow::SaveProject);
     connect(recoverActionLegacy, &QAction::triggered, this,
-            &MainWindow::RecoverDigitisedLM);
+        &MainWindow::RecoverDigitisedLM);
     connect(openProjectAction, &QAction::triggered, this,
-            &MainWindow::RecoverProject);
+        &MainWindow::RecoverProject);
     // connect(quitAction, &QAction::triggered, this, &QApplication::quit);
     connect(quitAction, &QAction::triggered, this, &MainWindow::customQuit);
     connect(plotToolbarAction, &QAction::triggered, this,
-            &MainWindow::DICOMPlot);
+        &MainWindow::DICOMPlot);
     connect(superImpositionToolbarAction, &QAction::triggered, this,
-            &MainWindow::SuperImpose);
+        &MainWindow::SuperImpose);
     connect(templatePlotToolbarAction, &QAction::triggered, this,
-            &MainWindow::TemplatePlot);
+        &MainWindow::TemplatePlot);
     connect(meshPlotToolbarAction, &QAction::triggered, this,
-            &MainWindow::meshPlot);
+        &MainWindow::meshPlot);
     connect(projectSettingAction, &QAction::triggered, this,
-            &MainWindow::SettingMenu);
+        &MainWindow::SettingMenu);
     connect(m_treeWidget, &QTreeWidget::itemSelectionChanged, this,
-            &MainWindow::UpdateActiveData);
+        &MainWindow::UpdateActiveData);
     connect(m_treeWidget, &QTreeWidget::customContextMenuRequested, this,
-            &MainWindow::ShowContextMenu);
+        &MainWindow::ShowContextMenu);
     connect(pcaToolbarAction, &QAction::triggered, this, &MainWindow::PCA);
     connect(helpToolbarAction, &QAction::triggered, this, &MainWindow::PrintHelp);
     //-----------------------------------------------------------
@@ -419,18 +419,18 @@ MainWindow::MainWindow() {
 void MainWindow::customQuit() {
     if (QMessageBox::Yes ==
         QMessageBox::question(this, "Close Confirmation",
-                              "Do you Want to quit?",
-                              QMessageBox::Yes | QMessageBox::No)) {
+            "Do you Want to quit?",
+            QMessageBox::Yes | QMessageBox::No)) {
         QApplication::quit();
     }
 }
 
-void MainWindow::closeEvent(QCloseEvent *event) {
+void MainWindow::closeEvent(QCloseEvent* event) {
     event->ignore();
     if (QMessageBox::Yes ==
         QMessageBox::question(this, "Close Confirmation",
-                              "Do you Want to quit?",
-                              QMessageBox::Yes | QMessageBox::No)) {
+            "Do you Want to quit?",
+            QMessageBox::Yes | QMessageBox::No)) {
         delete m_meshPlot;
         m_meshPlot = nullptr;
         delete m_SIMP;
@@ -451,27 +451,27 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     }
 }
 
-void MainWindow::ContentTree(QDockWidget *parent) {
-    m_treeWidget->setHeaderLabels(QStringList{"Name", "Type"});
+void MainWindow::ContentTree(QDockWidget* parent) {
+    m_treeWidget->setHeaderLabels(QStringList{ "Name", "Type" });
     parent->setWidget(m_treeWidget);
     m_treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     m_treeWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     renameNodeAction = nodePopUpMenu.addAction("Rename");
     connect(renameNodeAction, &QAction::triggered, this,
-            &MainWindow::RenameDataNode);
+        &MainWindow::RenameDataNode);
     connect(m_treeWidget, &QTreeWidget::itemChanged, this,
-            &MainWindow::UpdateNodeName);
+        &MainWindow::UpdateNodeName);
     nodePopUpMenu.addSeparator();
     deleteNodeAction = nodePopUpMenu.addAction("Delete");
     connect(deleteNodeAction, &QAction::triggered, this,
-            &MainWindow::DeleteDataNode);
+        &MainWindow::DeleteDataNode);
     deleteBranchAction = branchPopUpMenu.addAction("Delete Landmarks");
     connect(deleteBranchAction, &QAction::triggered, this,
-            &MainWindow::DeleteDataBranch);
+        &MainWindow::DeleteDataBranch);
     nodePopUpMenu.addSeparator();
     exportGeometryAction = nodePopUpMenu.addAction("Export Geometry");
     connect(exportGeometryAction, &QAction::triggered, this,
-            &MainWindow::ExportGeometry);
+        &MainWindow::ExportGeometry);
 }
 
 void MainWindow::SettingMenu() { projectSettings->show(); }
@@ -480,20 +480,21 @@ void MainWindow::about() {
     QMessageBox::about(
         this, tr("About ArchaeoToolbox"),
         tr("<p align='center'> <b>ArchaeoToolbox</b> <br> 2.0 - Beta version "
-           "<br> <b>Reference:</b> <br> Kaveh Yousef Pouran, Maria Saña, Juan "
-           "Anton Barceló, 2023. Biomechanics, behaviour dynamics and "
-           "archaeology: Integrative attempts to study animal domestication "
-           "and husbandry. Universitat Autònoma de Barcelona. <br> "
-           "Copyright (c) Kaveh Yousef Poran <br> 2023"));
+            "<br> <b>Reference:</b> <br> Kaveh Yousef Pouran, Maria Saña, Juan "
+            "Anton Barceló, 2023. Biomechanics, behaviour dynamics and "
+            "archaeology: Integrative attempts to study animal domestication "
+            "and husbandry. Universitat Autònoma de Barcelona. <br> "
+            "Copyright (c) Kaveh Yousef Poran <br> 2023"));
 }
 
 void MainWindow::LoadOBJ() {
     // we could add this option {QFileDialog::DontUseNativeDialog}
     QString fileName =
         QFileDialog::getOpenFileName(this, "OBJ Files", QDir::homePath(),
-                                     "OBJ Files (*.obj);;All Files (*)");
+            "OBJ Files (*.obj);;All Files (*)");
     if (fileName.isEmpty()) {
-    } else {
+    }
+    else {
         if (fileName.endsWith(".obj")) {
             vtkSmartPointer<vtkOBJReader> objReader =
                 vtkSmartPointer<vtkOBJReader>::New();
@@ -548,9 +549,20 @@ void MainWindow::LoadOBJ() {
 }
 
 void MainWindow::ExportCSV() {
-    delete m_exportDial;
-    m_exportDial = new ExportDialogue(this);
-    m_exportDial->show();
+    if (m_dataBase->CheckMembership("Template")) {
+        delete m_exportDial;
+        m_exportDial = new ExportDialogue(this);
+        m_exportDial->show();
+    }
+    else {
+        auto errorDialogue = QMessageBox();
+        // QPixmap Quim(":/icons/graphics/icons/Quim.png");
+        errorDialogue.setIcon(QMessageBox::Information);
+        // errorDialogue.setIconPixmap(Quim);
+        errorDialogue.setWindowTitle("Error");
+        errorDialogue.setText("Nothing to Export!");
+        errorDialogue.exec();
+    }
 }
 
 void MainWindow::DoExport() {
@@ -570,13 +582,13 @@ void MainWindow::DoExport() {
             QStringList textItem;
             QTextStream data(&f);
             textItem += "Name,";
-            for(int i = 0; i < numLM; i++){
-                if(i == numLM - 1){
+            for (int i = 0; i < numLM; i++) {
+                if (i == numLM - 1) {
                     textItem += "LM" + QString::number(i) + "X" + ",";
                     textItem += "LM" + QString::number(i) + "Y" + ",";
                     textItem += "LM" + QString::number(i) + "Z";
                 }
-                else{
+                else {
                     textItem += "LM" + QString::number(i) + "X" + ",";
                     textItem += "LM" + QString::number(i) + "Y" + ",";
                     textItem += "LM" + QString::number(i) + "Z" + ",";
@@ -586,12 +598,12 @@ void MainWindow::DoExport() {
             textItem.clear();
             for (int i = 0; i < mainTable->rowCount(); i++) {
                 for (int j = 0; j < numCols; j++) {
-                    QTableWidgetItem *item = mainTable->item(i, j);
+                    QTableWidgetItem* item = mainTable->item(i, j);
                     if (item && !item->text().isEmpty()) {
-                        if(j == numCols - 1){
+                        if (j == numCols - 1) {
                             textItem += item->text();
                         }
-                        else{
+                        else {
                             textItem += item->text() + ",";
                         }
                     }
@@ -601,7 +613,8 @@ void MainWindow::DoExport() {
             }
             f.close();
         }
-    } else if (m_si) {
+    }
+    else if (m_si) {
         auto filter = "csv(*.csv)";
         QString filename = QFileDialog::getSaveFileName(
             this, "Save SuperImposed Landmarks", "", filter);
@@ -618,13 +631,13 @@ void MainWindow::DoExport() {
             QTextStream data(&f);
 
             textItem += "Name,";
-            for(int i = 0; i < numLM; i++){
-                if(i == numLM - 1){
+            for (int i = 0; i < numLM; i++) {
+                if (i == numLM - 1) {
                     textItem += "LM" + QString::number(i) + "X" + ",";
                     textItem += "LM" + QString::number(i) + "Y" + ",";
                     textItem += "LM" + QString::number(i) + "Z";
                 }
-                else{
+                else {
                     textItem += "LM" + QString::number(i) + "X" + ",";
                     textItem += "LM" + QString::number(i) + "Y" + ",";
                     textItem += "LM" + QString::number(i) + "Z" + ",";
@@ -635,12 +648,12 @@ void MainWindow::DoExport() {
 
             for (int i = 0; i < supImposedTable->rowCount(); i++) {
                 for (int j = 0; j < numCols; j++) {
-                    QTableWidgetItem *item = supImposedTable->item(i, j);
+                    QTableWidgetItem* item = supImposedTable->item(i, j);
                     if (item && !item->text().isEmpty()) {
-                        if(j == numCols - 1){
+                        if (j == numCols - 1) {
                             textItem += item->text();
                         }
-                        else{
+                        else {
                             textItem += item->text() + ",";
                         }
                     }
@@ -650,7 +663,8 @@ void MainWindow::DoExport() {
             }
             f.close();
         }
-    } else if (m_pv) {
+    }
+    else if (m_pv) {
         auto filter = "csv(*.csv)";
         QString filename = QFileDialog::getSaveFileName(
             this, "Save Procrustes Residual Vectors", "", filter);
@@ -666,13 +680,13 @@ void MainWindow::DoExport() {
             QStringList textItem;
             QTextStream data(&f);
             textItem += "Name,";
-            for(int i = 0; i < numLM; i++){
-                if(i == numLM - 1){
+            for (int i = 0; i < numLM; i++) {
+                if (i == numLM - 1) {
                     textItem += "PV" + QString::number(i) + "X" + ",";
                     textItem += "PV" + QString::number(i) + "Y" + ",";
                     textItem += "PV" + QString::number(i) + "Z";
                 }
-                else{
+                else {
                     textItem += "PV" + QString::number(i) + "X" + ",";
                     textItem += "PV" + QString::number(i) + "Y" + ",";
                     textItem += "PV" + QString::number(i) + "Z" + ",";
@@ -682,12 +696,12 @@ void MainWindow::DoExport() {
             textItem.clear();
             for (int i = 0; i < procResTable->rowCount(); i++) {
                 for (int j = 0; j < procResTable->columnCount(); j++) {
-                    QTableWidgetItem *item = procResTable->item(i, j);
+                    QTableWidgetItem* item = procResTable->item(i, j);
                     if (item && !item->text().isEmpty()) {
-                        if(j == numCols - 1){
+                        if (j == numCols - 1) {
                             textItem += item->text();
                         }
-                        else{
+                        else {
                             textItem += item->text() + ",";
                         }
                     }
@@ -697,7 +711,8 @@ void MainWindow::DoExport() {
             }
             f.close();
         }
-    } else if (m_pm) {
+    }
+    else if (m_pm) {
         auto filter = "csv(*.csv)";
         QString filename = QFileDialog::getSaveFileName(
             this, "Save Procrustes Residual Magnitudes", "", filter);
@@ -713,30 +728,32 @@ void MainWindow::DoExport() {
             QStringList textItem;
             QTextStream data(&f);
             textItem += "Name,";
-            for(int i = 0; i < numLM; i++){
-                if(i == numLM - 1){
+            for (int i = 0; i < numLM; i++) {
+                if (i == numLM - 1) {
                     textItem += "PR" + QString::number(i);
                 }
-                else{
-                    textItem += "PR" + QString::number(i)+ ",";
+                else {
+                    textItem += "PR" + QString::number(i) + ",";
                 }
             }
             data << textItem.join("") << ENDL;
             textItem.clear();
-            std::vector<double> *doubleList = new std::vector<double>;
+            std::vector<double>* doubleList = new std::vector<double>;
             for (int i = 0; i < procResTable->rowCount(); i++) {
                 for (int j = 0; j < numCols; j++) {
-                    QTableWidgetItem *item = procResTable->item(i, j);
+                    QTableWidgetItem* item = procResTable->item(i, j);
                     if (item && !item->text().isEmpty()) {
                         if (j == 0) {
                             textItem += item->text() + ",";
-                        } else {
+                        }
+                        else {
                             std::string textNum = item->text().toStdString();
                             double num = 0;
                             bool convertable = 1;
                             try {
                                 num = stod(textNum);
-                            } catch (const std::exception &e) {
+                            }
+                            catch (const std::exception& e) {
                                 convertable = 0;
                             }
                             if (convertable) {
@@ -752,17 +769,18 @@ void MainWindow::DoExport() {
                         double z = doubleList->at(j + 2);
                         double mag = sqrt((x * x) + (y * y) + (z * z));
                         QString item = QString::number(mag);
-                        if(j == doubleList->size() - 1){
-                            textItem += item ;
+                        if (j == doubleList->size() - 1) {
+                            textItem += item;
                         }
-                        else{
+                        else {
                             textItem += item + ",";
                         }
                     }
-                } else {
+                }
+                else {
                     std::cout << "Number of coordinates are not devisible by "
-                                 "3; Debug!"
-                              << std::endl;
+                        "3; Debug!"
+                        << std::endl;
                     std::cout << doubleList->size() << std::endl;
                 }
 
@@ -789,20 +807,21 @@ void MainWindow::ExportGeometry() {
         auto name = m_treeWidget->selectedItems()[0]->text(0).toStdString();
         if (m_treeWidget->selectedItems()[0]->parent()) {
             name = m_treeWidget->selectedItems()[0]
-                       ->parent()
-                       ->text(0)
-                       .toStdString();
+                ->parent()
+                ->text(0)
+                .toStdString();
         }
         std::string dType = m_dataBase->GetGeometryType(name);
         if (dType == "OBJ") {
-            vtkPolyData *tempPoly = m_dataBase->GetPolyNode(name);
+            vtkPolyData* tempPoly = m_dataBase->GetPolyNode(name);
             vtkNew<vtkXMLPolyDataWriter> writer;
             writer->SetInputData(tempPoly);
             writer->SetFileName(filename.toStdString().c_str());
             writer->Update();
             writer->Write();
         }
-    } else {
+    }
+    else {
         auto errorDialogue = QMessageBox();
         // QPixmap Quim(":/icons/graphics/icons/Quim.png");
         errorDialogue.setIcon(QMessageBox::Information);
@@ -824,7 +843,8 @@ void MainWindow::SuperImpose() {
                 QPixmap(":/icons/graphics/icons/vBusy.svg"));
             delete m_SIMP;
             m_SIMP = new SuperImposition(m_dataBase, this, m_mutex);
-        } else {
+        }
+        else {
             auto errorDialogue = QMessageBox();
             QPixmap Quim(":/icons/graphics/icons/Quim.png");
             // errorDialogue.setIcon(QMessageBox::Information);
@@ -834,7 +854,8 @@ void MainWindow::SuperImpose() {
             errorDialogue.exec();
             superImpositionToolbarAction->setEnabled(0);
         }
-    } else {
+    }
+    else {
         auto errorDialogue = QMessageBox();
         QPixmap Quim(":/icons/graphics/icons/Quim.png");
         // errorDialogue.setIcon(QMessageBox::Information);
@@ -851,11 +872,11 @@ void MainWindow::ResetImposition() {
     supImposedTable->clear();
     supImposedTable->setColumnCount(mainTable->columnCount());
     supImposedTable->setRowCount(mainTable->rowCount());
-    supImposedTable->setHorizontalHeaderLabels({"Specimen", "X", "Y", "Z"});
+    supImposedTable->setHorizontalHeaderLabels({ "Specimen", "X", "Y", "Z" });
     procResTable->clear();
     procResTable->setColumnCount(mainTable->columnCount());
     procResTable->setRowCount(mainTable->rowCount());
-    procResTable->setHorizontalHeaderLabels({"Specimen", "X", "Y", "Z"});
+    procResTable->setHorizontalHeaderLabels({ "Specimen", "X", "Y", "Z" });
 }
 
 void MainWindow::FinaliseImposition() {
@@ -866,7 +887,7 @@ void MainWindow::FinaliseImposition() {
 
 void MainWindow::OnSuperImposed(std::string name) {
     m_mutex->lock();
-    vtkPolyData *coordsPoly = m_dataBase->GetTotalLandmarks(name);
+    vtkPolyData* coordsPoly = m_dataBase->GetTotalLandmarks(name);
     int freeRow;
     for (int i = 0; i < supImposedTable->rowCount(); i++) {
         if (!supImposedTable->item(i, 0) ||
@@ -900,15 +921,16 @@ void MainWindow::OnSuperImposed(std::string name) {
     }
 
     procResTable->setItem(freeRow, 0,
-                          new QTableWidgetItem(QString::fromStdString(name)));
+        new QTableWidgetItem(QString::fromStdString(name)));
     for (int j = 0; j < coordsPoly->GetNumberOfPoints(); j++) {
         for (int k = 0; k < 3; k++) {
             double item = 0;
             if (name != "Template") {
                 item = coordsPoly->GetPointData()
-                           ->GetArray("ProcrustesVector")
-                           ->GetTuple3(j)[k];
-            } else if (name == "Template") {
+                    ->GetArray("ProcrustesVector")
+                    ->GetTuple3(j)[k];
+            }
+            else if (name == "Template") {
                 item = 0;
             }
             int index = (3 * j) + k + 1;
@@ -925,19 +947,20 @@ void MainWindow::OnSuperImposed(std::string name) {
     if (m_treeWidget->selectedItems()[0]->parent()) {
         dataName =
             m_treeWidget->selectedItems()[0]->parent()->text(0).toStdString();
-    } else {
+    }
+    else {
         dataName = m_treeWidget->selectedItems()[0]->text(0).toStdString();
     }
 }
 
-void MainWindow::PDist(vtkPoints *points, Eigen::MatrixXd &output) {
+void MainWindow::PDist(vtkPoints* points, Eigen::MatrixXd& output) {
     int dim = points->GetNumberOfPoints();
     for (int i = 0; i < dim; i++) {
         for (int j = i + 1; j < dim; j++) {
             double dist =
                 EucDist(points->GetPoint(i)[0], points->GetPoint(i)[1],
-                        points->GetPoint(i)[2], points->GetPoint(j)[0],
-                        points->GetPoint(j)[1], points->GetPoint(j)[2]);
+                    points->GetPoint(i)[2], points->GetPoint(j)[0],
+                    points->GetPoint(j)[1], points->GetPoint(j)[2]);
             output.operator()(i, j) = dist;
         }
     }
@@ -945,7 +968,7 @@ void MainWindow::PDist(vtkPoints *points, Eigen::MatrixXd &output) {
 }
 
 double MainWindow::EucDist(double Ax, double Ay, double Az, double Bx,
-                           double By, double Bz) {
+    double By, double Bz) {
     double dx = Ax - Bx;
     double dy = Ay - By;
     double dz = Az - Bz;
@@ -972,14 +995,15 @@ void MainWindow::meshPlot() {
             "Project setting was not found! \n If the setting is already "
             "configured,\n the REGISTER button has not been pushed!");
         errorDialogue.exec();
-    } else {
+    }
+    else {
         if (!m_treeWidget->selectedItems().isEmpty()) {
             auto name = m_treeWidget->selectedItems()[0]->text(0).toStdString();
             if (m_treeWidget->selectedItems()[0]->parent()) {
                 name = m_treeWidget->selectedItems()[0]
-                           ->parent()
-                           ->text(0)
-                           .toStdString();
+                    ->parent()
+                    ->text(0)
+                    .toStdString();
             }
             std::string dType = m_dataBase->GetGeometryType(name);
             m_currentMesh = m_dataBase->GetPolyNode(name);
@@ -991,7 +1015,8 @@ void MainWindow::meshPlot() {
                     m_treeWidget->selectedItems()[0]->parent()->setIcon(
                         0, QIcon(":/icons/graphics/icons/hourglass.png"));
                     m_treeWidget->blockSignals(false);
-                } else {
+                }
+                else {
                     m_treeWidget->blockSignals(true);
                     m_treeWidget->selectedItems()[0]->setIcon(
                         0, QIcon(":/icons/graphics/icons/hourglass.png"));
@@ -1004,7 +1029,8 @@ void MainWindow::meshPlot() {
                 delete m_meshPlot;
                 m_meshPlot = new SpecimenDigitiser(m_currentMesh, this);
             }
-        } else {
+        }
+        else {
             if (m_treeWidget->topLevelItemCount() > 0) {
                 auto errorDialogue = QMessageBox();
                 QPixmap Quim(":/icons/graphics/icons/Quim.png");
@@ -1013,7 +1039,8 @@ void MainWindow::meshPlot() {
                 errorDialogue.setWindowTitle("Error");
                 errorDialogue.setText("Select a geometry to proceed!");
                 errorDialogue.exec();
-            } else {
+            }
+            else {
                 auto errorDialogue = QMessageBox();
                 QPixmap Quim(":/icons/graphics/icons/Quim.png");
                 // errorDialogue.setIcon(QMessageBox::Information);
@@ -1031,7 +1058,8 @@ void MainWindow::UpdateActiveData() {
     if (m_treeWidget->selectedItems().empty()) {
         m_currentMesh->Initialize();
         m_currentGrid->Initialize();
-    } else {
+    }
+    else {
         if (!m_treeWidget->selectedItems()[0]->parent()) {
             auto name = m_treeWidget->selectedItems()[0]->text(0).toStdString();
             std::string dType = m_dataBase->GetGeometryType(name);
@@ -1042,9 +1070,9 @@ void MainWindow::UpdateActiveData() {
                 m_mainMeshActor->Modified();
 
                 // vtkPolyData *landmarks = m_dataBase->GetTotalLandmarks(name);
-                vtkPoints *fixedLM = m_dataBase->GetTypeI(name);
-                vtkPoints *curveLM = m_dataBase->GetCurveSliders(name);
-                vtkPoints *surfaceLM = m_dataBase->GetSurfaceSliders(name);
+                vtkPoints* fixedLM = m_dataBase->GetTypeI(name);
+                vtkPoints* curveLM = m_dataBase->GetCurveSliders(name);
+                vtkPoints* surfaceLM = m_dataBase->GetSurfaceSliders(name);
 
                 PlotLandmarks(fixedLM, curveLM, surfaceLM, m_currentMesh);
                 m_mainRenderer->ResetCamera();
@@ -1053,11 +1081,12 @@ void MainWindow::UpdateActiveData() {
             if (dType == "DICOM") {
                 m_currentGrid = m_dataBase->GetGridNode(name);
             }
-        } else {
+        }
+        else {
             auto name = m_treeWidget->selectedItems()[0]
-                            ->parent()
-                            ->text(0)
-                            .toStdString();
+                ->parent()
+                ->text(0)
+                .toStdString();
             std::string dType = m_dataBase->GetGeometryType(name);
             if (dType == "OBJ") {
                 m_currentMesh = m_dataBase->GetPolyNode(name);
@@ -1065,9 +1094,9 @@ void MainWindow::UpdateActiveData() {
                 m_mainMeshActor->SetMapper(m_mainMeshMapper);
                 m_mainMeshActor->Modified();
 
-                vtkPoints *fixedLM = m_dataBase->GetTypeI(name);
-                vtkPoints *curveLM = m_dataBase->GetCurveSliders(name);
-                vtkPoints *surfaceLM = m_dataBase->GetSurfaceSliders(name);
+                vtkPoints* fixedLM = m_dataBase->GetTypeI(name);
+                vtkPoints* curveLM = m_dataBase->GetCurveSliders(name);
+                vtkPoints* surfaceLM = m_dataBase->GetSurfaceSliders(name);
                 PlotLandmarks(fixedLM, curveLM, surfaceLM, m_currentMesh);
                 m_mainRenderer->ResetCamera();
                 m_mainRenderer->GetRenderWindow()->Render();
@@ -1079,12 +1108,13 @@ void MainWindow::UpdateActiveData() {
     }
 }
 
-void MainWindow::ShowContextMenu(const QPoint &pos) {
+void MainWindow::ShowContextMenu(const QPoint& pos) {
     auto index = m_treeWidget->selectedItems();
     if (index.count() > 0) {
         if (m_treeWidget->selectedItems()[0]->parent()) {
             branchPopUpMenu.exec(m_treeWidget->mapToGlobal(pos));
-        } else {
+        }
+        else {
             nodePopUpMenu.exec(m_treeWidget->mapToGlobal(pos));
         }
     }
@@ -1092,7 +1122,8 @@ void MainWindow::ShowContextMenu(const QPoint &pos) {
 
 void MainWindow::RenameDataNode() {
     if (m_treeWidget->selectedItems()[0]->parent()) {
-    } else {
+    }
+    else {
         m_oldName = m_treeWidget->selectedItems()[0]->text(0).toStdString();
         m_treeWidget->blockSignals(1);
         m_treeWidget->selectedItems()[0]->setFlags(
@@ -1106,15 +1137,15 @@ void MainWindow::RenameDataNode() {
 
 void MainWindow::DeleteDataNode() {
     auto choice = QMessageBox::question(this, "Warning",
-                                        "Do you want to DELETE this object?",
-                                        QMessageBox::Yes | QMessageBox::No);
+        "Do you want to DELETE this object?",
+        QMessageBox::Yes | QMessageBox::No);
 
     if (choice == QMessageBox::Yes) {
-        QTreeWidgetItem *root = m_treeWidget->invisibleRootItem();
+        QTreeWidgetItem* root = m_treeWidget->invisibleRootItem();
         auto name = m_treeWidget->selectedItems()[0]->text(0).toStdString();
         m_dataBase->DeleteNode(name);
         while (m_treeWidget->selectedItems()[0]->childCount()) {
-            QTreeWidgetItem *c = m_treeWidget->selectedItems()[0]->child(0);
+            QTreeWidgetItem* c = m_treeWidget->selectedItems()[0]->child(0);
             m_treeWidget->selectedItems()[0]->removeChild(c);
             delete c;
         }
@@ -1124,19 +1155,19 @@ void MainWindow::DeleteDataNode() {
         }
         //-----------------------------------
         QList oldItem = mainTable->findItems(QString::fromStdString(name),
-                                             Qt::MatchExactly);
+            Qt::MatchExactly);
         if (oldItem.count() > 0) {
             int row = oldItem.at(0)->row();
             mainTable->removeRow(row);
         }
         oldItem = supImposedTable->findItems(QString::fromStdString(name),
-                                             Qt::MatchExactly);
+            Qt::MatchExactly);
         if (oldItem.count() > 0) {
             int row = oldItem.at(0)->row();
             supImposedTable->removeRow(row);
         }
         oldItem = procResTable->findItems(QString::fromStdString(name),
-                                          Qt::MatchExactly);
+            Qt::MatchExactly);
         if (oldItem.count() > 0) {
             int row = oldItem.at(0)->row();
             procResTable->removeRow(row);
@@ -1172,7 +1203,7 @@ void MainWindow::DeleteDataNode() {
 void MainWindow::DeleteDataBranch() {
     auto choice = QMessageBox::question(
         this, "Warning",
-        "This will delete the digitized landmarks! \n Do you want to continue?",
+        "This will delete the digitised landmarks! \n Do you want to continue?",
         QMessageBox::Yes | QMessageBox::No);
     if (choice == QMessageBox::Yes) {
         auto parent = m_treeWidget->selectedItems()[0]->parent();
@@ -1180,11 +1211,11 @@ void MainWindow::DeleteDataBranch() {
             m_treeWidget->selectedItems()[0]->parent()->text(0).toStdString();
         auto name = m_treeWidget->selectedItems()[0]->text(0).toStdString();
         while (parent->childCount()) {
-            QTreeWidgetItem *c = parent->child(0);
+            QTreeWidgetItem* c = parent->child(0);
             parent->removeChild(c);
             delete c;
         }
-        if (name == "TypeI" || name == "Curve Slider" ||
+        if (name == "Type I-II" || name == "Curve Slider" ||
             name == "Surface Slider") {
             m_dataBase->DeleteAllLandmarks(nodeName);
 
@@ -1201,14 +1232,15 @@ void MainWindow::DeleteDataBranch() {
                 supImposedTable->removeRow(row);
             }
             oldItem = procResTable->findItems(QString::fromStdString(nodeName),
-                                              Qt::MatchExactly);
+                Qt::MatchExactly);
             if (oldItem.count() > 0) {
                 int row = oldItem.at(0)->row();
                 procResTable->removeRow(row);
             }
             // Update rendering stuff
             ResetLMData(nodeName);
-        } else {
+        }
+        else {
             std::cout << "This shouldn't happen" << std::endl;
         }
     }
@@ -1219,10 +1251,10 @@ void MainWindow::ResetLMData(std::string name) {
     m_mainMeshActor->SetMapper(m_mainMeshMapper);
     m_mainMeshActor->Modified();
 
-    vtkPoints *fixedLM = m_dataBase->GetTypeI(name);
-    vtkPoints *curveLM = m_dataBase->GetCurveSliders(name);
-    vtkPoints *surfaceLM = m_dataBase->GetSurfaceSliders(name);
-    vtkPolyData *tempPoly = m_dataBase->GetPolyNode(name);
+    vtkPoints* fixedLM = m_dataBase->GetTypeI(name);
+    vtkPoints* curveLM = m_dataBase->GetCurveSliders(name);
+    vtkPoints* surfaceLM = m_dataBase->GetSurfaceSliders(name);
+    vtkPolyData* tempPoly = m_dataBase->GetPolyNode(name);
     PlotLandmarks(fixedLM, curveLM, surfaceLM, tempPoly);
     m_mainRenderer->GetRenderWindow()->Render();
 }
@@ -1241,21 +1273,21 @@ void MainWindow::UpdateNodeName() {
     }
     m_dataBase->RenameNode(m_oldName, m_newName);
     QList oldItem = mainTable->findItems(QString::fromStdString(m_oldName),
-                                         Qt::MatchExactly);
+        Qt::MatchExactly);
     if (oldItem.count() > 0) {
         int row = oldItem.at(0)->row();
         mainTable->setItem(
             row, 0, new QTableWidgetItem(QString::fromStdString(m_newName)));
     }
     oldItem = supImposedTable->findItems(QString::fromStdString(m_oldName),
-                                         Qt::MatchExactly);
+        Qt::MatchExactly);
     if (oldItem.count() > 0) {
         int row = oldItem.at(0)->row();
         supImposedTable->setItem(
             row, 0, new QTableWidgetItem(QString::fromStdString(m_newName)));
     }
     oldItem = procResTable->findItems(QString::fromStdString(m_oldName),
-                                      Qt::MatchExactly);
+        Qt::MatchExactly);
     if (oldItem.count() > 0) {
         int row = oldItem.at(0)->row();
         procResTable->setItem(
@@ -1269,7 +1301,8 @@ void MainWindow::UpdateDataBase() {
             m_treeWidget->blockSignals(true);
             m_treeWidget->selectedItems()[0]->parent()->setIcon(0, QIcon());
             m_treeWidget->blockSignals(false);
-        } else {
+        }
+        else {
             m_treeWidget->blockSignals(true);
             m_treeWidget->selectedItems()[0]->setIcon(0, QIcon());
             m_treeWidget->blockSignals(false);
@@ -1282,14 +1315,14 @@ void MainWindow::UpdateDataBase() {
             m_treeWidget->selectedItems()[0]->text(0).toStdString();
         if (m_treeWidget->selectedItems()[0]->parent()) {
             dataName = m_treeWidget->selectedItems()[0]
-                           ->parent()
-                           ->text(0)
-                           .toStdString();
+                ->parent()
+                ->text(0)
+                .toStdString();
         }
-        vtkPoints *fixedLM = m_dataBase->GetTypeI(dataName);
-        vtkPoints *curveLM = m_dataBase->GetCurveSliders(dataName);
-        vtkPoints *surfaceLM = m_dataBase->GetSurfaceSliders(dataName);
-        vtkPolyData *tempMesh = m_dataBase->GetPolyNode(dataName);
+        vtkPoints* fixedLM = m_dataBase->GetTypeI(dataName);
+        vtkPoints* curveLM = m_dataBase->GetCurveSliders(dataName);
+        vtkPoints* surfaceLM = m_dataBase->GetSurfaceSliders(dataName);
+        vtkPolyData* tempMesh = m_dataBase->GetPolyNode(dataName);
         PaintMesh(dataName);
         m_mainMeshActor->SetMapper(m_mainMeshMapper);
         m_mainMeshActor->Modified();
@@ -1303,7 +1336,8 @@ void MainWindow::UpdateDataBase() {
             m_treeWidget->blockSignals(true);
             m_treeWidget->selectedItems()[0]->parent()->setIcon(0, QIcon());
             m_treeWidget->blockSignals(false);
-        } else {
+        }
+        else {
             m_treeWidget->blockSignals(true);
             m_treeWidget->selectedItems()[0]->setIcon(0, QIcon());
             m_treeWidget->blockSignals(false);
@@ -1315,14 +1349,14 @@ void MainWindow::UpdateDataBase() {
             m_treeWidget->selectedItems()[0]->text(0).toStdString();
         if (m_treeWidget->selectedItems()[0]->parent()) {
             dataName = m_treeWidget->selectedItems()[0]
-                           ->parent()
-                           ->text(0)
-                           .toStdString();
+                ->parent()
+                ->text(0)
+                .toStdString();
         }
-        vtkPoints *fixedLM = m_dataBase->GetTypeI(dataName);
-        vtkPoints *curveLM = m_dataBase->GetCurveSliders(dataName);
-        vtkPoints *surfaceLM = m_dataBase->GetSurfaceSliders(dataName);
-        vtkPolyData *tempMesh = m_dataBase->GetPolyNode(dataName);
+        vtkPoints* fixedLM = m_dataBase->GetTypeI(dataName);
+        vtkPoints* curveLM = m_dataBase->GetCurveSliders(dataName);
+        vtkPoints* surfaceLM = m_dataBase->GetSurfaceSliders(dataName);
+        vtkPolyData* tempMesh = m_dataBase->GetPolyNode(dataName);
         PlotLandmarks(fixedLM, curveLM, surfaceLM, tempMesh);
         /* delete m_meshPlot;
         m_meshPlot = nullptr; */
@@ -1336,20 +1370,21 @@ void MainWindow::UpdateDataBase() {
                 m_treeWidget->selectedItems()[0]->text(0).toStdString();
             if (m_treeWidget->selectedItems()[0]->parent()) {
                 dataName = m_treeWidget->selectedItems()[0]
-                               ->parent()
-                               ->text(0)
-                               .toStdString();
+                    ->parent()
+                    ->text(0)
+                    .toStdString();
                 m_treeWidget->blockSignals(true);
                 m_treeWidget->selectedItems()[0]->parent()->setIcon(0, QIcon());
                 m_treeWidget->blockSignals(false);
-            } else {
+            }
+            else {
                 m_treeWidget->blockSignals(true);
                 m_treeWidget->selectedItems()[0]->setIcon(0, QIcon());
                 m_treeWidget->blockSignals(false);
             }
-            vtkPoints *fixedLM = m_dataBase->GetTypeI(dataName);
-            vtkPoints *curveLM = m_dataBase->GetCurveSliders(dataName);
-            vtkPoints *surfaceLM = m_dataBase->GetSurfaceSliders(dataName);
+            vtkPoints* fixedLM = m_dataBase->GetTypeI(dataName);
+            vtkPoints* curveLM = m_dataBase->GetCurveSliders(dataName);
+            vtkPoints* surfaceLM = m_dataBase->GetSurfaceSliders(dataName);
             PlotLandmarks(fixedLM, curveLM, surfaceLM, m_currentMesh);
         }
         m_status = STATUS::neutral;
@@ -1358,7 +1393,7 @@ void MainWindow::UpdateDataBase() {
     }
 }
 
-void MainWindow::SetTypeI(vtkPoints *fixedPts) {
+void MainWindow::SetTypeI(vtkPoints* fixedPts) {
     auto name = m_treeWidget->selectedItems()[0]->text(0).toStdString();
     if (m_treeWidget->selectedItems()[0]->parent()) {
         name =
@@ -1375,9 +1410,9 @@ void MainWindow::SetTypeI(vtkPoints *fixedPts) {
             }
         }
         mainTable->removeRow(targetRow);
-        QTreeWidgetItem *parent = m_treeWidget->selectedItems()[0];
+        QTreeWidgetItem* parent = m_treeWidget->selectedItems()[0];
         while (parent->childCount()) {
-            QTreeWidgetItem *c = parent->child(0);
+            QTreeWidgetItem* c = parent->child(0);
             parent->removeChild(c);
             delete c;
         }
@@ -1386,7 +1421,7 @@ void MainWindow::SetTypeI(vtkPoints *fixedPts) {
     if (!m_treeWidget->selectedItems()[0]->parent()) {
         if (m_treeWidget->selectedItems()[0]->childCount() == 0) {
             m_typeIBranch = new QTreeWidgetItem();
-            m_typeIBranch->setText(0, "TypeI");
+            m_typeIBranch->setText(0, "Type I-II");
             m_treeWidget->selectedItems()[0]->addChild(m_typeIBranch);
             m_treeWidget->selectedItems()[0]->setExpanded(1);
         }
@@ -1406,7 +1441,7 @@ void MainWindow::SetTypeI(vtkPoints *fixedPts) {
         }
     }
     mainTable->setItem(freeRow, 0,
-                       new QTableWidgetItem(QString::fromStdString(name)));
+        new QTableWidgetItem(QString::fromStdString(name)));
     for (int i = 0; i < fixedPts->GetNumberOfPoints(); i++) {
         for (int j = 0; j < 3; j++) {
             double item = fixedPts->GetPoint(i)[j];
@@ -1421,8 +1456,8 @@ void MainWindow::SetTypeI(vtkPoints *fixedPts) {
     }
 }
 
-void MainWindow::SetSliders(vtkPoints *fixedPts, vtkPoints *curveSliderPts,
-                            vtkPoints *surfaceSliderPts) {
+void MainWindow::SetSliders(vtkPoints* fixedPts, vtkPoints* curveSliderPts,
+    vtkPoints* surfaceSliderPts) {
     auto name = m_treeWidget->selectedItems()[0]->text(0).toStdString();
     if (m_treeWidget->selectedItems()[0]->parent()) {
         name =
@@ -1441,9 +1476,9 @@ void MainWindow::SetSliders(vtkPoints *fixedPts, vtkPoints *curveSliderPts,
             }
         }
         mainTable->removeRow(targetRow);
-        QTreeWidgetItem *parent = m_treeWidget->selectedItems()[0];
+        QTreeWidgetItem* parent = m_treeWidget->selectedItems()[0];
         while (parent->childCount()) {
-            QTreeWidgetItem *c = parent->child(0);
+            QTreeWidgetItem* c = parent->child(0);
             parent->removeChild(c);
             delete c;
         }
@@ -1456,7 +1491,7 @@ void MainWindow::SetSliders(vtkPoints *fixedPts, vtkPoints *curveSliderPts,
         }
         if (!m_treeWidget->selectedItems()[0]->parent()) {
             m_typeIBranch = new QTreeWidgetItem();
-            m_typeIBranch->setText(0, "TypeI");
+            m_typeIBranch->setText(0, "Type I-II");
             m_treeWidget->selectedItems()[0]->addChild(m_typeIBranch);
             m_treeWidget->selectedItems()[0]->setExpanded(1);
         }
@@ -1501,7 +1536,7 @@ void MainWindow::SetSliders(vtkPoints *fixedPts, vtkPoints *curveSliderPts,
     }
 
     mainTable->setItem(freeRow, 0,
-                       new QTableWidgetItem(QString::fromStdString(name)));
+        new QTableWidgetItem(QString::fromStdString(name)));
     for (int i = 0; i < totalPts->GetNumberOfPoints(); i++) {
         for (int j = 0; j < 3; j++) {
             double item = totalPts->GetPoint(i)[j];
@@ -1516,8 +1551,8 @@ void MainWindow::SetSliders(vtkPoints *fixedPts, vtkPoints *curveSliderPts,
     }
 }
 
-void MainWindow::SetSliders(vtkPoints *fixedPts, vtkPoints *curveSliderPts,
-                            vtkPoints *surfaceSliderPts, std::string name) {
+void MainWindow::SetSliders(vtkPoints* fixedPts, vtkPoints* curveSliderPts,
+    vtkPoints* surfaceSliderPts, std::string name) {
     vtkNew<vtkPoints> totalPts;
     int itemNum = m_treeWidget->topLevelItemCount();
     if (m_dataBase->GetTotalLandmarks(name)->GetNumberOfPoints() > 0) {
@@ -1533,9 +1568,9 @@ void MainWindow::SetSliders(vtkPoints *fixedPts, vtkPoints *curveSliderPts,
             mainTable->removeRow(targetRow);
         }
 
-        QTreeWidgetItem *parent = m_treeWidget->topLevelItem(itemNum - 1);
+        QTreeWidgetItem* parent = m_treeWidget->topLevelItem(itemNum - 1);
         while (parent->childCount()) {
-            QTreeWidgetItem *c = parent->child(0);
+            QTreeWidgetItem* c = parent->child(0);
             parent->removeChild(c);
             delete c;
         }
@@ -1545,7 +1580,7 @@ void MainWindow::SetSliders(vtkPoints *fixedPts, vtkPoints *curveSliderPts,
             totalPts->InsertNextPoint(fixedPts->GetPoint(i));
         }
         m_typeIBranch = new QTreeWidgetItem();
-        m_typeIBranch->setText(0, "TypeI");
+        m_typeIBranch->setText(0, "Type I-II");
         m_treeWidget->topLevelItem(itemNum - 1)->addChild(m_typeIBranch);
         m_treeWidget->topLevelItem(itemNum - 1)->setExpanded(1);
     }
@@ -1582,7 +1617,7 @@ void MainWindow::SetSliders(vtkPoints *fixedPts, vtkPoints *curveSliderPts,
         }
     }
     mainTable->setItem(freeRow, 0,
-                       new QTableWidgetItem(QString::fromStdString(name)));
+        new QTableWidgetItem(QString::fromStdString(name)));
     for (int i = 0; i < totalPts->GetNumberOfPoints(); i++) {
         for (int j = 0; j < 3; j++) {
             double item = totalPts->GetPoint(i)[j];
@@ -1611,10 +1646,10 @@ void MainWindow::TemplateStatus(bool status) {
         iterCurveSlider->SkipEmptyNodesOn();
         iterCurveSlider->VisitOnlyLeavesOn();
         for (iterCurveSlider->InitTraversal();
-             !iterCurveSlider->IsDoneWithTraversal();
-             iterCurveSlider->GoToNextItem()) {
-            vtkDataObject *dso = iterCurveSlider->GetCurrentDataObject();
-            vtkPolyData *pd = dynamic_cast<vtkPolyData *>(dso);
+            !iterCurveSlider->IsDoneWithTraversal();
+            iterCurveSlider->GoToNextItem()) {
+            vtkDataObject* dso = iterCurveSlider->GetCurrentDataObject();
+            vtkPolyData* pd = dynamic_cast<vtkPolyData*>(dso);
             for (int i = 0; i < pd->GetNumberOfPoints(); i++) {
                 curveSliderPts->InsertNextPoint(pd->GetPoint(i));
             }
@@ -1626,10 +1661,10 @@ void MainWindow::TemplateStatus(bool status) {
         iterSurfacePatchSlider->SkipEmptyNodesOn();
         iterSurfacePatchSlider->VisitOnlyLeavesOn();
         for (iterSurfacePatchSlider->InitTraversal();
-             !iterSurfacePatchSlider->IsDoneWithTraversal();
-             iterSurfacePatchSlider->GoToNextItem()) {
-            vtkDataObject *dso = iterSurfacePatchSlider->GetCurrentDataObject();
-            vtkPolyData *pd = dynamic_cast<vtkPolyData *>(dso);
+            !iterSurfacePatchSlider->IsDoneWithTraversal();
+            iterSurfacePatchSlider->GoToNextItem()) {
+            vtkDataObject* dso = iterSurfacePatchSlider->GetCurrentDataObject();
+            vtkPolyData* pd = dynamic_cast<vtkPolyData*>(dso);
             for (int i = 0; i < pd->GetNumberOfPoints(); i++) {
                 surfacePatchSliderPts->InsertNextPoint(pd->GetPoint(i));
             }
@@ -1640,7 +1675,7 @@ void MainWindow::TemplateStatus(bool status) {
             int targetRow;
             for (int i = 0; i < mainTable->rowCount(); i++) {
                 if (mainTable->item(i, 0) && mainTable->item(i, 0)->text() ==
-                                                 QString::fromStdString(name)) {
+                    QString::fromStdString(name)) {
                     targetRow = i;
                     break;
                 }
@@ -1663,7 +1698,7 @@ void MainWindow::TemplateStatus(bool status) {
             surfacePatchSliderPts->GetNumberOfPoints() == 0) {
             m_dataBase->InsertSurfaceSliders(name, m_templateSurfaceSliders);
             for (int i = 0; i < m_templateSurfaceSliders->GetNumberOfPoints();
-                 i++) {
+                i++) {
                 totalPts->InsertNextPoint(
                     m_templateSurfaceSliders->GetPoint(i));
             }
@@ -1672,7 +1707,7 @@ void MainWindow::TemplateStatus(bool status) {
             m_templateSurfaceSliders->GetNumberOfPoints() == 0) {
             m_dataBase->InsertSurfaceSliders(name, surfacePatchSliderPts);
             for (int i = 0; i < surfacePatchSliderPts->GetNumberOfPoints();
-                 i++) {
+                i++) {
                 totalPts->InsertNextPoint(surfacePatchSliderPts->GetPoint(i));
             }
         }
@@ -1691,7 +1726,7 @@ void MainWindow::TemplateStatus(bool status) {
             }
         }
         mainTable->setItem(freeRow, 0,
-                           new QTableWidgetItem(QString::fromStdString(name)));
+            new QTableWidgetItem(QString::fromStdString(name)));
         for (int i = 0; i < totalPts->GetNumberOfPoints(); i++) {
             for (int j = 0; j < 3; j++) {
                 double item = totalPts->GetPoint(i)[j];
@@ -1740,21 +1775,21 @@ void MainWindow::TemplateStatus(bool status) {
     }
 }
 
-void MainWindow::SetTemplateMesh(vtkPolyData *mesh) { m_templateMesh = mesh; }
+void MainWindow::SetTemplateMesh(vtkPolyData* mesh) { m_templateMesh = mesh; }
 
-void MainWindow::SetTemplateTypeI(vtkPoints *fixedPts) {
+void MainWindow::SetTemplateTypeI(vtkPoints* fixedPts) {
     m_templateTypeI = fixedPts;
     m_typeINOL = fixedPts->GetNumberOfPoints();
 }
 
-void MainWindow::SetTemplateSurfaceSliders(vtkPoints *pts) {
+void MainWindow::SetTemplateSurfaceSliders(vtkPoints* pts) {
     m_templateSurfaceSliders = pts;
     m_surfaceNOS = m_templateSurfaceSliders->GetNumberOfPoints();
 }
 
 void MainWindow::SetTemplateCurveSliders(
-    vtkMultiBlockDataSet *sliderPtsPolyBlock,
-    vtkMultiBlockDataSet *curvePtsPolyBlock, int numOfSliders) {
+    vtkMultiBlockDataSet* sliderPtsPolyBlock,
+    vtkMultiBlockDataSet* curvePtsPolyBlock, int numOfSliders) {
     m_templateCurveSliders = sliderPtsPolyBlock;
     m_templateCurvePointsPoly = curvePtsPolyBlock;
     m_curveNOS = numOfSliders;
@@ -1765,7 +1800,7 @@ void MainWindow::SetTemplateCurveSliders(
 }
 
 void MainWindow::SetTemplatePatchSurfaceSliders(
-    vtkMultiBlockDataSet *ptsPolyBlock, vtkMultiBlockDataSet *surfaceCurve,
+    vtkMultiBlockDataSet* ptsPolyBlock, vtkMultiBlockDataSet* surfaceCurve,
     int Ures, int Vres) {
     m_templatePatchSurfaceSliders = ptsPolyBlock;
     m_surfacePatchNOP = ptsPolyBlock->GetNumberOfBlocks();
@@ -1793,7 +1828,7 @@ void MainWindow::ResetLandmarks() {
             m_dataBase->DeleteAllLandmarks(name);
             ResetLMData(name);
             while ((*it)->childCount()) {
-                QTreeWidgetItem *c = (*it)->child(0);
+                QTreeWidgetItem* c = (*it)->child(0);
                 (*it)->removeChild(c);
                 delete c;
             }
@@ -1808,24 +1843,24 @@ void MainWindow::ResetLandmarks() {
         supImposedTable->setHorizontalHeaderItem(i, new QTableWidgetItem(""));
         procResTable->setHorizontalHeaderItem(i, new QTableWidgetItem(""));
     }
-    mainTable->setHorizontalHeaderLabels({"Specimen", "X", "Y", "Z"});
-    supImposedTable->setHorizontalHeaderLabels({"Specimen", "X", "Y", "Z"});
-    procResTable->setHorizontalHeaderLabels({"Specimen", "X", "Y", "Z"});
+    mainTable->setHorizontalHeaderLabels({ "Specimen", "X", "Y", "Z" });
+    supImposedTable->setHorizontalHeaderLabels({ "Specimen", "X", "Y", "Z" });
+    procResTable->setHorizontalHeaderLabels({ "Specimen", "X", "Y", "Z" });
     m_mainRenderer->RemoveActor(m_fixedLmActor);
     m_mainRenderer->RemoveActor(m_curveLmActor);
     m_mainRenderer->RemoveActor(m_surfaceLmActor);
     m_mainRenderer->GetRenderWindow()->Render();
 }
 
-vtkPolyData *MainWindow::GetTemplateMesh() { return m_templateMesh; }
+vtkPolyData* MainWindow::GetTemplateMesh() { return m_templateMesh; }
 
-vtkPoints *MainWindow::GetTemplateTypeI() { return m_templateTypeI; }
+vtkPoints* MainWindow::GetTemplateTypeI() { return m_templateTypeI; }
 
-vtkPoints *MainWindow::GetTemplateSurfaceSliders() {
+vtkPoints* MainWindow::GetTemplateSurfaceSliders() {
     return m_templateSurfaceSliders;
 }
 
-vtkMultiBlockDataSet *MainWindow::GetTemplateSurfacePatchSliders() {
+vtkMultiBlockDataSet* MainWindow::GetTemplateSurfacePatchSliders() {
     return m_templatePatchSurfaceSliders;
 }
 
@@ -1833,25 +1868,25 @@ int MainWindow::GetURes() { return m_surfacePatchUNOS; }
 int MainWindow::GetVRes() { return m_surfacePatchVNOS; }
 int MainWindow::GetCurveNOS() { return m_curveNOS; }
 
-vtkMultiBlockDataSet *MainWindow::GetTemplateCurveSliders() {
+vtkMultiBlockDataSet* MainWindow::GetTemplateCurveSliders() {
     return m_templateCurveSliders;
 }
 
-vtkMultiBlockDataSet *MainWindow::GetTemplateCurvePoly() {
+vtkMultiBlockDataSet* MainWindow::GetTemplateCurvePoly() {
     return m_templateCurvePointsPoly;
 }
 
-vtkMultiBlockDataSet *MainWindow::GetTemplateSurfacePatchCurve() {
+vtkMultiBlockDataSet* MainWindow::GetTemplateSurfacePatchCurve() {
     return m_templatePatchSurfaceCurve;
 }
 
-vtkPolyData *MainWindow::GetTemplateTotalLandmarks() {
+vtkPolyData* MainWindow::GetTemplateTotalLandmarks() {
     return m_dataBase->GetTotalLandmarks("Template");
 }
 
-void MainWindow::PlotLandmarks(vtkPoints *fixedLandmarks,
-                               vtkPoints *curveLandmarks,
-                               vtkPoints *surfaceLandmarks, vtkPolyData *mesh) {
+void MainWindow::PlotLandmarks(vtkPoints* fixedLandmarks,
+    vtkPoints* curveLandmarks,
+    vtkPoints* surfaceLandmarks, vtkPolyData* mesh) {
     if (fixedLandmarks->GetNumberOfPoints() > 0 ||
         curveLandmarks->GetNumberOfPoints() > 0 ||
         surfaceLandmarks->GetNumberOfPoints() > 0) {
@@ -1862,8 +1897,8 @@ void MainWindow::PlotLandmarks(vtkPoints *fixedLandmarks,
         area = std::sqrt(area);
         double sizeConstant =
             (m_typeINOL + m_surfaceNOS +
-             (m_surfacePatchNOP * m_surfacePatchUNOS * m_surfacePatchVNOS) +
-             (m_curveNOS * m_curveNOC));
+                (m_surfacePatchNOP * m_surfacePatchUNOS * m_surfacePatchVNOS) +
+                (m_curveNOS * m_curveNOC));
         if (sizeConstant < 100) {
             sizeConstant = 100;
         }
@@ -1925,7 +1960,8 @@ void MainWindow::PlotLandmarks(vtkPoints *fixedLandmarks,
             m_mainRenderer->AddActor(m_surfaceLmActor);
         }
 
-    } else {
+    }
+    else {
         m_mainRenderer->RemoveActor(m_fixedLmActor);
         m_mainRenderer->RemoveActor(m_curveLmActor);
         m_mainRenderer->RemoveActor(m_surfaceLmActor);
@@ -1939,7 +1975,8 @@ void MainWindow::PCA() {
         if (m_dataBase->GetNodeNames().size() >= 3) {
             delete m_pcaWindow;
             m_pcaWindow = new PCAWindow(m_dataBase);
-        } else {
+        }
+        else {
             auto errorDialogue = QMessageBox();
             QPixmap Quim(":/icons/graphics/icons/Quim.png");
             errorDialogue.setIconPixmap(Quim);
@@ -1950,7 +1987,8 @@ void MainWindow::PCA() {
                 "try again!");
             errorDialogue.exec();
         }
-    } else {
+    }
+    else {
         auto errorDialogue = QMessageBox();
         QPixmap Quim(":/icons/graphics/icons/Quim.png");
         // errorDialogue.setIcon(QMessageBox::Information);
@@ -1964,8 +2002,8 @@ void MainWindow::PCA() {
 }
 
 void MainWindow::PaintMesh(std::string name) {
-    vtkDoubleArray *tempDataArr = m_dataBase->GetProcDistance(name);
-    vtkPolyData *tempMesh = m_dataBase->GetPolyNode(name);
+    vtkDoubleArray* tempDataArr = m_dataBase->GetProcDistance(name);
+    vtkPolyData* tempMesh = m_dataBase->GetPolyNode(name);
 
     m_mainMeshMapper->SetInputData(tempMesh);
     m_mainRenderer->RemoveActor(m_scalarBar);
@@ -1988,7 +2026,7 @@ void MainWindow::PaintMesh(std::string name) {
         for (int i = 0; i < lut->GetNumberOfColors(); ++i) {
             std::array<double, 3> rgb;
             ctf->GetColor(double(i) / lut->GetNumberOfColors(), rgb.data());
-            std::array<double, 4> rgba{0.0, 0.0, 0.0, 1.0};
+            std::array<double, 4> rgba{ 0.0, 0.0, 0.0, 1.0 };
             std::copy(std::begin(rgb), std::end(rgb), std::begin(rgba));
             lut->SetTableValue(i, rgba.data());
         }
@@ -2003,7 +2041,8 @@ void MainWindow::PaintMesh(std::string name) {
         m_scalarBar->SetLookupTable(m_mainMeshMapper->GetLookupTable());
         m_scalarBar->Modified();
         m_mainRenderer->AddActor(m_scalarBar);
-    } else {
+    }
+    else {
         m_mainRenderer->RemoveActor(m_scalarBar);
     }
     m_mainMeshMapper->Update();
@@ -2014,11 +2053,11 @@ void MainWindow::ReadLMDataFromFile() {
     if (TemplateIsSet) {
         QString csvFileName =
             QFileDialog::getOpenFileName(this, "CSV Files", QDir::homePath(),
-                                         "CSV Files (*.csv);;All Files (*)");
+                "CSV Files (*.csv);;All Files (*)");
         if (csvFileName.isEmpty()) {
             // do nothing
             //return;
-        } 
+        }
         else {
             if (csvFileName.endsWith(".csv")) {
                 std::vector<std::vector<string>> content;
@@ -2035,13 +2074,14 @@ void MainWindow::ReadLMDataFromFile() {
                         }
                         content.push_back(row);
                     }
-                } else {
+                }
+                else {
                     std::cout << "Could not open the .csv file\n";
                 }
                 QString geomDir = QFileDialog::getExistingDirectory(
                     this, tr("Open Mesh Directory"), QDir::homePath(),
                     QFileDialog::ShowDirsOnly |
-                        QFileDialog::DontResolveSymlinks);
+                    QFileDialog::DontResolveSymlinks);
                 if (!geomDir.isEmpty()) {
                     LockTheWindow();
                     std::string path = geomDir.toStdString();
@@ -2051,19 +2091,20 @@ void MainWindow::ReadLMDataFromFile() {
                     m_recoveryThread = new RecoverLMThread(this, content, path, m_mutex);
                     m_recoveryThread->setParent(this);
                     connect(m_recoveryThread,
-                            &RecoverLMThread::TreeObjectChanged, this,
-                            &MainWindow::OnTreeObjectChanged);
+                        &RecoverLMThread::TreeObjectChanged, this,
+                        &MainWindow::OnTreeObjectChanged);
                     connect(m_recoveryThread, &RecoverLMThread::DataBaseChanged,
-                            this, &MainWindow::OnDataBaseChanged);
+                        this, &MainWindow::OnDataBaseChanged);
                     connect(m_recoveryThread, &RecoverLMThread::RecoveryIsDone,
-                            this, &MainWindow::OnRecoveryIsDone);
+                        this, &MainWindow::OnRecoveryIsDone);
 
                     RunStatThread(m_recoveryThread);
                     m_recoveryThread->start();
                 }
             }
         }
-    } else {
+    }
+    else {
         auto errorDialogue = QMessageBox();
         QPixmap Quim(":/icons/graphics/icons/Quim.png");
         // errorDialogue.setIcon(QMessageBox::Information);
@@ -2076,109 +2117,109 @@ void MainWindow::ReadLMDataFromFile() {
     }
 }
 
-void MainWindow::SaveProject(){
+void MainWindow::SaveProject() {
     auto nameList = m_dataBase->GetNodeNames();
     auto filter = "atp(*.atp)";
     QString filename = QFileDialog::getSaveFileName(this, "Save file", "", filter);
     QFileInfo fi(filename);
     QString ext = fi.completeSuffix();
-    if(ext != "atp"){
+    if (ext != "atp") {
         filename += ".atp";
     }
     QFile f(filename);
-    if(f.open(QFile::WriteOnly | QFile::Truncate)){
+    if (f.open(QFile::WriteOnly | QFile::Truncate)) {
         QStringList textItem;
         QTextStream data(&f);
 
         textItem += QString("Do Not Modify The Content of This File");
-        data << textItem.join("") <<ENDL;
+        data << textItem.join("") << ENDL;
         textItem.clear();
 
-        textItem += QString("Number of Specimens") +",";
+        textItem += QString("Number of Specimens") + ",";
         textItem += QString::number(nameList.size());
-        data << textItem.join("") <<ENDL;
+        data << textItem.join("") << ENDL;
         textItem.clear();
 
-        for(std::string name : nameList){
+        for (std::string name : nameList) {
             vtkPolyData* tempPoly = m_dataBase->GetPolyNode(name);
             vtkPoints* tempFixedLM = m_dataBase->GetTypeI(name);
             vtkPoints* tempCurveLM = m_dataBase->GetCurveSliders(name);
             vtkPoints* tempSurfaceLM = m_dataBase->GetSurfaceSliders(name);
 
-            textItem += QString("Specimen") +",";
+            textItem += QString("Specimen") + ",";
             textItem += QString::fromStdString(name);
-            data << textItem.join("") <<ENDL;
+            data << textItem.join("") << ENDL;
             textItem.clear();
 
-            textItem += QString("Number of Fixed Landmarks") +",";
+            textItem += QString("Number of Fixed Landmarks") + ",";
             textItem += QString::number(tempFixedLM->GetNumberOfPoints());
-            data << textItem.join("") <<ENDL;
+            data << textItem.join("") << ENDL;
             textItem.clear();
-            for(int i =0; i < tempFixedLM->GetNumberOfPoints(); i++){
-                textItem += QString("Fixed Coords") +",";
-                for(int j =0; j < 3; j++){
+            for (int i = 0; i < tempFixedLM->GetNumberOfPoints(); i++) {
+                textItem += QString("Fixed Coords") + ",";
+                for (int j = 0; j < 3; j++) {
                     textItem += QString::number(tempFixedLM->GetPoint(i)[j]) + ",";
                 }
-                data << textItem.join("") <<ENDL;
+                data << textItem.join("") << ENDL;
                 textItem.clear();
             }
 
-            textItem += QString("Number of Curve Landmarks") +",";
+            textItem += QString("Number of Curve Landmarks") + ",";
             textItem += QString::number(tempCurveLM->GetNumberOfPoints());
-            data << textItem.join("") <<ENDL;
+            data << textItem.join("") << ENDL;
             textItem.clear();
-            for(int i =0; i < tempCurveLM->GetNumberOfPoints(); i++){
-                textItem += QString("Curve Coords") +",";
-                for(int j =0; j < 3; j++){
+            for (int i = 0; i < tempCurveLM->GetNumberOfPoints(); i++) {
+                textItem += QString("Curve Coords") + ",";
+                for (int j = 0; j < 3; j++) {
                     textItem += QString::number(tempCurveLM->GetPoint(i)[j]) + ",";
                 }
-                data << textItem.join("") <<ENDL;
+                data << textItem.join("") << ENDL;
                 textItem.clear();
             }
 
-            textItem += QString("Number of Surface Landmarks") +",";
+            textItem += QString("Number of Surface Landmarks") + ",";
             textItem += QString::number(tempSurfaceLM->GetNumberOfPoints());
-            data << textItem.join("") <<ENDL;
+            data << textItem.join("") << ENDL;
             textItem.clear();
-            for(int i =0; i < tempSurfaceLM->GetNumberOfPoints(); i++){
-                textItem += QString("Surface Coords") +",";
-                for(int j =0; j < 3; j++){
+            for (int i = 0; i < tempSurfaceLM->GetNumberOfPoints(); i++) {
+                textItem += QString("Surface Coords") + ",";
+                for (int j = 0; j < 3; j++) {
                     textItem += QString::number(tempSurfaceLM->GetPoint(i)[j]) + ",";
                 }
-                data << textItem.join("") <<ENDL;
+                data << textItem.join("") << ENDL;
                 textItem.clear();
             }
 
-            textItem += QString("Number of Vertices") +",";
+            textItem += QString("Number of Vertices") + ",";
             textItem += QString::number(tempPoly->GetNumberOfPoints());
-            data << textItem.join("") <<ENDL;
+            data << textItem.join("") << ENDL;
             textItem.clear();
 
-            for(int i=0; i < tempPoly->GetNumberOfPoints(); i++){
-                textItem += QString("Vertex Coords") +",";
-                for(int j =0; j < 3; j++){
+            for (int i = 0; i < tempPoly->GetNumberOfPoints(); i++) {
+                textItem += QString("Vertex Coords") + ",";
+                for (int j = 0; j < 3; j++) {
                     textItem += QString::number(tempPoly->GetPoint(i)[j]) + ",";
                 }
-                data << textItem.join("") <<ENDL;
+                data << textItem.join("") << ENDL;
                 textItem.clear();
             }
             textItem += QString("Number of Poly") + ",";
             textItem += QString::number(tempPoly->GetNumberOfCells());
-            data << textItem.join("") <<ENDL;
+            data << textItem.join("") << ENDL;
             textItem.clear();
 
-            for(int i=0; i < tempPoly->GetNumberOfCells(); i++){
+            for (int i = 0; i < tempPoly->GetNumberOfCells(); i++) {
                 int numPts = tempPoly->GetCell(i)->GetNumberOfPoints();
-                textItem += QString("Connectivity") +",";
-                textItem += QString::number(numPts) +",";
-                for(int j = 0; j < numPts; j++){
+                textItem += QString("Connectivity") + ",";
+                textItem += QString::number(numPts) + ",";
+                for (int j = 0; j < numPts; j++) {
                     textItem += QString::number(tempPoly->GetCell(i)->GetPointId(j)) + ",";
                 }
-                data << textItem.join("") <<ENDL;
+                data << textItem.join("") << ENDL;
                 textItem.clear();
             }
-            textItem += QString("Next Specimen") +",";
-            data << textItem.join("") <<ENDL;
+            textItem += QString("Next Specimen") + ",";
+            data << textItem.join("") << ENDL;
             textItem.clear();
         }
 
@@ -2186,15 +2227,15 @@ void MainWindow::SaveProject(){
     }
 }
 
-void MainWindow::ReadProjectFromFile(){
-    if (TemplateIsSet){
+void MainWindow::ReadProjectFromFile() {
+    if (TemplateIsSet) {
         QString atpFileName =
             QFileDialog::getOpenFileName(this, "atp Files", QDir::homePath(),
-                                         "atp Files (*.atp);;All Files (*)");
+                "atp Files (*.atp);;All Files (*)");
         if (atpFileName.isEmpty()) {
             // do nothing
             //return;
-        } 
+        }
         else {
             if (atpFileName.endsWith(".atp")) {
                 LockTheWindow();
@@ -2204,14 +2245,14 @@ void MainWindow::ReadProjectFromFile(){
                 qRegisterMetaType<std::string>("std::string");
                 delete m_importThread;
                 m_importThread = new ImportThread(this, atpFileName, m_mutex);
-                 
+
                 connect(m_importThread,
-                            &ImportThread::TreeObjectChanged, this,
-                            &MainWindow::OnTreeObjectChanged);
+                    &ImportThread::TreeObjectChanged, this,
+                    &MainWindow::OnTreeObjectChanged);
                 connect(m_importThread, &ImportThread::DataBaseChanged,
-                            this, &MainWindow::OnDataBaseChanged);
+                    this, &MainWindow::OnDataBaseChanged);
                 connect(m_importThread, &ImportThread::ImportIsDone,
-                            this, &MainWindow::OnRecoveryIsDone);
+                    this, &MainWindow::OnRecoveryIsDone);
 
                 RunStatThread(m_importThread);
 
@@ -2220,7 +2261,7 @@ void MainWindow::ReadProjectFromFile(){
         }
 
     }
-    else{
+    else {
         auto errorDialogue = QMessageBox();
         QPixmap Quim(":/icons/graphics/icons/Quim.png");
         // errorDialogue.setIcon(QMessageBox::Information);
@@ -2260,19 +2301,19 @@ void MainWindow::OnSuperImpositionIsDone() {
             m_treeWidget->selectedItems()[0]->text(0).toStdString();
         if (m_treeWidget->selectedItems()[0]->parent()) {
             name = m_treeWidget->selectedItems()[0]
-                       ->parent()
-                       ->text(0)
-                       .toStdString();
+                ->parent()
+                ->text(0)
+                .toStdString();
         }
 
-        vtkPoints *fixedLandmarks = m_dataBase->GetTypeI(name);
-        vtkPoints *curveLandmarks = m_dataBase->GetCurveSliders(name);
-        vtkPoints *surfaceLandmarks = m_dataBase->GetSurfaceSliders(name);
-        vtkPolyData *tempMesh = m_dataBase->GetPolyNode(name);
+        vtkPoints* fixedLandmarks = m_dataBase->GetTypeI(name);
+        vtkPoints* curveLandmarks = m_dataBase->GetCurveSliders(name);
+        vtkPoints* surfaceLandmarks = m_dataBase->GetSurfaceSliders(name);
+        vtkPolyData* tempMesh = m_dataBase->GetPolyNode(name);
 
         PaintMesh(name);
         PlotLandmarks(fixedLandmarks, curveLandmarks, surfaceLandmarks,
-                      tempMesh);
+            tempMesh);
         m_mainRenderer->ResetCamera();
         m_mainRenderer->GetRenderWindow()->Render();
     }
@@ -2295,8 +2336,8 @@ void MainWindow::OnDataBaseChanged(std::string name) {
     m_mutex->unlock();
 }
 
-bool MainWindow::IsNumber(const std::string &s) {
-    char *end = nullptr;
+bool MainWindow::IsNumber(const std::string& s) {
+    char* end = nullptr;
     double val = strtod(s.c_str(), &end);
     return end != s.c_str() && *end == '\0' && val != HUGE_VAL;
 }
@@ -2341,11 +2382,13 @@ void MainWindow::OnStatusChanged(int status) {
         if (status % 2 == 0) {
             progressLabel->setPixmap(
                 QPixmap(":/icons/graphics/icons/vBusy.svg"));
-        } else {
+        }
+        else {
             progressLabel->setPixmap(
                 QPixmap(":/icons/graphics/icons/busy.svg"));
         }
-    } else {
+    }
+    else {
         statusLabel->setText("Status: Idle");
         progressLabel->setPixmap(QPixmap(":/icons/graphics/icons/idle.svg"));
         // progressLineEdit->hide();
@@ -2357,15 +2400,15 @@ void MainWindow::RecoverDigitisedLM() {
     ReadLMDataFromFile();
 }
 
-void MainWindow::RecoverProject(){
+void MainWindow::RecoverProject() {
     ReadProjectFromFile();
 }
 
-void MainWindow::RunStatThread(QThread *thread) {
+void MainWindow::RunStatThread(QThread* thread) {
     delete m_statThread;
     m_statThread = new StatusReporterThread(thread);
     connect(m_statThread, &StatusReporterThread::StatusChanged, this,
-            &MainWindow::OnStatusChanged);
+        &MainWindow::OnStatusChanged);
     m_statThread->setParent(this);
     m_statThread->start();
 }
@@ -2377,7 +2420,7 @@ void MainWindow::SetToExport(bool lm, bool si, bool pv, bool pm) {
     m_pm = pm;
 }
 
-DataBase *MainWindow::GetDataBase() { return m_dataBase; }
+DataBase* MainWindow::GetDataBase() { return m_dataBase; }
 
 bool MainWindow::GetTemplateStatus() { return TemplateIsSet; }
 
@@ -2391,11 +2434,11 @@ bool MainWindow::GetIgnorSetting() {
     return projectSettings->GetIgnorInternals();
 }
 
-QMutex* MainWindow::GetMutex(){
+QMutex* MainWindow::GetMutex() {
     return m_mutex;
 }
 
-void MainWindow::PrintHelp(){
+void MainWindow::PrintHelp() {
     helpWindow->show();
 }
 

@@ -1,0 +1,75 @@
+cmake_minimum_required(VERSION 3.16)
+
+project("Archaeotoolbox")
+
+
+set(CMAKE_BUILD_TYPE Debug)
+#set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_CXX_STANDARD 17)
+set(Cpd_DIR C:/Repo/cpd/install/lib/cmake/cpd)
+set(OpenCASCADE_DIR C:/Program Files/OCCT/cmake)
+set(SOURCE_FILES main.cpp src/MainWindow.cpp src/SpecimenDigitiser.cpp src/DataBase.cpp src/ProSetMenu.cpp src/TemplateDigitiser.cpp src/Morphometrics.cpp 
+src/Registration.cpp src/TemplateViewer.cpp src/SuperImpositionThread.cpp src/SuperImposition.cpp src/SlidingThread.cpp
+src/StatusReporterThread.cpp src/PCAWindow.cpp  src/RecoverLMThread.cpp src/ExportDialogue.cpp src/RegistrationThread.cpp
+src/BlueNoiseThread.cpp src/HelpBrowser.cpp src/ImportThread.cpp
+include/MainWindow.h include/SpecimenDigitiser.h include/DataBase.h include/MainWindow.fwd.h include/ProSetMenu.h include/ProSetMenu.fwd.h
+include/TemplateDigitiser.h include/Morphometrics.h include/Registration.h include/TemplateViewer.h include/SpecimenDigitiser.fwd.h
+include/SuperImpositionThread.h include/SuperImposition.h include/SlidingThread.h include/StatusReporterThread.h include/PCAWindow.h 
+include/RecoverLMThread.h include/ExportDialogue.h include/RegistrationThread.h include/BlueNoiseThread.h include/HelpBrowser.h
+include/ImportThread.h
+Resources/resources.qrc)
+
+
+set (WIN32_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Resources/icon.rc)
+
+find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui Help Charts Test)
+find_package(Cpd REQUIRED)
+#find_package(OpenCASCADE REQUIRED)
+find_package(VTK REQUIRED COMPONENTS vtkCommonColor
+  vtkCommonCore
+  vtkGUISupportQt
+  vtkCommonDataModel
+  vtkCommonMisc
+  vtkIOImage
+  vtkIOGeometry
+  vtkFiltersCore
+  vtkFiltersPoints
+  vtkFiltersModeling
+  vtkFiltersSources
+  vtkFiltersVerdict
+  vtkFiltersGeneral
+  vtkCommonComputationalGeometry
+  vtkIOGeometry
+  vtkIOLegacy
+  vtkIOPLY
+  vtkIOXML
+  vtkInteractionStyle
+  vtkInteractionWidgets
+  vtkRenderingContextOpenGL2
+  vtkRenderingCore
+  vtkRenderingFreeType
+  vtkRenderingGL2PSOpenGL2
+  vtkRenderingOpenGL2
+  vtkRenderingLabel
+  vtkImagingHybrid
+  vtkViewsInfovis
+  vtkViewsContext2D
+  vtkRenderingContext2D
+  vtkRenderingVolumeOpenGL2)
+
+
+include_directories(./include)
+include_directories(./include/cpd)
+include_directories(C:/Repo/eigen3)
+include_directories(C:/Program Files/VTK8/include/vtk-8.2)
+include_directories(C:/Program Files/OCCT/inc)
+include_directories(C:/Qt/5.15.2/msvc2019_64/include)
+include_directories(C:/Program Files/cpd/include)
+
+add_executable("${PROJECT_NAME}" WIN32 "${SOURCE_FILES}" "${WIN32_RESOURCES}")
+target_link_libraries("${PROJECT_NAME}" "${VTK_LIBRARIES}"
+Qt5::Widgets Qt5::Gui Qt5::Core Qt5::Charts Qt5::Help Qt5::Test Cpd::Library-C++)
