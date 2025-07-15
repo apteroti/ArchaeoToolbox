@@ -423,7 +423,7 @@ SpecimenDigitiser::SpecimenDigitiser(vtkPolyData* data, MainWindow* parent)
 
     counterGroup->setStyleSheet(style);
 
-    counterFixedLabel = new QLabel(tr(u8"\u0025 Type I:"));
+    counterFixedLabel = new QLabel(tr(u8"\u0025 Type I-II:"));
     counterCurveNOCLabel = new QLabel(tr(u8"\u0025 Curves:"));
     counterSurfaceNOPLabel = new QLabel(tr(u8"\u0025 Surface Patches:"));
     typeILineEdit = new QLineEdit();
