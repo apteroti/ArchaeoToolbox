@@ -112,7 +112,7 @@ void RegistrationThread::run() {
         icp->SetSource(preAlignedMesh);
         icp->SetTarget(m_templateMesh);
         double ptsSample = m_res;
-        if (preAlignedMesh->GetNumberOfPoints() < 300) {
+        if (preAlignedMesh->GetNumberOfPoints() < m_res) {
             ptsSample = preAlignedMesh->GetNumberOfPoints() / 1.0;
         }
         icp->SetMaximumNumberOfLandmarks(ptsSample);
@@ -130,8 +130,30 @@ void RegistrationThread::run() {
     }
     
     int resampleResolution = m_res;
+
+
+    if(m_templateMesh->GetNumberOfPoints() <  alignedMesh->GetNumberOfPoints() || 
+        m_templateMesh->GetNumberOfPoints() <  m_sourceMesh->GetNumberOfPoints()){
+        if(m_templateMesh->GetNumberOfPoints() < m_res){
+            resampleResolution = m_templateMesh->GetNumberOfPoints() / 1.0;
+        }
+    }
+    else{
+        if (!m_preAlign){
+            if(alignedMesh->GetNumberOfPoints() < m_res){
+                resampleResolution = alignedMesh->GetNumberOfPoints() / 1.0;
+            }
+        }
+        else{
+            if(m_sourceMesh->GetNumberOfPoints() < m_res){
+                resampleResolution = m_sourceMesh->GetNumberOfPoints() / 1.0;
+            }
+        }
+    }
+    
     vtkNew<vtkPoints> templateResampled;
     Resample(m_templateMesh, resampleResolution, templateResampled);
+    
     vtkNew<vtkPoints> sourceResampled;
     if (!m_preAlign) {
         Resample(alignedMesh, resampleResolution, sourceResampled);

@@ -367,7 +367,7 @@ TemplateDigitiser::TemplateDigitiser(ProSetMenu* parent) : m_parent(parent) {
         Resample(m_surfaceNOS, m_meshData);
     });  // give a functor to connect
     QLabel* ignoreIntLabel = new QLabel();
-    ignoreIntLabel->setText(tr("Ignore Mesh Islands"));
+    ignoreIntLabel->setText(tr("Single Mesh"));
     surfaceToolbar->addWidget(ignoreIntLabel);
     ignoreIntCheckbox = new QCheckBox();
     ignoreIntCheckbox->setChecked(1);
