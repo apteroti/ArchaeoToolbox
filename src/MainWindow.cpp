@@ -286,7 +286,7 @@ MainWindow::MainWindow() {
     // Setting up File menu
     fileMenu = menuBar()->addMenu("&File");
     importMeshAction = new QAction("Import Geometry (OBJ)", this);
-    importMeshAction->setShortcut(QKeySequence("Ctrl+O"));
+    importMeshAction->setShortcut(QKeySequence("Ctrl+I"));
     importMeshAction->setStatusTip("Import .OBJ mesh");
 
     exportCSVAction = new QAction("Export Data", this);
