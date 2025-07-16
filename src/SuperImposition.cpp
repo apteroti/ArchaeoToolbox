@@ -222,7 +222,7 @@ SuperImposition::SuperImposition(DataBase *dataBase, MainWindow *parent, QMutex*
     this->show();
     if (m_nameList.size() == 0) {
         auto errorDialogue = QMessageBox();
-        errorDialogue.setIcon(QMessageBox::Information);
+        errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
             "No Landmark to SuperImpose: digitize your specimen!");

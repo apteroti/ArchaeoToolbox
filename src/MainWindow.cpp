@@ -534,7 +534,7 @@ void MainWindow::LoadOBJ() {
         }
         if (fileName.endsWith(".obj") == 0) {
             auto errorDialogue = QMessageBox();
-            errorDialogue.setIcon(QMessageBox::Information);
+            errorDialogue.setIcon(QMessageBox::Critical);
             errorDialogue.setWindowTitle("Error");
             errorDialogue.setText("No OBJ file was Selected");
             errorDialogue.exec();
@@ -550,7 +550,7 @@ void MainWindow::ExportCSV() {
     }
     else {
         auto errorDialogue = QMessageBox();
-        errorDialogue.setIcon(QMessageBox::Information);
+        errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText("Nothing to Export!");
         errorDialogue.exec();
@@ -815,7 +815,7 @@ void MainWindow::ExportGeometry() {
     }
     else {
         auto errorDialogue = QMessageBox();
-        errorDialogue.setIcon(QMessageBox::Information);
+        errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText("Nothing to Export!");
         errorDialogue.exec();
@@ -836,7 +836,7 @@ void MainWindow::SuperImpose() {
         }
         else {
             auto errorDialogue = QMessageBox();
-            errorDialogue.setIcon(QMessageBox::Information);
+            errorDialogue.setIcon(QMessageBox::Critical);
             errorDialogue.setWindowTitle("Error");
             errorDialogue.setText("Digitise a mesh, first!");
             errorDialogue.exec();
@@ -846,7 +846,7 @@ void MainWindow::SuperImpose() {
     else {
         auto errorDialogue = QMessageBox();
         //QPixmap Quim(":/icons/graphics/icons/Quim.png");
-        errorDialogue.setIcon(QMessageBox::Information);
+        errorDialogue.setIcon(QMessageBox::Critical);
         //errorDialogue.setIconPixmap(Quim);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
@@ -975,7 +975,7 @@ void MainWindow::TemplatePlot() { m_templateView->show(); }
 void MainWindow::meshPlot() {
     if (!TemplateIsSet) {
         auto errorDialogue = QMessageBox();
-        errorDialogue.setIcon(QMessageBox::Information);
+        errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
             "Project setting was not found! \n If the setting is already "
@@ -1019,14 +1019,14 @@ void MainWindow::meshPlot() {
         else {
             if (m_treeWidget->topLevelItemCount() > 0) {
                 auto errorDialogue = QMessageBox();
-                errorDialogue.setIcon(QMessageBox::Information);
+                errorDialogue.setIcon(QMessageBox::Critical);
                 errorDialogue.setWindowTitle("Error");
                 errorDialogue.setText("Select a geometry to proceed!");
                 errorDialogue.exec();
             }
             else {
                 auto errorDialogue = QMessageBox();
-                errorDialogue.setIcon(QMessageBox::Information);
+                errorDialogue.setIcon(QMessageBox::Critical);
                 errorDialogue.setWindowTitle("Error");
                 errorDialogue.setText("Import a mesh, first!");
                 errorDialogue.exec();
@@ -1958,7 +1958,7 @@ void MainWindow::PCA() {
         }
         else {
             auto errorDialogue = QMessageBox();
-            errorDialogue.setIcon(QMessageBox::Information);
+            errorDialogue.setIcon(QMessageBox::Critical);
             errorDialogue.setWindowTitle("Error");
             errorDialogue.setText(
                 "SuperImpose your specimens first (minimum two of them), \n "
@@ -1969,7 +1969,7 @@ void MainWindow::PCA() {
     }
     else {
         auto errorDialogue = QMessageBox();
-        errorDialogue.setIcon(QMessageBox::Information);
+        errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
             "Project setting was not found! \n If the setting is already "
@@ -2083,7 +2083,7 @@ void MainWindow::ReadLMDataFromFile() {
     }
     else {
         auto errorDialogue = QMessageBox();
-        errorDialogue.setIcon(QMessageBox::Information);
+        errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
             "Project setting was not found! \n If the setting is already "
@@ -2238,7 +2238,7 @@ void MainWindow::ReadProjectFromFile() {
     }
     else {
         auto errorDialogue = QMessageBox();
-        errorDialogue.setIcon(QMessageBox::Information);
+        errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
             "Project setting was not found! \n If the setting is already "

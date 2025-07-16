@@ -714,7 +714,7 @@ void ProSetMenu::ImportTemplate() {
         }
         if (fileName.endsWith(".att") == 0) {
             auto errorDialogue = QMessageBox();
-            errorDialogue.setIcon(QMessageBox::Information);
+            errorDialogue.setIcon(QMessageBox::Critical);
             errorDialogue.setWindowTitle("Error");
             errorDialogue.setText("No Suitable file was Selected");
             errorDialogue.exec();
@@ -768,7 +768,7 @@ void ProSetMenu::ChangeSurfaceMode(int index) {
 void ProSetMenu::LoadTemplate() {
     if (surfaceNOS == 0 && typeINOL == 0 && curveNOS == 0 && surfacePatchUNOS == 0 && surfacePatchVNOS == 0) {
         auto errorDialogue = QMessageBox();
-        errorDialogue.setIcon(QMessageBox::Information);
+        errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText("The project setting is empty");
         errorDialogue.exec();
@@ -776,21 +776,21 @@ void ProSetMenu::LoadTemplate() {
     else if (surfaceNOS != 0 && surfaceNOS < surfaceSliderLimit) {
         //surfaceLineEditNOS->clear();
         auto errorDialogue = QMessageBox();
-        errorDialogue.setIcon(QMessageBox::Information);
+        errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText("Number of the surface sliders is less than the limit. Try again");
         errorDialogue.exec();
     }
     else if (surfacePatchUNOS != 0 && (surfacePatchUNOS < surfaceResolutionLimit || surfacePatchVNOS < surfaceResolutionLimit)) {
         auto errorDialogue = QMessageBox();
-        errorDialogue.setIcon(QMessageBox::Information);
+        errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText("The resolution is less than the limit. Try again");
         errorDialogue.exec();
     }
     else if (surfacePatchVNOS != 0 && surfacePatchVNOS < surfaceResolutionLimit) {
         auto errorDialogue = QMessageBox();
-        errorDialogue.setIcon(QMessageBox::Information);
+        errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText("The resolution is less than the limit. Try again");
         errorDialogue.exec();
@@ -798,7 +798,7 @@ void ProSetMenu::LoadTemplate() {
     else if (typeINOL != 0 && typeINOL < fixedLandmarkLimit) {
         //typeILineEdit->clear();
         auto errorDialogue = QMessageBox();
-        errorDialogue.setIcon(QMessageBox::Information);
+        errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText("Number of the fixed landmarks is less than the limit. Try again");
         errorDialogue.exec();
@@ -806,7 +806,7 @@ void ProSetMenu::LoadTemplate() {
     else if (curveNOS != 0 && curveNOS < curveSliderLimit) {
         //curveLineEditNOS->clear();
         auto errorDialogue = QMessageBox();
-        errorDialogue.setIcon(QMessageBox::Information);
+        errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText("Number of the curve sliders is less than the limit. Try again");
         errorDialogue.exec();
@@ -845,7 +845,7 @@ void ProSetMenu::LoadTemplate() {
             }
             if (fileName.endsWith(".obj") == 0) {
                 auto errorDialogue = QMessageBox();
-                errorDialogue.setIcon(QMessageBox::Information);
+                errorDialogue.setIcon(QMessageBox::Critical);
                 errorDialogue.setWindowTitle("Error");
                 errorDialogue.setText("No Suitable file was Selected");
                 errorDialogue.exec();

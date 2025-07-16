@@ -358,7 +358,7 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         this->show();
     } else {
         auto errorDialogue = QMessageBox();
-        errorDialogue.setIcon(QMessageBox::Information);
+        errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
             "SuperImpose your specimens first (minimum two of them), \n then "
