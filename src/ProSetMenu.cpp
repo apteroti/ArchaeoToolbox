@@ -481,6 +481,21 @@ void ProSetMenu::SaveTemplate() {
             textItem.clear();
         }
 
+        textItem += QString("Mask Array") + ",";
+        textItem += QString::number(m_templatePoly->GetNumberOfCells());
+        data << textItem.join("") << ENDL;
+        textItem.clear();
+
+        // Get the Masked array
+        vtkIntArray* maskArray = vtkIntArray::SafeDownCast(
+        m_templatePoly->GetCellData()->GetArray("Masked"));
+        for (vtkIdType i = 0; i < m_templatePoly->GetNumberOfCells(); ++i) {
+            int maskValue = maskArray->GetValue(i);
+            textItem += QString::number(maskValue) + ",";
+            data << textItem.join("") << ENDL;
+            textItem.clear();
+        }
+
         f.close();
     }
 }
@@ -584,6 +599,25 @@ void ProSetMenu::ImportTemplate() {
                 m_templatePoly->SetPolys(tempImportedPolyCells);
                 m_templatePoly->Modified();
 
+                if (content[i][0] == "Mask Array") {
+                    int numCells = std::stoi(content[i][1]);  // Number of cell values
+                    int startIdx = i + 1;
+
+                    vtkNew<vtkIntArray> maskArray;
+                    maskArray->SetName("Masked");
+                    maskArray->SetNumberOfComponents(1);
+                    maskArray->SetNumberOfTuples(numCells);
+
+                    for (int j = 0; j < numCells; ++j) {
+                        int val = std::stoi(content[startIdx + j][0]);
+                        maskArray->SetTuple1(j, val);
+                    }
+
+                    m_templatePoly->GetCellData()->AddArray(maskArray);
+                    m_templatePoly->GetCellData()->SetActiveScalars("Masked");
+                    break;
+                }
+
                 if (content[i][0] == "Curve Direction Glyph") {
                     if (std::stoi(content[i][2]) != 0) {
                         int startCell = i + 1;
@@ -671,11 +705,11 @@ void ProSetMenu::ImportTemplate() {
                     }
                 }
             }
-            /* vtkNew<vtkXMLPolyDataWriter> writer;
+            vtkNew<vtkXMLPolyDataWriter> writer;
             writer->SetInputData(m_templatePoly);
             writer->SetFileName("TestTemplate.vtp");
             writer->Update();
-            writer->Write(); */
+            writer->Write(); 
             Refresh(1);
         }
         if (fileName.endsWith(".att") == 0) {

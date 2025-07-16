@@ -993,6 +993,29 @@ void SpecimenDigitiser::SurfaceTool() {
                     statusLabel->setText("Status: Busy");
                     progressLabel->setPixmap(
                         QPixmap(":/icons/graphics/icons/busy.svg"));
+                    
+                    vtkNew<vtkThreshold> threshold;
+                    threshold->SetInputData(m_templateMesh);
+                    threshold->ThresholdBetween(1, 1);  // Extract cells with Masked == 1
+                    threshold->SetInputArrayToProcess(
+                        0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_CELLS, "Masked");
+                    threshold->Update();
+                    if(threshold->GetOutput()->GetNumberOfPoints() > 0){
+                        auto choice = QMessageBox::question(this, "Information",
+                            "Do you want to apply Exclusion Paint?",
+                            QMessageBox::Yes | QMessageBox::No);
+                        if (choice == QMessageBox::Yes) {
+                            this->hide();
+                            delete m_exclusionPainter;
+                            m_exclusionPainter = new ExclusionPaint(m_meshData);
+                            // Create an event loop to block here until the window is closed
+                            QEventLoop loop;
+                            QObject::connect(m_exclusionPainter, &ExclusionPaint::windowClosed, &loop, &QEventLoop::quit);
+                            loop.exec();  // blocks here until m_exclusionPainter is closed
+                            this->show();
+                        }
+                    }
+                    
                     delete m_regPlot;
                     m_regPlot =
                         new Registration(m_meshData, m_templateMesh,
@@ -1026,6 +1049,29 @@ void SpecimenDigitiser::SurfaceTool() {
                 statusLabel->setText("Status: Busy");
                 progressLabel->setPixmap(
                     QPixmap(":/icons/graphics/icons/busy.svg"));
+
+                vtkNew<vtkThreshold> threshold;
+                threshold->SetInputData(m_templateMesh);
+                threshold->ThresholdBetween(1, 1);  // Extract cells with Masked == 1
+                threshold->SetInputArrayToProcess(
+                    0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_CELLS, "Masked");
+                threshold->Update();
+                if(threshold->GetOutput()->GetNumberOfPoints() > 0){
+                    auto choice = QMessageBox::question(this, "Information",
+                        "Do you want to apply Exclusion Paint?",
+                        QMessageBox::Yes | QMessageBox::No);
+                    if (choice == QMessageBox::Yes) {
+                        this->hide();
+                        delete m_exclusionPainter;
+                        m_exclusionPainter = new ExclusionPaint(m_meshData);
+                        // Create an event loop to block here until the window is closed
+                        QEventLoop loop;
+                        QObject::connect(m_exclusionPainter, &ExclusionPaint::windowClosed, &loop, &QEventLoop::quit);
+                        loop.exec();  // blocks here until m_exclusionPainter is closed
+                        this->show();
+                    }
+                }
+                
                 delete m_regPlot;
                 m_regPlot = new Registration(m_meshData, m_templateMesh,
                                              m_templateSurfaceSliders, this);
@@ -4473,5 +4519,6 @@ bool SpecimenDigitiser::GetIgnorSetting() { return m_ignoreInside; }
 
 SpecimenDigitiser::~SpecimenDigitiser() {
     delete m_vtkRenderWidget;
+    delete m_exclusionPainter;
     CleanUp();
 }

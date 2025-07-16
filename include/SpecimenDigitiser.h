@@ -202,6 +202,7 @@
 #include <Geom_TrimmedCurve.hxx>
 #include <BRepFill_Filling.hxx>
 
+#include "ExclusionPaint.h"
 
 
 class SpecimenDigitiser : public QMainWindow
@@ -242,6 +243,7 @@ private:
     vtkSmartPointer<vtkMultiBlockDataSet> m_templateCurveSliders = nullptr;
 
     MainWindow *m_parent;
+    ExclusionPaint* m_exclusionPainter = nullptr;
     //
     QLineEdit *typeILineEdit;
     QLineEdit *curveLineEditNOC;

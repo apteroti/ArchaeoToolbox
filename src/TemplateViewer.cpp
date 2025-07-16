@@ -209,6 +209,7 @@ void TemplateViewer::Plot(){
     //Mesh properties and color etc
     vtkNew<vtkDataSetMapper> mapper;
     mapper->SetInputData(m_meshData);
+    mapper->ScalarVisibilityOff();  // <- disables scalar-based coloring
     m_meshActor->SetMapper(mapper);
     m_meshActor->GetProperty()->SetColor(1, 0.992, 0.815);
     m_renderer->AddActor(m_meshActor);

@@ -187,8 +187,7 @@ class Registration : public QMainWindow {
     
     int m_resampledRes = 300;
     
-    SlidingThread* m_slidingThread = nullptr;
-    StatusReporterThread* m_slidingStatThread = nullptr;
+    StatusReporterThread* m_morphingStatThread = nullptr;
     RegistrationThread* m_regThread = nullptr;
     // Toolbar
     QToolBar* mainToolbar;
@@ -294,7 +293,6 @@ class Registration : public QMainWindow {
     void ResetTool();
     //void Refine();
     //void Morph();
-    void SlidingStatus();
     void FinalizeDigitization(Eigen::MatrixXd& Lndmrks, bool sendOffData);
     void PCA(Eigen::MatrixXd& data, Eigen::MatrixXd& out);
     ~Registration();
@@ -302,7 +300,6 @@ class Registration : public QMainWindow {
     void OnCoordinateChanged(Eigen::MatrixXd sendOffData);
     void OnCoordinateNotChanged(Eigen::MatrixXd sendOffData);
     void OnMeshMorphed();
-    void OnSlidingStatusChanged(int status);
     void RegistrationStatus();
     void OnRegisterStatusChanged(int status);
     bool IsRunning();

@@ -168,7 +168,6 @@ MainWindow::MainWindow() {
     m_scalarBar->SetNumberOfLabels(5);
     m_scalarBar->SetMaximumWidthInPixels(windowWidth / 10);
     m_scalarBar->SetMaximumHeightInPixels(windowHeight / 3);
-    // m_mainRenderer->AddActor(m_scalarBar);
 
     // Create a dummy vector text
     vtkNew<vtkVectorText> vecText;
@@ -181,7 +180,6 @@ MainWindow::MainWindow() {
     extrude->Update();
     m_mainMeshMapper->SetInputData(extrude->GetOutput());
     m_mainMeshMapper->ScalarVisibilityOn();
-    // m_mainMeshMapper->SetScalarModeToUsePointFieldData();
     m_mainMeshActor->SetMapper(m_mainMeshMapper);
     m_mainMeshActor->GetProperty()->SetColor(1, 0.992, 0.815);
     m_mainRenderer->AddActor(m_mainMeshActor);
@@ -283,7 +281,7 @@ MainWindow::MainWindow() {
     mainTabWidget->addTab(mainTable, tr("Digitised"));
     mainTabWidget->addTab(supImposedTable, tr("SuperImposed"));
     mainTabWidget->addTab(procResTable, tr("Procrustes Residual"));
-    // setCentralWidget(mainTable);
+    
     setCentralWidget(mainTabWidget);
     // Setting up File menu
     fileMenu = menuBar()->addMenu("&File");
@@ -293,11 +291,9 @@ MainWindow::MainWindow() {
 
     exportCSVAction = new QAction("Export Data", this);
     exportCSVAction->setStatusTip("Export Data as .CSV");
-    // exportCSVAction->setEnabled(0);
 
     exportVTKAction = new QAction("Export Geometry", this);
     exportVTKAction->setStatusTip("Export Geometry as .VTK");
-    // exportVTKAction->setEnabled(0);
 
     recoverActionLegacy = new QAction("Recover (Legacy)", this);
     recoverActionLegacy->setStatusTip("Recover via file");
@@ -538,9 +534,7 @@ void MainWindow::LoadOBJ() {
         }
         if (fileName.endsWith(".obj") == 0) {
             auto errorDialogue = QMessageBox();
-            // QPixmap Quim(":/icons/graphics/icons/Quim.png");
             errorDialogue.setIcon(QMessageBox::Information);
-            // errorDialogue.setIconPixmap(Quim);
             errorDialogue.setWindowTitle("Error");
             errorDialogue.setText("No OBJ file was Selected");
             errorDialogue.exec();
@@ -556,9 +550,7 @@ void MainWindow::ExportCSV() {
     }
     else {
         auto errorDialogue = QMessageBox();
-        // QPixmap Quim(":/icons/graphics/icons/Quim.png");
         errorDialogue.setIcon(QMessageBox::Information);
-        // errorDialogue.setIconPixmap(Quim);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText("Nothing to Export!");
         errorDialogue.exec();
@@ -823,9 +815,7 @@ void MainWindow::ExportGeometry() {
     }
     else {
         auto errorDialogue = QMessageBox();
-        // QPixmap Quim(":/icons/graphics/icons/Quim.png");
         errorDialogue.setIcon(QMessageBox::Information);
-        // errorDialogue.setIconPixmap(Quim);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText("Nothing to Export!");
         errorDialogue.exec();
@@ -846,9 +836,7 @@ void MainWindow::SuperImpose() {
         }
         else {
             auto errorDialogue = QMessageBox();
-            QPixmap Quim(":/icons/graphics/icons/Quim.png");
-            // errorDialogue.setIcon(QMessageBox::Information);
-            errorDialogue.setIconPixmap(Quim);
+            errorDialogue.setIcon(QMessageBox::Information);
             errorDialogue.setWindowTitle("Error");
             errorDialogue.setText("Digitise a mesh, first!");
             errorDialogue.exec();
@@ -857,9 +845,9 @@ void MainWindow::SuperImpose() {
     }
     else {
         auto errorDialogue = QMessageBox();
-        QPixmap Quim(":/icons/graphics/icons/Quim.png");
-        // errorDialogue.setIcon(QMessageBox::Information);
-        errorDialogue.setIconPixmap(Quim);
+        //QPixmap Quim(":/icons/graphics/icons/Quim.png");
+        errorDialogue.setIcon(QMessageBox::Information);
+        //errorDialogue.setIconPixmap(Quim);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
             "Project setting was not found! \n If the setting is already "
@@ -987,9 +975,7 @@ void MainWindow::TemplatePlot() { m_templateView->show(); }
 void MainWindow::meshPlot() {
     if (!TemplateIsSet) {
         auto errorDialogue = QMessageBox();
-        QPixmap Quim(":/icons/graphics/icons/Quim.png");
-        // errorDialogue.setIcon(QMessageBox::Information);
-        errorDialogue.setIconPixmap(Quim);
+        errorDialogue.setIcon(QMessageBox::Information);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
             "Project setting was not found! \n If the setting is already "
@@ -1033,18 +1019,14 @@ void MainWindow::meshPlot() {
         else {
             if (m_treeWidget->topLevelItemCount() > 0) {
                 auto errorDialogue = QMessageBox();
-                QPixmap Quim(":/icons/graphics/icons/Quim.png");
-                // errorDialogue.setIcon(QMessageBox::Information);
-                errorDialogue.setIconPixmap(Quim);
+                errorDialogue.setIcon(QMessageBox::Information);
                 errorDialogue.setWindowTitle("Error");
                 errorDialogue.setText("Select a geometry to proceed!");
                 errorDialogue.exec();
             }
             else {
                 auto errorDialogue = QMessageBox();
-                QPixmap Quim(":/icons/graphics/icons/Quim.png");
-                // errorDialogue.setIcon(QMessageBox::Information);
-                errorDialogue.setIconPixmap(Quim);
+                errorDialogue.setIcon(QMessageBox::Information);
                 errorDialogue.setWindowTitle("Error");
                 errorDialogue.setText("Import a mesh, first!");
                 errorDialogue.exec();
@@ -1816,8 +1798,6 @@ int MainWindow::GetTypeINOL() { return m_typeINOL; }
 
 void MainWindow::ResetLandmarks() {
     if (m_dataBase->CheckMembership("Template")) {
-        // m_dataBase->DeleteTypeI("Template");
-        // m_dataBase->DeleteSliders("Template");
         m_dataBase->DeleteAllLandmarks("Template");
         m_dataBase->DeleteNode("Template");
     }
@@ -1978,8 +1958,7 @@ void MainWindow::PCA() {
         }
         else {
             auto errorDialogue = QMessageBox();
-            QPixmap Quim(":/icons/graphics/icons/Quim.png");
-            errorDialogue.setIconPixmap(Quim);
+            errorDialogue.setIcon(QMessageBox::Information);
             errorDialogue.setWindowTitle("Error");
             errorDialogue.setText(
                 "SuperImpose your specimens first (minimum two of them), \n "
@@ -1990,9 +1969,7 @@ void MainWindow::PCA() {
     }
     else {
         auto errorDialogue = QMessageBox();
-        QPixmap Quim(":/icons/graphics/icons/Quim.png");
-        // errorDialogue.setIcon(QMessageBox::Information);
-        errorDialogue.setIconPixmap(Quim);
+        errorDialogue.setIcon(QMessageBox::Information);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
             "Project setting was not found! \n If the setting is already "
@@ -2106,9 +2083,7 @@ void MainWindow::ReadLMDataFromFile() {
     }
     else {
         auto errorDialogue = QMessageBox();
-        QPixmap Quim(":/icons/graphics/icons/Quim.png");
-        // errorDialogue.setIcon(QMessageBox::Information);
-        errorDialogue.setIconPixmap(Quim);
+        errorDialogue.setIcon(QMessageBox::Information);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
             "Project setting was not found! \n If the setting is already "
@@ -2263,9 +2238,7 @@ void MainWindow::ReadProjectFromFile() {
     }
     else {
         auto errorDialogue = QMessageBox();
-        QPixmap Quim(":/icons/graphics/icons/Quim.png");
-        // errorDialogue.setIcon(QMessageBox::Information);
-        errorDialogue.setIconPixmap(Quim);
+        errorDialogue.setIcon(QMessageBox::Information);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
             "Project setting was not found! \n If the setting is already "
@@ -2285,17 +2258,6 @@ void MainWindow::OnRecoveryIsDone() {
 }
 
 void MainWindow::OnSuperImpositionIsDone() {
-    /* auto item = m_treeWidget->topLevelItem(0);
-    m_treeWidget->setCurrentItem(item);
-    m_treeWidget->topLevelItem(0)->setSelected(1); */
-
-    /* auto item = m_treeWidget->selectedItems()[0];
-    if (m_treeWidget->selectedItems()[0]->parent()) {
-        item = m_treeWidget->selectedItems()[0]
-                    ->parent();
-    }
-    m_treeWidget->setCurrentItem(item);
-    m_treeWidget->currentItem()->setSelected(1); */
     if (!m_treeWidget->selectedItems().isEmpty()) {
         std::string name =
             m_treeWidget->selectedItems()[0]->text(0).toStdString();
@@ -2391,12 +2353,10 @@ void MainWindow::OnStatusChanged(int status) {
     else {
         statusLabel->setText("Status: Idle");
         progressLabel->setPixmap(QPixmap(":/icons/graphics/icons/idle.svg"));
-        // progressLineEdit->hide();
     }
 }
 
 void MainWindow::RecoverDigitisedLM() {
-    // GeneralProgressStatus(0);
     ReadLMDataFromFile();
 }
 

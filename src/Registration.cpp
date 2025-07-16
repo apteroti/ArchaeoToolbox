@@ -205,12 +205,6 @@ Registration::Registration(vtkPolyData* data, vtkPolyData* templateMesh,
     resetButton->setCheckable(false);
     this->statusBar()->addWidget(resetButton);
 
-    /* refineButton = new QPushButton("Refine");
-    refineButton->setToolTip("Refine the registration");
-    refineButton->setCheckable(false);
-    refineButton->setEnabled(0);
-    mainToolbar->addWidget(refineButton); */
-
     connect(morphButton, &QPushButton::clicked, this, &Registration::MorphTool);
     connect(sliderButton, &QPushButton::clicked, this,
             &Registration::SliderTool);
@@ -278,6 +272,12 @@ void Registration::Register() {
             RegistrationStatus();
         }
         else{
+            QMessageBox::warning(
+                this,
+                tr("Landmark Digitisation Required"),
+                tr("You need to digitise other types of landmarks (Type I-II or curve sliders) first.\n"
+                "You will possibly get inaccurate landmark distribution after the sliding process!"),
+                QMessageBox::Ok);
             delete m_regThread;
             m_regThread =
                 new RegistrationThread(m_templateMesh, m_meshData, m_morphedMesh,
@@ -305,12 +305,12 @@ void Registration::Register() {
 
 void Registration::RegistrationStatus() {
     if (m_regThread) {
-        delete m_slidingStatThread;
-        m_slidingStatThread = new StatusReporterThread(m_regThread);
-        m_slidingStatThread->setParent(this);
-        connect(m_slidingStatThread, &StatusReporterThread::StatusChanged, this,
+        delete m_morphingStatThread;
+        m_morphingStatThread = new StatusReporterThread(m_regThread);
+        m_morphingStatThread->setParent(this);
+        connect(m_morphingStatThread, &StatusReporterThread::StatusChanged, this,
                 &Registration::OnRegisterStatusChanged);
-        m_slidingStatThread->start();
+        m_morphingStatThread->start();
     }
 }
 
@@ -425,17 +425,6 @@ void Registration::FinalizeDigitization(Eigen::MatrixXd& Lndmrks,
     }
 }
 
-void Registration::SlidingStatus() {
-    if (m_slidingThread) {
-        delete m_slidingStatThread;
-        m_slidingStatThread = new StatusReporterThread(m_slidingThread);
-        m_slidingStatThread->setParent(this);
-        connect(m_slidingStatThread, &StatusReporterThread::StatusChanged, this,
-                &Registration::OnSlidingStatusChanged);
-        m_slidingStatThread->start();
-    }
-}
-
 void Registration::OnRegisterStatusChanged(int status) {
     if (status > 0) {
         statusLabel->setText("Status: Morphing");
@@ -457,34 +446,6 @@ void Registration::OnRegisterStatusChanged(int status) {
     }
 }
 
-void Registration::OnSlidingStatusChanged(int status) {
-    double scale = m_slidingThread->GetScalingFactor();
-    double BE = m_slidingThread->GetBE();
-    std::stringstream scaleStream;
-    scaleStream << std::fixed << std::setprecision(1) << scale;
-
-    std::string progressText = "Scaling Factor: " + scaleStream.str() + "  " +
-                               "Bending Energy: " + std::to_string(BE);
-    progressLineEdit->setText(QString::fromUtf8(progressText.c_str()));
-    if (status > 0) {
-        statusLabel->setText("Status: Sliding");
-        if (status % 2 == 0) {
-            progressLabel->setPixmap(
-                QPixmap(":/icons/graphics/icons/vBusy.svg"));
-        } else {
-            progressLabel->setPixmap(
-                QPixmap(":/icons/graphics/icons/busy.svg"));
-        }
-    }
-    if (status == -1) {
-        statusLabel->setText("Status: Aborting");
-        progressLabel->setPixmap(QPixmap(":/icons/graphics/icons/busy.svg"));
-    }
-    if (status == 0) {
-        statusLabel->setText("Status: Idle");
-        progressLabel->setPixmap(QPixmap(":/icons/graphics/icons/idle.svg"));
-    }
-}
 
 void Registration::DebugPrintMatrix(Eigen::MatrixXd matrix) {
     Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
@@ -521,11 +482,26 @@ void Registration::SetTemplateScene() {
     m_templateIren->SetInteractorStyle(m_templateStyle);
     m_templateIren->SetRenderWindow(m_templateRenWin);
     // Mesh properties and color etc
+    vtkNew<vtkNamedColors> nc;
+    nc->SetColor("Bone", 1.0, 0.3882, 0.2784);
+    nc->Modified();
+    vtkNew<vtkColorSeries> maskColorsSeries;
+    maskColorsSeries->SetColorSchemeByName("myMaskColors");
+    maskColorsSeries->AddColor(nc->GetColor3ub("Bone"));
+    maskColorsSeries->AddColor(nc->GetColor3ub("Gray"));
+    maskColorsSeries->Modified();
+    vtkNew<vtkLookupTable> lut;
+    maskColorsSeries->BuildLookupTable(lut, maskColorsSeries->ORDINAL);
+    lut->Modified();
+
     vtkNew<vtkDataSetMapper> mapper;
     mapper->SetInputData(m_templateMesh);
+    mapper->SetResolveCoincidentTopologyToOff();
+    mapper->SetScalarModeToUseCellFieldData();
+    mapper->SelectColorArray("Masked");
+    mapper->SetLookupTable(lut);
+
     m_templateMeshActor->SetMapper(mapper);
-    m_templateMeshActor->GetProperty()->SetDiffuseColor(
-        colors->GetColor3d("Tomato").GetData());
     m_templateRenderer->AddActor(m_templateMeshActor);
     // Point properties and color etc
     vtkNew<vtkMassProperties> prop;
@@ -693,10 +669,34 @@ void Registration::SetTargetScene() {
     m_targetIren->SetInteractorStyle(m_targetStyle);
     m_targetIren->SetRenderWindow(m_targetRenWin);
     // Mesh properties and color etc
+    vtkNew<vtkNamedColors> nc;
+    nc->SetColor("Bone", 1, 0.992, 0.815);
+    nc->Modified();
+    vtkNew<vtkColorSeries> maskColorsSeries;
+    maskColorsSeries->SetColorSchemeByName("myMaskColors");
+    maskColorsSeries->AddColor(nc->GetColor3ub("Bone"));
+    maskColorsSeries->AddColor(nc->GetColor3ub("Gray"));
+    maskColorsSeries->Modified();
+    vtkNew<vtkLookupTable> lut;
+    maskColorsSeries->BuildLookupTable(lut, maskColorsSeries->ORDINAL);
+    lut->Modified();
 
-    m_targetMapper->SetInputData(m_meshData);
-    m_targetMeshActor->SetMapper(m_targetMapper);
-    m_targetMeshActor->GetProperty()->SetColor(1, 0.992, 0.815);
+    vtkDataArray* maskedArray = m_meshData->GetCellData()->GetArray("Masked");
+    if (maskedArray && vtkIntArray::SafeDownCast(maskedArray)) {
+        m_targetMapper->SetInputData(m_meshData);
+        m_targetMapper->SetResolveCoincidentTopologyToOff();
+        m_targetMapper->SetScalarModeToUseCellFieldData();
+        m_targetMapper->SelectColorArray("Masked");
+        m_targetMapper->SetLookupTable(lut);
+
+        m_targetMeshActor->SetMapper(m_targetMapper);
+        m_targetMeshActor->GetProperty()->SetOpacity(1);
+    } 
+    else {
+        m_targetMapper->SetInputData(m_meshData);
+        m_targetMeshActor->SetMapper(m_targetMapper);
+        m_targetMeshActor->GetProperty()->SetColor(1, 0.992, 0.815);
+    }    
     m_targetRenderer->AddActor(m_targetMeshActor);
     // Point properties and color etc
     vtkNew<vtkMassProperties> prop;
@@ -875,6 +875,7 @@ void Registration::SetOverlayScene() {
     // template mesh
     vtkNew<vtkDataSetMapper> templateMapper;
     templateMapper->SetInputData(m_templateMesh);
+    templateMapper->ScalarVisibilityOff();  // <- disables scalar-based coloring
     m_overlayTemplateActor->SetMapper(templateMapper);
     m_overlayTemplateActor->GetProperty()->SetDiffuseColor(
         colors->GetColor3d("Tomato").GetData());
@@ -970,29 +971,45 @@ void Registration::SliderTool() {
     m_overlayMeshActor->Modified();
     m_overlayRenderer->AddActor(m_overlayMeshActor);
 
+    vtkNew<vtkThreshold> threshold;
+    threshold->SetInputData(m_overlaidMesh);
+    threshold->ThresholdBetween(0, 0);
+    threshold->SetInputArrayToProcess(
+        0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_CELLS, "Masked");
+    threshold->Update();
+
+    vtkSmartPointer<vtkPolyData> pointLocatorData;
+    if (threshold->GetOutput()->GetNumberOfPoints() > 0) {
+        vtkNew<vtkGeometryFilter> geometry;
+        geometry->SetInputData(threshold->GetOutput());
+        geometry->Update();
+
+        vtkNew<vtkCleanPolyData> cleanFilter;
+        cleanFilter->SetInputData(geometry->GetOutput());
+        cleanFilter->Update();
+
+        pointLocatorData = cleanFilter->GetOutput();
+    } else {
+        pointLocatorData = m_overlaidMesh;
+    }
     vtkNew<vtkPointLocator> pointTree;
-    pointTree->SetDataSet(m_overlaidMesh);
+    pointTree->SetDataSet(pointLocatorData);
     pointTree->BuildLocator();
     pointTree->Update();
+    vtkIntArray* originalIdArray = vtkIntArray::SafeDownCast(
+        pointLocatorData->GetPointData()->GetArray("OriginalID"));
 
-    // std::vector<int> idVect;
-    for (int i = 0; i < m_templateSliders->GetNumberOfPoints(); i++) {
-        auto ptId = pointTree->FindClosestPoint(m_templateSliders->GetPoint(i));
-        if (m_regMethod == METHOD::Manual) {
-            m_preSliderHighlightPoints->InsertNextPoint(
-                m_meshData->GetPoint(ptId));
-        } else {
-            int orgId = m_overlaidMesh->GetPointData()
-                            ->GetArray("OriginalID")
-                            ->GetTuple1(ptId);
-            m_preSliderHighlightPoints->InsertNextPoint(
-                m_meshData->GetPoint(orgId));
-        }
-        // idVect.push_back(ptId);
+    for (vtkIdType i = 0; i < m_templateSliders->GetNumberOfPoints(); ++i) {
+        double* point = m_templateSliders->GetPoint(i);
+        vtkIdType localPtId = pointTree->FindClosestPoint(point);
+
+        int originalPtId = originalIdArray->GetValue(localPtId);  // <- Correct
+        double* originalPoint = m_meshData->GetPoint(originalPtId);
+
+        m_preSliderHighlightPoints->InsertNextPoint(originalPoint);
     }
 
     m_preSliderHighlightPoints->Modified();
-
     m_parent->SetSurfaceSlider(m_preSliderHighlightPoints);
     m_sliderPointActor->Modified();
     vtkNew<vtkPolyData> tempSurfacePtsPoly;
@@ -1140,19 +1157,7 @@ void Registration::ResetTool() {
 }
 
 void Registration::closeEvent(QCloseEvent* event) {
-    if (m_slidingThread) {
-        if (m_slidingThread->isRunning()) {
-            QMessageBox warning;
-            warning.setText("Refining is in the process, be patient please!");
-            warning.exec();
-            event->ignore();
-        }
-        if (!m_slidingThread->isRunning()) {
-            event->ignore();
-            m_parent->FlipSurfaceButton();
-            event->accept();
-        }
-    } else if (m_regThread) {
+    if (m_regThread) {
         if (m_regThread->isRunning()) {
             QMessageBox warning;
             warning.setText("Morphing is in the process, be patient please!");
@@ -1173,6 +1178,8 @@ void Registration::closeEvent(QCloseEvent* event) {
                     event->ignore();
                     m_meshData->GetPointData()->RemoveArray("OriginalID");
                     m_meshData->Modified();
+                    m_meshData->GetCellData()->RemoveArray("Masked");
+                    m_meshData->Modified();
                     m_parent->FlipSurfaceButton();
                     event->accept();
                 } else {
@@ -1181,6 +1188,8 @@ void Registration::closeEvent(QCloseEvent* event) {
             } else {
                 event->ignore();
                 m_meshData->GetPointData()->RemoveArray("OriginalID");
+                m_meshData->Modified();
+                m_meshData->GetCellData()->RemoveArray("Masked");
                 m_meshData->Modified();
                 m_parent->FlipSurfaceButton();
                 event->accept();
@@ -1197,6 +1206,8 @@ void Registration::closeEvent(QCloseEvent* event) {
             event->ignore();
             m_meshData->GetPointData()->RemoveArray("OriginalID");
             m_meshData->Modified();
+            m_meshData->GetCellData()->RemoveArray("Masked");
+            m_meshData->Modified();
             m_parent->FlipSurfaceButton();
             event->accept();
         } else {
@@ -1206,6 +1217,8 @@ void Registration::closeEvent(QCloseEvent* event) {
         event->ignore();
         m_meshData->GetPointData()->RemoveArray("OriginalID");
         m_meshData->Modified();
+        m_meshData->GetCellData()->RemoveArray("Masked");
+        m_meshData->Modified();
         m_parent->FlipSurfaceButton();
         event->accept();
     }
@@ -1213,7 +1226,6 @@ void Registration::closeEvent(QCloseEvent* event) {
 
 bool Registration::IsRunning() {
     bool morphStatus = false;
-    bool slidingStatus = false;
     if (m_regThread) {
         if (m_regThread->isRunning()) {
             morphStatus = true;
@@ -1221,16 +1233,8 @@ bool Registration::IsRunning() {
             morphStatus = false;
         }
     }
-    if (m_slidingStatThread) {
-        if (m_slidingStatThread->isRunning()) {
-            slidingStatus = true;
-        } else {
-            slidingStatus = false;
-        }
-    }
-
     bool status = false;
-    if (morphStatus || slidingStatus) {
+    if (morphStatus) {
         status = true;
     }
     return status;

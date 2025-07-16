@@ -472,8 +472,6 @@ public:
     void ProjectOnMesh(vtkPoints *points, vtkPolyData *mask);
     void ProjectOnMesh(vtkPolyData *Poly, vtkPolyData* mask, std::vector<int>* ids = nullptr);
     void MakeArrow(vtkPolyData* inputMesh, vtkMultiBlockDataSet* inputCurveBlock,int liftScale, vtkPolyData* output);
-    //void MakeSurface(vtkPoints* outerCurve, int Ures, int Vres, vtkPoints *outputSliders);
-    //void MakeSurface(vtkPolyData* mask, vtkPoints* curve, vtkPolyData* plane, int ures, int vres);
     void CosmeticCurve(vtkPoints* ctrlPts, vtkPolyData* outputCurve);
     void DijkstraEdgeSearch(vtkPolyData* mesh, vtkPolyData* closedCurve, vtkIdList* edgePointIds);
     void MeshCutter(vtkPolyData *Poly, vtkPoints *curvePts, vtkPolyData* outMask);
@@ -482,9 +480,6 @@ public:
     void ChangePointSize(int index);
     void ChangeLineSize(int index);
     void OutlineIdFinder(int u, int v, std::vector<int>* output);
-    //void UpdateAnchors(vtkPolyData* landmarksPoly, std::vector<int>* anchorId,int sliderType, bool status);
-    //void RedistCurveLM(vtkPolyData* curvePolyData, vtkPolyData* curveLandmarksPoly, int id, double *location );
-    //void Redistributor(vtkPolyData* curvePolyData, int startId, int endId,int locationId, std::vector<int>& firstCurveIdList, std::vector<int>& secondCurveIdList, vtkPolyData* outPutPtsPoly, vtkPoints* outPutPts);
     void ShowLargestDiameter();
     void DrawDiameter(vtkPoints* meshPoints);
     void PDist(vtkPoints *points, Eigen::MatrixXd &output);
