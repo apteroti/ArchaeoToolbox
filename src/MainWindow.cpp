@@ -475,7 +475,7 @@ void MainWindow::SettingMenu() { projectSettings->show(); }
 void MainWindow::about() {
     QMessageBox::about(
         this, tr("About ArchaeoToolbox"),
-        tr("<p align='center'> <b>ArchaeoToolbox</b> <br> 2.0 - Beta version "
+        tr("<p align='center'> <b>ArchaeoToolbox</b> <br> 2.1"
             "<br> <b>Reference:</b> <br> Kaveh Yousef Pouran, Maria Saña, Juan "
             "Anton Barceló, 2023. Biomechanics, behaviour dynamics and "
             "archaeology: Integrative attempts to study animal domestication "
