@@ -162,6 +162,7 @@
 #include <vtkBillboardTextActor3D.h>
 #include <vtkTransform.h>
 
+
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QComboBox>
@@ -226,6 +227,7 @@ private:
     vtkSmartPointer<vtkInteractorStyleTrackballCamera> m_style;
     vtkSmartPointer<vtkGenericRenderWindowInteractor> m_meshIren;
     vtkSmartPointer<vtkActor> m_meshActor;
+    vtkSmartPointer<vtkDataSetMapper> m_meshMapper;
 
     vtkSmartPointer<vtkVertexGlyphFilter> m_lmVertexFilter;
     vtkSmartPointer<vtkActor> m_lmActor;
@@ -242,14 +244,6 @@ private:
     /* vtkSmartPointer<vtkPolyData> m_graphLabelPoly;
     vtkSmartPointer<vtkActor2D> m_graphLabelActor; */
     vtkSmartPointer<vtkBillboardTextActor3D>m_MILLabelActor[1];
-    
-
-    /* QtCharts::QScatterSeries *m_graphRenderSeries;
-    QtCharts::QChart *m_graphChart;
-    QtCharts::QChartView *m_graphChartView;
-    QtCharts::QValueAxis *m_axisX;
-    QtCharts::QValueAxis *m_axisY; */
-    
 
     // toolbar etc
     QToolBar *mainToolbar;
@@ -277,6 +271,7 @@ public:
     void ShowPtsIds();
     //void ShowSpecimenIds();
     void Export2Csv();
+    void InterpolateTPSContributionToMesh(vtkDoubleArray* scalars);
     ~PCAWindow();
 protected:
     //void closeEvent(QCloseEvent *event) override;

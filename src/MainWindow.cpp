@@ -256,8 +256,8 @@ MainWindow::MainWindow() {
     //--------------
     mainTable->setRowCount(TableRowNum);
     mainTable->setColumnCount(TableColNum);
-    mainTable->setHorizontalHeaderLabels({ "Specimen", "X", "Y", "Z" });
-
+    SetLandmarkHeaders(mainTable);
+    
 
     mainTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     mainTable->setFocusPolicy(Qt::NoFocus);
@@ -265,14 +265,14 @@ MainWindow::MainWindow() {
 
     supImposedTable->setRowCount(TableRowNum);
     supImposedTable->setColumnCount(TableColNum);
-    supImposedTable->setHorizontalHeaderLabels({ "Specimen", "X", "Y", "Z" });
+    SetLandmarkHeaders(supImposedTable);
     supImposedTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     supImposedTable->setFocusPolicy(Qt::NoFocus);
     supImposedTable->setSelectionMode(QAbstractItemView::NoSelection);
 
     procResTable->setRowCount(TableRowNum);
     procResTable->setColumnCount(TableColNum);
-    procResTable->setHorizontalHeaderLabels({ "Specimen", "X", "Y", "Z" });
+    SetLandmarkHeaders(procResTable);
     procResTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     procResTable->setFocusPolicy(Qt::NoFocus);
     procResTable->setSelectionMode(QAbstractItemView::NoSelection);
@@ -564,6 +564,9 @@ void MainWindow::DoExport() {
             this, "Save Raw Landmarks", "", filter);
         QFileInfo fi(filename);
         QString ext = fi.completeSuffix();
+        if (filename.isEmpty()) {
+            return;
+        }
         if (ext != "csv") {
             filename += ".csv";
         }
@@ -612,6 +615,9 @@ void MainWindow::DoExport() {
             this, "Save SuperImposed Landmarks", "", filter);
         QFileInfo fi(filename);
         QString ext = fi.completeSuffix();
+        if (filename.isEmpty()) {
+            return;
+        }
         if (ext != "csv") {
             filename += ".csv";
         }
@@ -662,6 +668,9 @@ void MainWindow::DoExport() {
             this, "Save Procrustes Residual Vectors", "", filter);
         QFileInfo fi(filename);
         QString ext = fi.completeSuffix();
+        if (filename.isEmpty()) {
+            return;
+        }
         if (ext != "csv") {
             filename += ".csv";
         }
@@ -710,6 +719,9 @@ void MainWindow::DoExport() {
             this, "Save Procrustes Residual Magnitudes", "", filter);
         QFileInfo fi(filename);
         QString ext = fi.completeSuffix();
+        if (filename.isEmpty()) {
+            return;
+        }
         if (ext != "csv") {
             filename += ".csv";
         }
@@ -787,38 +799,57 @@ void MainWindow::DoExport() {
 }
 
 void MainWindow::ExportGeometry() {
-    if (!m_treeWidget->selectedItems().empty()) {
-        auto filter = "vtp(*.vtp)";
-        QString filename =
-            QFileDialog::getSaveFileName(this, "Save file", "", filter);
-        QFileInfo fi(filename);
-        QString ext = fi.completeSuffix();
-        if (ext != "vtp") {
-            filename += ".vtp";
-        }
-        auto name = m_treeWidget->selectedItems()[0]->text(0).toStdString();
-        if (m_treeWidget->selectedItems()[0]->parent()) {
-            name = m_treeWidget->selectedItems()[0]
-                ->parent()
-                ->text(0)
-                .toStdString();
-        }
-        std::string dType = m_dataBase->GetGeometryType(name);
-        if (dType == "OBJ") {
-            vtkPolyData* tempPoly = m_dataBase->GetPolyNode(name);
-            vtkNew<vtkXMLPolyDataWriter> writer;
-            writer->SetInputData(tempPoly);
-            writer->SetFileName(filename.toStdString().c_str());
-            writer->Update();
-            writer->Write();
-        }
-    }
-    else {
-        auto errorDialogue = QMessageBox();
+    // Check if any item is selected
+    if (m_treeWidget->selectedItems().empty()) {
+        QMessageBox errorDialogue;
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
-        errorDialogue.setText("Nothing to Export!");
+        errorDialogue.setText("Nothing to export!");
         errorDialogue.exec();
+        return;
+    }
+
+    // Ask user for filename
+    QString filter = "VTK PolyData (*.vtp)";
+    QString filename = QFileDialog::getSaveFileName(this, "Save file", "", filter);
+
+    // If user cancels, filename is empty
+    if (filename.isEmpty()) {
+        return;
+    }
+
+    // Ensure .vtp extension
+    QFileInfo fi(filename);
+    if (fi.suffix().toLower() != "vtp") {
+        filename += ".vtp";
+    }
+
+    // Get name from selected tree item
+    QTreeWidgetItem* selectedItem = m_treeWidget->selectedItems()[0];
+    QString itemName = selectedItem->text(0);
+
+    // If child item, get parent's name instead
+    if (selectedItem->parent()) {
+        itemName = selectedItem->parent()->text(0);
+    }
+
+    std::string name = itemName.toStdString();
+    std::string dType = m_dataBase->GetGeometryType(name);
+
+    if (dType == "OBJ") {
+        vtkPolyData* tempPoly = m_dataBase->GetPolyNode(name);
+        if (!tempPoly) {
+            QMessageBox::warning(this, "Export Failed", "Failed to access geometry.");
+            return;
+        }
+
+        vtkNew<vtkXMLPolyDataWriter> writer;
+        writer->SetInputData(tempPoly);
+        writer->SetFileName(filename.toStdString().c_str());
+        writer->SetDataModeToBinary(); // optional: smaller file
+        writer->Write();
+    } else {
+        QMessageBox::warning(this, "Unsupported Format", "Only OBJ-based geometries are supported for export.");
     }
 }
 
@@ -858,13 +889,13 @@ void MainWindow::SuperImpose() {
 
 void MainWindow::ResetImposition() {
     supImposedTable->clear();
-    supImposedTable->setColumnCount(mainTable->columnCount());
-    supImposedTable->setRowCount(mainTable->rowCount());
-    supImposedTable->setHorizontalHeaderLabels({ "Specimen", "X", "Y", "Z" });
+    supImposedTable->setColumnCount(TableColNum);
+    supImposedTable->setRowCount(TableRowNum);
+    SetLandmarkHeaders(supImposedTable);
     procResTable->clear();
-    procResTable->setColumnCount(mainTable->columnCount());
-    procResTable->setRowCount(mainTable->rowCount());
-    procResTable->setHorizontalHeaderLabels({ "Specimen", "X", "Y", "Z" });
+    procResTable->setColumnCount(TableColNum);
+    procResTable->setRowCount(TableRowNum);
+    SetLandmarkHeaders(procResTable);
 }
 
 void MainWindow::FinaliseImposition() {
@@ -1816,16 +1847,18 @@ void MainWindow::ResetLandmarks() {
         ++it;
     }
     mainTable->clear();
+    mainTable->setColumnCount(TableColNum);
+    mainTable->setRowCount(TableRowNum);
     supImposedTable->clear();
+    supImposedTable->setColumnCount(TableColNum);
+    supImposedTable->setRowCount(TableRowNum);
     procResTable->clear();
-    for (int i = 0; i < TableColNum; i++) {
-        mainTable->setHorizontalHeaderItem(i, new QTableWidgetItem(""));
-        supImposedTable->setHorizontalHeaderItem(i, new QTableWidgetItem(""));
-        procResTable->setHorizontalHeaderItem(i, new QTableWidgetItem(""));
-    }
-    mainTable->setHorizontalHeaderLabels({ "Specimen", "X", "Y", "Z" });
-    supImposedTable->setHorizontalHeaderLabels({ "Specimen", "X", "Y", "Z" });
-    procResTable->setHorizontalHeaderLabels({ "Specimen", "X", "Y", "Z" });
+    procResTable->setColumnCount(TableColNum);
+    procResTable->setRowCount(TableRowNum);
+    
+    SetLandmarkHeaders(mainTable);
+    SetLandmarkHeaders(supImposedTable);
+    SetLandmarkHeaders(procResTable);
     m_mainRenderer->RemoveActor(m_fixedLmActor);
     m_mainRenderer->RemoveActor(m_curveLmActor);
     m_mainRenderer->RemoveActor(m_surfaceLmActor);
@@ -2400,6 +2433,19 @@ QMutex* MainWindow::GetMutex() {
 
 void MainWindow::PrintHelp() {
     helpWindow->show();
+}
+
+void MainWindow::SetLandmarkHeaders(QTableWidget* table){
+    QStringList headers;
+    headers << "Specimen";  // First column
+    for (int i = 1; i <= TableColNum-1; ++i) {
+        headers << QString("LM%1X").arg(i);
+        headers << QString("LM%1Y").arg(i);
+        headers << QString("LM%1Z").arg(i);
+    }
+
+    table->setColumnCount(headers.size());  // Ensure table has enough columns
+    table->setHorizontalHeaderLabels(headers);
 }
 
 MainWindow::~MainWindow() {

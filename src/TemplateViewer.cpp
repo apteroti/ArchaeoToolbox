@@ -155,6 +155,9 @@ void TemplateViewer::CaptureScreen(){
         QFileDialog::getSaveFileName(this, "Save image", "", filter);
     QFileInfo fi(filename);
     QString ext = fi.completeSuffix();
+    if (filename.isEmpty()) {
+            return;
+        }
     if (ext != "png") {
         filename += ".png";
     }

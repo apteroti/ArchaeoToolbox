@@ -204,7 +204,7 @@ private:
     int m_curveNOS;
     int m_curveNOC;
     int TableRowNum = 500;
-    int TableColNum = 500;
+    int TableColNum = 501;
     DataBase *m_dataBase;
     SpecimenDigitiser *m_meshPlot = nullptr;
     SuperImposition *m_SIMP = nullptr;
@@ -353,6 +353,7 @@ public:
     int GetVRes();
     bool GetIgnorSetting();
     QMutex* GetMutex();
+    void SetLandmarkHeaders(QTableWidget* table);
     ~MainWindow();
 protected:
     void closeEvent(QCloseEvent *event) override;

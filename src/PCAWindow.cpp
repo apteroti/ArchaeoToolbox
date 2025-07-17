@@ -224,26 +224,18 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         m_style = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
         m_meshIren = vtkSmartPointer<vtkGenericRenderWindowInteractor>::New();
         m_meshActor = vtkSmartPointer<vtkActor>::New();
-
+        m_meshMapper = vtkSmartPointer<vtkDataSetMapper>::New();
         m_meshRenWin->AddRenderer(m_meshRenderer);
         m_style->SetCurrentRenderer(m_meshRenderer);
         m_meshIren->SetInteractorStyle(m_style);
         m_meshIren->SetRenderWindow(m_meshRenWin);
 
-        // scatter plot
-
-        /*   #include "matplotlibcpp.h"
-          namespace plt = matplotlibcpp;
-          int main() {
-          plt::plot({1,3,2,4});
-          plt::show();
-          } */
+        
 
         // Mesh properties and color etc
-        vtkNew<vtkDataSetMapper> meshmMapper;
-        meshmMapper->SetInputData(m_meshData);
-        meshmMapper->SetResolveCoincidentTopologyToOff();
-        m_meshActor->SetMapper(meshmMapper);
+        m_meshMapper->SetInputData(m_meshData);
+        m_meshMapper->SetResolveCoincidentTopologyToOff();
+        m_meshActor->SetMapper(m_meshMapper);
         m_meshActor->GetProperty()->SetColor(1, 0.992, 0.815);
         m_meshActor->GetProperty()->SetOpacity(0.5);
         m_meshRenderer->AddActor(m_meshActor);
@@ -264,11 +256,6 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         }
         vtkNew<vtkSphereSource> sphereSource;
         sphereSource->SetRadius(area / (sizeConstant));
-        /*  vtkNew<vtkSphereSource> sphereSource2;
-         sphereSource2->SetRadius((area/sizeConstant) * 1.5);
-         vtkNew<vtkSphereSource> sphereSource3;
-         sphereSource3->SetRadius((area/sizeConstant) * 0.5 ); */
-
         m_lmVertexFilter = vtkSmartPointer<vtkVertexGlyphFilter>::New();
         m_lmActor = vtkSmartPointer<vtkActor>::New();
         m_lmMapper = vtkSmartPointer<vtkGlyph3DMapper>::New();
@@ -327,23 +314,6 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         m_graphRenderWidget->SetRenderWindow(
             m_scatterChartView->GetRenderWindow());
         UpdateScatter(m_x, m_y);
-
-        // m_scatterChart->GetTooltip()->SetVisible(1);
-        // m_scatterChart->SetActionToButton(vtkChart::ZOOM_AXIS,
-        // vtkContextMouseEvent::LEFT_BUTTON);
-        // m_scatterChart->SetSelectionMethod(vtkChart::SELECTION_PLOTS);
-        // m_scatterChart->SetDrawAxesAtOrigin(1);
-        // m_scatterChart->SetForceAxesToBounds(1);
-
-        /* vtkNew<vtkVertexGlyphFilter> graphLabelVertexFilter;
-        graphLabelVertexFilter->SetInputData(m_graphLabelPoly);
-        graphLabelVertexFilter->Update();
-        vtkNew<vtkLabeledDataMapper> labelMapper;
-        labelMapper->SetInputData(graphLabelVertexFilter->GetOutput());
-        labelMapper->GetLabelTextProperty()->SetFontSize(15);
-        m_graphLabelActor->SetMapper(labelMapper);
-        m_graphLabelActor->SetPickable(0);
-        m_scatterChartView->GetRenderer()->AddActor(m_graphLabelActor); */
 
         // bg color
         m_meshRenderer->SetBackground(
@@ -437,25 +407,33 @@ void PCAWindow::UpdateContribution(int pc) {
     ctf->SetScaleToLinear();
 
     double maxContr = scalars->GetRange()[1];
-    int maxIndex = scalars->LookupValue(maxContr);
+    vtkIdType maxIndex = 0;
+    for (vtkIdType i = 1; i < scalars->GetNumberOfTuples(); ++i) {
+        if (scalars->GetTuple1(i) == maxContr) {
+            maxIndex = i;
+            break;
+        }
+    }
     /* std::cout<< "Index of the most influential Landmark is:"<<std::endl;
     std::cout<< maxIndex<<std::endl; */
     milLineEdit->setText(QString::number(maxIndex));
+    QString milText = QString("MIL (%1)").arg(maxContr, 0, 'g', 3);
 
     vtkNew<vtkNamedColors> colors;
     m_meshRenderer->RemoveActor(m_MILLabelActor[0]);
     vtkNew<vtkBillboardTextActor3D> tempActor;
     tempActor->SetPosition(m_landmarksPoly->GetPoint(maxIndex));
-    tempActor->SetInput("MIL");
+    tempActor->SetInput(milText.toStdString().c_str());
     tempActor->GetTextProperty()->SetFontSize(20);
     tempActor->GetTextProperty()->SetBold(1);
     tempActor->GetTextProperty()->SetColor(
-            colors->GetColor3d("Green").GetData()); 
+            colors->GetColor3d("Black").GetData()); 
     m_MILLabelActor[0] = tempActor;
     m_meshRenderer->AddActor(m_MILLabelActor[0]);
     
     
     vtkNew<vtkLookupTable> lut;
+    lut->SetNumberOfTableValues(512);
     lut->SetTableRange(scalars->GetRange());
     for (int i = 0; i < lut->GetNumberOfColors(); ++i) {
         std::array<double, 3> rgb;
@@ -475,6 +453,112 @@ void PCAWindow::UpdateContribution(int pc) {
 
     // Update scalar bar
     m_scalarBar->SetLookupTable(m_lmMapper->GetLookupTable());
+    m_scalarBar->Modified();
+
+    m_meshRenderer->GetRenderWindow()->Render();
+    InterpolateTPSContributionToMesh(scalars);
+}
+
+void PCAWindow::InterpolateTPSContributionToMesh(vtkDoubleArray* scalars) {
+    if (!m_landmarksPoly || !m_meshData || !scalars) return;
+
+    vtkIdType N = m_landmarksPoly->GetNumberOfPoints();
+    vtkIdType M = m_meshData->GetNumberOfPoints();
+    if (scalars->GetNumberOfTuples() != N) return;
+
+    // Step 1: Extract landmark positions and scalar values
+    Eigen::MatrixXd X(N, 3);  // Landmark positions
+    Eigen::VectorXd Y(N);     // Scalar values
+    for (vtkIdType i = 0; i < N; ++i) {
+        double p[3];
+        m_landmarksPoly->GetPoint(i, p);
+        X.row(i) << p[0], p[1], p[2];
+        Y(i) = scalars->GetTuple1(i);
+    }
+
+    // Step 2: Build TPS kernel matrix K
+    Eigen::MatrixXd K(N, N);
+    for (vtkIdType i = 0; i < N; ++i) {
+        for (vtkIdType j = 0; j < N; ++j) {
+            double r = (X.row(i) - X.row(j)).norm();
+            K(i, j) = (r > 1e-10) ? (r * r * std::log(r)) : 0.0;
+        }
+    }
+
+    // Step 3: Build matrix P (affine part)
+    Eigen::MatrixXd P(N, 4);
+    P.col(0) = Eigen::VectorXd::Ones(N);
+    P.block(0, 1, N, 3) = X;
+
+    // Step 4: Build linear system to solve weights
+    Eigen::MatrixXd L(N + 4, N + 4);
+    L.setZero();
+    L.block(0, 0, N, N) = K;
+    L.block(0, N, N, 4) = P;
+    L.block(N, 0, 4, N) = P.transpose();
+
+    Eigen::VectorXd rhs(N + 4);
+    rhs.setZero();
+    rhs.head(N) = Y;
+
+    // Solve system
+    Eigen::VectorXd coeffs = L.fullPivLu().solve(rhs);
+    Eigen::VectorXd w = coeffs.head(N);
+    Eigen::VectorXd a = coeffs.tail(4);
+
+    // Step 5: Interpolate over mesh vertices
+    vtkNew<vtkDoubleArray> interpolatedScalars;
+    interpolatedScalars->SetName("Contribution");
+    interpolatedScalars->SetNumberOfComponents(1);
+    interpolatedScalars->SetNumberOfTuples(M);
+
+    for (vtkIdType i = 0; i < M; ++i) {
+        double p[3];
+        m_meshData->GetPoint(i, p);
+        Eigen::Vector3d x(p[0], p[1], p[2]);
+
+        // Evaluate TPS
+        double value = a(0) + a.tail(3).dot(x);
+        for (vtkIdType j = 0; j < N; ++j) {
+            double r = (x - X.row(j).transpose()).norm();
+            if (r > 1e-10)
+                value += w(j) * r * r * std::log(r);
+        }
+        interpolatedScalars->SetTuple1(i, value);
+    }
+
+    // Step 6: Assign to mesh and render
+    m_meshData->GetPointData()->SetScalars(interpolatedScalars);
+    m_meshData->Modified();
+
+    // Color setup like before
+    vtkNew<vtkColorTransferFunction> ctf;
+    ctf->SetColorSpaceToDiverging();
+    ctf->AddRGBPoint(0, 0.231373, 0.298039, 0.752941);
+    ctf->AddRGBPoint(0.5, 0.865003, 0.865003, 0.865003);
+    ctf->AddRGBPoint(1, 0.705882, 0.0156863, 0.14902);
+
+    vtkNew<vtkLookupTable> lut;
+    lut->SetNumberOfTableValues(512);
+    double range[2];
+    interpolatedScalars->GetRange(range);
+    lut->SetTableRange(range);
+    for (int i = 0; i < lut->GetNumberOfTableValues(); ++i) {
+        double val = static_cast<double>(i) / (lut->GetNumberOfTableValues() - 1);
+        double rgb[3];
+        ctf->GetColor(val, rgb);
+        lut->SetTableValue(i, rgb[0], rgb[1], rgb[2], 1.0);
+    }
+    lut->Build();
+
+    m_meshMapper->SetInputData(m_meshData);
+    m_meshMapper->SetScalarModeToUsePointData();
+    m_meshMapper->SelectColorArray("Contribution");
+    m_meshMapper->SetScalarRange(range);
+    m_meshMapper->SetLookupTable(lut);
+    m_meshMapper->Update();
+
+    m_scalarBar->SetLookupTable(lut);
     m_scalarBar->Modified();
 
     m_meshRenderer->GetRenderWindow()->Render();
@@ -612,6 +696,9 @@ void PCAWindow::Export2Csv() {
         QFileDialog::getSaveFileName(this, "Save file", "", filter);
     QFileInfo fi(filename);
     QString ext = fi.completeSuffix();
+    if (filename.isEmpty()) {
+        return;
+    }
     if (ext != "csv") {
         filename += ".csv";
     }
