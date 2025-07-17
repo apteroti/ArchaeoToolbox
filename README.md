@@ -42,7 +42,8 @@ If you wish to build from source, ensure the following libraries are available o
 - ├── Binaries/             # Precompiled installers (Windows & Linux)
 - ├── build/                # (Generated) CMake build directory
 - ├── CMakeLists.txt        # Build configuration
+- ├── LICENSE               # The licence file
 - ├── README.md             # This file
 
 ## 📃 License
-MIT License — Free to use, modify, and distribute.
+GNU General Public License v3.0. Read the Licence file
