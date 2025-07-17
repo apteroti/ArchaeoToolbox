@@ -46,4 +46,4 @@ If you wish to build from source, ensure the following libraries are available o
 - ├── README.md             # This file
 
 ## 📃 License
-GNU General Public License v3.0. Read the Licence file
+This software is licensed under the GPLv3, which means you are free to use, modify, and distribute it — but any derivative work must also be released under the same license. This ensures that the software and any improvements remain free and open for everyone. For more information, please read the licence file.
