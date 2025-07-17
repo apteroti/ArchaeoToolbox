@@ -34,15 +34,15 @@ If you wish to build from source, ensure the following libraries are available o
 ---
 
 ## 📁 Folder Structure
-ArchaeoToolbox/
-│
-├── src/                  # Source files
-├── include/              # Header files
-├── Resources/            # Qt resource files (e.g., icons)
-├── Binaries/             # Precompiled installers (Windows & Linux)
-├── build/                # (Generated) CMake build directory
-├── CMakeLists.txt        # Build configuration
-├── README.md             # This file
+- ArchaeoToolbox/
+- │
+- ├── src/                  # Source files
+- ├── include/              # Header files
+- ├── Resources/            # Qt resource files (e.g., icons)
+- ├── Binaries/             # Precompiled installers (Windows & Linux)
+- ├── build/                # (Generated) CMake build directory
+- ├── CMakeLists.txt        # Build configuration
+- ├── README.md             # This file
 
 ## 📃 License
 MIT License — Free to use, modify, and distribute.
