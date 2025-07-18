@@ -108,11 +108,11 @@ void RegistrationThread::run() {
     if (!m_preAlign) {
         PrealignMesh(m_sourceMesh, m_templateMesh, alignedMesh);
     }
-    vtkNew<vtkXMLPolyDataWriter> writer;
-    writer->SetInputData(alignedMesh);
-    writer->SetFileName("test_aligned.vtp");
-    writer->SetDataModeToBinary(); // optional: smaller file
-    writer->Write();
+    //vtkNew<vtkXMLPolyDataWriter> writer;
+    //writer->SetInputData(alignedMesh);
+    //writer->SetFileName("test_aligned.vtp");
+    //writer->SetDataModeToBinary(); // optional: smaller file
+    //writer->Write();
     
     int resampleResolution = m_res;
 
