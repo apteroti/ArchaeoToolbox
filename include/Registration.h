@@ -176,6 +176,7 @@ class Registration : public QMainWindow {
     vtkPoints* m_templateSliders;
 
     bool m_anchorStat = 0;
+    bool m_accuracy = 1;
     vtkSmartPointer<vtkPoints> m_templateAnchor;
     vtkSmartPointer<vtkPoints> m_sourceAnchor;
 
@@ -304,6 +305,7 @@ class Registration : public QMainWindow {
     void OnRegisterStatusChanged(int status);
     bool IsRunning();
     void SetAnchors(vtkPoints* sourceAnchor, vtkPoints* templateAnchor);
+    void SetAccuracy(bool accuracy);
    protected:
     void closeEvent(QCloseEvent* event) override;
 };

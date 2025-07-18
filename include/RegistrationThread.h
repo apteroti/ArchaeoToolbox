@@ -169,7 +169,6 @@ class RegistrationThread : public QThread {
     
    public:
     RegistrationThread(vtkPolyData* templateMesh, vtkPolyData* sourceMesh, vtkPolyData* outMesh, bool ignoreInside, int res, QMutex* mutex, bool preAlign = 0);
-    void PreRegister(vtkPolyData* templ, vtkPolyData* target, vtkPolyData* out);
     void BestBoundingBox(std::string const& axis, vtkPolyData* templ,
                          vtkPolyData* source, vtkPolyData* templateResampled, vtkPolyData* sourceResampled);
     double HausdorffDistance(vtkPolyData* inputA, vtkPolyData* inputB);
@@ -177,6 +176,12 @@ class RegistrationThread : public QThread {
     void AlignBBoxToWorld(vtkPolyData* tempelateMesh, vtkPolyData* sourceMesh,
                    vtkPolyData* outTemplate, vtkPolyData* outSource,
                    vtkLandmarkTransform* invTrans);
+    void PrealignMesh(vtkPolyData* sourceMesh, vtkPolyData* templateMesh, vtkPolyData* alignedOutput);
+    
+    void ComputeCentroid(vtkPolyData* mesh, double centroid[3]);
+    Eigen::Matrix3d ComputeCovarianceMatrix(vtkPolyData* mesh, const double centroid[3]);
+    
+    
     void Resample(vtkPolyData* mesh, int resolution, vtkPoints* out);
     double GetMeshCellArea(std::vector<double>* probab, vtkPolyData* inputMesh);
     void RandomChoice(vtkPolyData* mesh, int outputSize,std::vector<double> *probab,std::vector<int> *idList, vtkPoints* points);

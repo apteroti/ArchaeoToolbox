@@ -106,31 +106,15 @@ void RegistrationThread::run() {
     // In vtk, target means template
     vtkNew<vtkPolyData> alignedMesh;
     if (!m_preAlign) {
-        vtkNew<vtkPolyData> preAlignedMesh;
-        PreRegister(m_templateMesh, m_sourceMesh, preAlignedMesh);
-        vtkNew<vtkIterativeClosestPointTransform> icp;
-        icp->SetSource(preAlignedMesh);
-        icp->SetTarget(m_templateMesh);
-        double ptsSample = m_res;
-        if (preAlignedMesh->GetNumberOfPoints() < m_res) {
-            ptsSample = preAlignedMesh->GetNumberOfPoints() / 1.0;
-        }
-        icp->SetMaximumNumberOfLandmarks(ptsSample);
-        icp->SetMaximumNumberOfIterations(100);
-        icp->CheckMeanDistanceOn();
-        icp->StartByMatchingCentroidsOn();
-        icp->GetLandmarkTransform()->SetModeToSimilarity();
-        icp->Update();
-        //  transform SOURCE to allign the TARGET
-        vtkNew<vtkTransformPolyDataFilter> transform;
-        transform->SetInputData(preAlignedMesh);
-        transform->SetTransform(icp);
-        transform->Update();
-        alignedMesh->DeepCopy(transform->GetOutput());
+        PrealignMesh(m_sourceMesh, m_templateMesh, alignedMesh);
     }
+    vtkNew<vtkXMLPolyDataWriter> writer;
+    writer->SetInputData(alignedMesh);
+    writer->SetFileName("test_aligned.vtp");
+    writer->SetDataModeToBinary(); // optional: smaller file
+    writer->Write();
     
     int resampleResolution = m_res;
-
 
     if(m_templateMesh->GetNumberOfPoints() <  alignedMesh->GetNumberOfPoints() || 
         m_templateMesh->GetNumberOfPoints() <  m_sourceMesh->GetNumberOfPoints()){
@@ -209,50 +193,168 @@ void RegistrationThread::DebugPrintMatrix(Eigen::MatrixXd matrix) {
     std::cout << matrix.format(CleanFmt) << sep;
 }
 
-void RegistrationThread::PreRegister(vtkPolyData* orgtempl,
-                                     vtkPolyData* orgSource, vtkPolyData* out) {
-    vtkNew<vtkPolyData> source;
-    vtkNew<vtkPolyData> templ;
-    vtkNew<vtkLandmarkTransform> backTrans;
-    // source->DeepCopy(orgSource);
-    AlignBBoxToWorld(orgtempl, orgSource, templ, source, backTrans);
-    backTrans->Inverse();
-    backTrans->Update();
+void RegistrationThread::PrealignMesh(
+    vtkPolyData* sourceMesh, vtkPolyData* templateMesh, vtkPolyData* alignedOutput) {
+    // Step 1: Compute centroids
+    double sourceCentroid[3];
+    double templateCentroid[3];
+    ComputeCentroid(sourceMesh, sourceCentroid);
+    ComputeCentroid(templateMesh, templateCentroid);
 
-    vtkNew<vtkPoints> templateResampled;
-    vtkNew<vtkPolyData> templateResampledPtsPoly;
-    if (templ->GetNumberOfPoints() < m_resampledRes) {
-        Resample(templ, templ->GetNumberOfPoints(), templateResampled);
-    } else {
-        Resample(templ, m_resampledRes, templateResampled);
+    // Step 2: Compute eigenvectors of covariance matrices
+    Eigen::Matrix3d covSource = ComputeCovarianceMatrix(sourceMesh, sourceCentroid);
+    Eigen::Matrix3d covTemplate = ComputeCovarianceMatrix(templateMesh, templateCentroid);
+
+    Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> eigSource(covSource);
+    Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> eigTemplate(covTemplate);
+
+    Eigen::Matrix3d axesSource = eigSource.eigenvectors();
+    Eigen::Matrix3d axesTemplate = eigTemplate.eigenvectors();
+
+    // Fix PCA sign ambiguity: align source axes with template axes
+    for (int i = 0; i < 3; ++i) {
+        if (axesTemplate.col(i).dot(axesSource.col(i)) < 0) {
+            axesSource.col(i) *= -1;
+        }
     }
 
-    templateResampledPtsPoly->SetPoints(templateResampled);
+    // Step 3: Compute rotation matrix
+    Eigen::Matrix3d rotation = axesTemplate * axesSource.transpose();
 
-    vtkNew<vtkPoints> sourceResampled;
-    vtkNew<vtkPolyData> sourceResampledPtsPoly;
-    if (source->GetNumberOfPoints() < m_resampledRes) {
-        Resample(source, source->GetNumberOfPoints(), sourceResampled);
-    } else {
-        Resample(source, m_resampledRes, sourceResampled);
+    // Fix reflection if needed
+    if (rotation.determinant() < 0) {
+        axesTemplate.col(2) *= -1;
+        rotation = axesTemplate * axesSource.transpose();
     }
 
-    sourceResampledPtsPoly->SetPoints(sourceResampled);
+    // Step 4: Build transform: translate to origin → rotate → move to template
+    vtkNew<vtkTransform> transform;
+    transform->PostMultiply();
 
-    BestBoundingBox("X", templ, source, templateResampledPtsPoly,
-                    sourceResampledPtsPoly);
-    BestBoundingBox("Y", templ, source, templateResampledPtsPoly,
-                    sourceResampledPtsPoly);
-    BestBoundingBox("Z", templ, source, templateResampledPtsPoly,
-                    sourceResampledPtsPoly);
+    // Move to origin
+    transform->Translate(-sourceCentroid[0], -sourceCentroid[1], -sourceCentroid[2]);
 
-    vtkNew<vtkTransformPolyDataFilter> sourceTpd;
-    sourceTpd->SetTransform(backTrans);
-    sourceTpd->SetInputData(source);
-    sourceTpd->Update();
+    // Apply rotation using vtkMatrix4x4
+    vtkNew<vtkMatrix4x4> vtkRotMatrix;
+    vtkRotMatrix->Identity();
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            vtkRotMatrix->SetElement(i, j, rotation(i, j));
+    transform->Concatenate(vtkRotMatrix);
 
-    out->Initialize();
-    out->DeepCopy(sourceTpd->GetOutput());
+    // Move to template centroid
+    transform->Translate(templateCentroid);
+
+    // Step 5: Apply transform to source mesh
+    vtkNew<vtkTransformPolyDataFilter> filter;
+    filter->SetInputData(sourceMesh);
+    filter->SetTransform(transform);
+    filter->Update();
+
+    // Step 6: Output the aligned mesh
+    alignedOutput->ShallowCopy(filter->GetOutput());
+}
+
+Eigen::Matrix3d RegistrationThread::ComputeCovarianceMatrix(vtkPolyData* mesh, const double centroid[3]) {
+    vtkPoints* points = mesh->GetPoints();
+    vtkIdType numPoints = points->GetNumberOfPoints();
+    Eigen::MatrixXd centered(3, numPoints);
+
+    for (vtkIdType i = 0; i < numPoints; ++i) {
+        double p[3];
+        points->GetPoint(i, p);
+        centered(0, i) = p[0] - centroid[0];
+        centered(1, i) = p[1] - centroid[1];
+        centered(2, i) = p[2] - centroid[2];
+    }
+
+    // Covariance matrix
+    return (centered * centered.transpose()) / static_cast<double>(numPoints);
+}
+
+void RegistrationThread::ComputeCentroid(vtkPolyData* mesh, double centroid[3]) {
+    vtkPoints* points = mesh->GetPoints();
+    vtkIdType numPoints = points->GetNumberOfPoints();
+
+    centroid[0] = centroid[1] = centroid[2] = 0.0;
+    for (vtkIdType i = 0; i < numPoints; ++i) {
+        double p[3];
+        points->GetPoint(i, p);
+        centroid[0] += p[0];
+        centroid[1] += p[1];
+        centroid[2] += p[2];
+    }
+
+    centroid[0] /= numPoints;
+    centroid[1] /= numPoints;
+    centroid[2] /= numPoints;
+}
+
+void RegistrationThread::AlignBBoxToWorld(vtkPolyData* tempelateMesh,
+                                          vtkPolyData* sourceMesh,
+                                          vtkPolyData* outTemplate,
+                                          vtkPolyData* outSource,
+                                          vtkLandmarkTransform* invTrans) {
+    vtkNew<vtkOBBTree> sourceOBBTree;
+    sourceOBBTree->SetDataSet(sourceMesh);
+    sourceOBBTree->SetMaxLevel(1);
+    sourceOBBTree->BuildLocator();
+    vtkNew<vtkPolyData> sourceLandmarks;
+    sourceOBBTree->GenerateRepresentation(0, sourceLandmarks);
+
+    vtkNew<vtkOBBTree> templateOBBTree;
+    templateOBBTree->SetDataSet(tempelateMesh);
+    templateOBBTree->SetMaxLevel(1);
+    templateOBBTree->BuildLocator();
+    vtkNew<vtkPolyData> templateLandmarks;
+    templateOBBTree->GenerateRepresentation(0, templateLandmarks);
+
+    // first align template bbox to world coordinates
+    vtkNew<vtkCubeSource> cubeSource;
+    cubeSource->SetCenter(0, 0, 0);
+    cubeSource->Update();
+    vtkNew<vtkOBBTree> boxOBBTree;
+    boxOBBTree->SetDataSet(cubeSource->GetOutput());
+    boxOBBTree->SetMaxLevel(1);
+    boxOBBTree->BuildLocator();
+    vtkNew<vtkPolyData> boxLandmarks;
+    boxOBBTree->GenerateRepresentation(0, boxLandmarks);
+    vtkNew<vtkLandmarkTransform> boxLmTransformer;
+    boxLmTransformer->SetSourceLandmarks(templateLandmarks->GetPoints());
+    boxLmTransformer->SetTargetLandmarks(boxLandmarks->GetPoints());
+    boxLmTransformer->SetModeToSimilarity();
+    boxLmTransformer->Update();
+
+    invTrans->DeepCopy(boxLmTransformer);
+
+    vtkNew<vtkTransformPolyDataFilter> templatePdt;
+    templatePdt->SetInputData(tempelateMesh);
+    templatePdt->SetTransform(boxLmTransformer);
+    templatePdt->Update();
+    outTemplate->Initialize();
+    outTemplate->DeepCopy(templatePdt->GetOutput());
+
+    vtkNew<vtkOBBTree> newTemplateOBBTree;
+    newTemplateOBBTree->SetDataSet(outTemplate);
+    newTemplateOBBTree->SetMaxLevel(1);
+    newTemplateOBBTree->BuildLocator();
+    vtkNew<vtkPolyData> newTemplateLandmarks;
+    newTemplateOBBTree->GenerateRepresentation(0, newTemplateLandmarks);
+
+    // then align target to this new template
+    vtkNew<vtkLandmarkTransform> lmTransformer;
+    lmTransformer->SetSourceLandmarks(sourceLandmarks->GetPoints());
+    lmTransformer->SetTargetLandmarks(newTemplateLandmarks->GetPoints());
+    lmTransformer->SetModeToSimilarity();
+    lmTransformer->Update();
+
+    vtkNew<vtkTransformPolyDataFilter> pdt;
+    pdt->SetInputData(sourceMesh);
+    pdt->SetTransform(lmTransformer);
+    pdt->Update();
+
+    outSource->Initialize();
+    outSource->DeepCopy(pdt->GetOutput());
 }
 
 void RegistrationThread::BestBoundingBox(std::string const& axis,
@@ -437,73 +539,6 @@ double RegistrationThread::GetMeshCellArea(std::vector<double>* probab,
         probab->push_back(val / totalArea);
     }
     return totalArea;
-}
-
-void RegistrationThread::AlignBBoxToWorld(vtkPolyData* tempelateMesh,
-                                          vtkPolyData* sourceMesh,
-                                          vtkPolyData* outTemplate,
-                                          vtkPolyData* outSource,
-                                          vtkLandmarkTransform* invTrans) {
-    vtkNew<vtkOBBTree> sourceOBBTree;
-    sourceOBBTree->SetDataSet(sourceMesh);
-    sourceOBBTree->SetMaxLevel(1);
-    sourceOBBTree->BuildLocator();
-    vtkNew<vtkPolyData> sourceLandmarks;
-    sourceOBBTree->GenerateRepresentation(0, sourceLandmarks);
-
-    vtkNew<vtkOBBTree> templateOBBTree;
-    templateOBBTree->SetDataSet(tempelateMesh);
-    templateOBBTree->SetMaxLevel(1);
-    templateOBBTree->BuildLocator();
-    vtkNew<vtkPolyData> templateLandmarks;
-    templateOBBTree->GenerateRepresentation(0, templateLandmarks);
-
-    // first align template bbox to world coordinates
-    vtkNew<vtkCubeSource> cubeSource;
-    cubeSource->SetCenter(0, 0, 0);
-    cubeSource->Update();
-    vtkNew<vtkOBBTree> boxOBBTree;
-    boxOBBTree->SetDataSet(cubeSource->GetOutput());
-    boxOBBTree->SetMaxLevel(1);
-    boxOBBTree->BuildLocator();
-    vtkNew<vtkPolyData> boxLandmarks;
-    boxOBBTree->GenerateRepresentation(0, boxLandmarks);
-    vtkNew<vtkLandmarkTransform> boxLmTransformer;
-    boxLmTransformer->SetSourceLandmarks(templateLandmarks->GetPoints());
-    boxLmTransformer->SetTargetLandmarks(boxLandmarks->GetPoints());
-    boxLmTransformer->SetModeToSimilarity();
-    boxLmTransformer->Update();
-
-    invTrans->DeepCopy(boxLmTransformer);
-
-    vtkNew<vtkTransformPolyDataFilter> templatePdt;
-    templatePdt->SetInputData(tempelateMesh);
-    templatePdt->SetTransform(boxLmTransformer);
-    templatePdt->Update();
-    outTemplate->Initialize();
-    outTemplate->DeepCopy(templatePdt->GetOutput());
-
-    vtkNew<vtkOBBTree> newTemplateOBBTree;
-    newTemplateOBBTree->SetDataSet(outTemplate);
-    newTemplateOBBTree->SetMaxLevel(1);
-    newTemplateOBBTree->BuildLocator();
-    vtkNew<vtkPolyData> newTemplateLandmarks;
-    newTemplateOBBTree->GenerateRepresentation(0, newTemplateLandmarks);
-
-    // then align target to this new template
-    vtkNew<vtkLandmarkTransform> lmTransformer;
-    lmTransformer->SetSourceLandmarks(sourceLandmarks->GetPoints());
-    lmTransformer->SetTargetLandmarks(newTemplateLandmarks->GetPoints());
-    lmTransformer->SetModeToSimilarity();
-    lmTransformer->Update();
-
-    vtkNew<vtkTransformPolyDataFilter> pdt;
-    pdt->SetInputData(sourceMesh);
-    pdt->SetTransform(lmTransformer);
-    pdt->Update();
-
-    outSource->Initialize();
-    outSource->DeepCopy(pdt->GetOutput());
 }
 
 double RegistrationThread::HausdorffDistance(vtkPolyData* inputA,

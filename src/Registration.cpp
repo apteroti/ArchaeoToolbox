@@ -261,6 +261,15 @@ void Registration::Register() {
 
             vtkPolyData* tempMeshData = transformFilter->GetOutput();
 
+            if(!m_accuracy){
+                QMessageBox::warning(
+                this,
+                tr("Potential Inaccuracy"),
+                tr("Automated Registration needs to have other types of landmarks as anchors to get acceptable results.\n"
+                "There will be a possibility of getting inaccurate landmark distribution after the sliding process!"),
+                QMessageBox::Ok);
+            }
+
             delete m_regThread;
             m_regThread =
                 new RegistrationThread(m_templateMesh, tempMeshData, m_morphedMesh,
@@ -1244,6 +1253,10 @@ void Registration::SetAnchors(vtkPoints* sourceAnchor, vtkPoints* templateAnchor
     m_templateAnchor->DeepCopy(templateAnchor);
     m_sourceAnchor->DeepCopy(sourceAnchor);
     m_anchorStat = 1;
+}
+
+void Registration::SetAccuracy(bool accuracy){
+    m_accuracy = accuracy;
 }
 
 Registration::~Registration() {
