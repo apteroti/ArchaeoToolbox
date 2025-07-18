@@ -1,4 +1,0 @@
-/home/kaveh/cpp/ArchaeoToolbox/build/CMakeFiles/Archaeotoolbox.dir
-/home/kaveh/cpp/ArchaeoToolbox/build/CMakeFiles/edit_cache.dir
-/home/kaveh/cpp/ArchaeoToolbox/build/CMakeFiles/rebuild_cache.dir
-/home/kaveh/cpp/ArchaeoToolbox/build/CMakeFiles/Archaeotoolbox_autogen.dir
