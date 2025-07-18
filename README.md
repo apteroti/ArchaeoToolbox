@@ -20,7 +20,7 @@ If you wish to build from source, ensure the following libraries are available o
 
 ## 🖥️ Precompiled Binaries
 
-### Windows Users
+### Windows Users 🪟 Microsoft
 - Go to the `Binaries/` folder in this repository.
 - Download the `.exe` installer and run it.
 - The application will install like any regular Windows software.
@@ -40,7 +40,6 @@ If you wish to build from source, ensure the following libraries are available o
 - ├── include/              # Header files
 - ├── Resources/            # Qt resource files (e.g., icons)
 - ├── Binaries/             # Precompiled installers (Windows & Linux)
-- ├── build/                # (Generated) CMake build directory
 - ├── CMakeLists.txt        # Build configuration
 - ├── LICENSE               # The licence file
 - ├── README.md             # This file

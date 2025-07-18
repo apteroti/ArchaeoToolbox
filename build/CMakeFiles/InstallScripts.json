@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/kaveh/cpp/ArchaeoToolbox/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

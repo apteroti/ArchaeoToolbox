@@ -351,6 +351,9 @@ void ProSetMenu::SaveTemplate() {
     QString filename = QFileDialog::getSaveFileName(this, "Save file", "", filter);
     QFileInfo fi(filename);
     QString ext = fi.completeSuffix();
+    if (filename.isEmpty()) {
+        return;
+    }
     if (ext != "att") {
         filename += ".att";
     }
@@ -705,11 +708,6 @@ void ProSetMenu::ImportTemplate() {
                     }
                 }
             }
-            vtkNew<vtkXMLPolyDataWriter> writer;
-            writer->SetInputData(m_templatePoly);
-            writer->SetFileName("TestTemplate.vtp");
-            writer->Update();
-            writer->Write(); 
             Refresh(1);
         }
         if (fileName.endsWith(".att") == 0) {

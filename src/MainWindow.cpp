@@ -2131,6 +2131,9 @@ void MainWindow::SaveProject() {
     QString filename = QFileDialog::getSaveFileName(this, "Save file", "", filter);
     QFileInfo fi(filename);
     QString ext = fi.completeSuffix();
+    if (filename.isEmpty()) {
+        return;
+    }
     if (ext != "atp") {
         filename += ".atp";
     }
