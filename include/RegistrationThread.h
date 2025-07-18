@@ -177,10 +177,8 @@ class RegistrationThread : public QThread {
                    vtkPolyData* outTemplate, vtkPolyData* outSource,
                    vtkLandmarkTransform* invTrans);
     void PrealignMesh(vtkPolyData* sourceMesh, vtkPolyData* templateMesh, vtkPolyData* alignedOutput);
-    
     void ComputeCentroid(vtkPolyData* mesh, double centroid[3]);
     Eigen::Matrix3d ComputeCovarianceMatrix(vtkPolyData* mesh, const double centroid[3]);
-    
     
     void Resample(vtkPolyData* mesh, int resolution, vtkPoints* out);
     double GetMeshCellArea(std::vector<double>* probab, vtkPolyData* inputMesh);
