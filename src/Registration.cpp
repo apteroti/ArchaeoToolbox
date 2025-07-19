@@ -891,19 +891,19 @@ void Registration::SetOverlayScene() {
     m_overlayRenderer->AddActor(m_overlayTemplateActor);
 
     // Point properties and color etc
-    vtkNew<vtkMassProperties> prop;
-    prop->SetInputData(m_meshData);
-    prop->Update();
-    double area = prop->GetSurfaceArea();
-    double sizeConstant = m_parent->GetTemplateNOL();
-    if (sizeConstant < 800) {
-        sizeConstant = 5000;
-    }
-    if (sizeConstant >= 800) {
-        sizeConstant = 10000;
-    }
+    double sphereScaleRatio = 0.01; // ~1% of geometry diagonal
+
+    double bounds[6];
+    m_meshData->GetBounds(bounds);
+
+    double dx = bounds[1] - bounds[0];
+    double dy = bounds[3] - bounds[2];
+    double dz = bounds[5] - bounds[4];
+    double diagonal = std::sqrt(dx * dx + dy * dy + dz * dz);
+
     vtkNew<vtkSphereSource> sphereSource;
-    sphereSource->SetRadius(area / (sizeConstant));
+    sphereSource->SetRadius(sphereScaleRatio * diagonal);
+
     vtkNew<vtkGlyph3DMapper> pointMapper;
     vtkNew<vtkPolyData> tempSurfacePtsPoly;
     tempSurfacePtsPoly->SetPoints(m_preSliderHighlightPoints);

@@ -1360,12 +1360,26 @@ void SpecimenDigitiser::MakeSlide() {
 void SpecimenDigitiser::OnStatusChanged(int status) {
     double scale = m_slidingThread->GetScalingFactor();
     double BE = m_slidingThread->GetBE();
+    bool improving = m_slidingThread->GetImprovement();
+    std::string solverType = m_slidingThread->GetSolverType();
+    int loopCount = m_slidingThread->GetImprovementLoop();
     std::stringstream scaleStream;
-    scaleStream << std::fixed << std::setprecision(1) << scale;
+    scaleStream << std::fixed << std::setprecision(3) << scale;
 
-    std::string progressText = "Scaling Factor: " + scaleStream.str() + "  " +
-                               "Bending Energy: " + std::to_string(BE);
+    std::string progressText = "";
+    if (!improving) {
+        progressText = "Solver: " + solverType + " | " +
+                       "Scaling Factor: " + scaleStream.str() + " | " +
+                       "Bending Energy: " + std::to_string(BE);
+    }
+    if (improving) {
+        progressText =
+            "Solver: " + solverType + " | " +
+            " Improving Bending Energy (Loop: " + std::to_string(loopCount) +
+            ")";
+    }
     progressLineEdit->setText(QString::fromUtf8(progressText.c_str()));
+
     if (status > 0) {
         statusLabel->setText("Status: Sliding");
         if (status % 2 == 0) {

@@ -179,6 +179,10 @@ private:
     int m_surfacePatchNOP = 1;
     double m_scaleFactor = 0;
     double m_BEUpdated = 0;
+    std::string m_solverType = "";
+    int m_noImprovementCounter = 0;
+    int m_maxNoImprovementCount = 5;
+    bool m_improvement = 0;
 
     std::vector<int>* m_curveType;
     //int m_currentCurveId;
@@ -216,10 +220,15 @@ public:
     bool Killing();
     void SuperImpose(Eigen::MatrixXd& templatePts, Eigen::MatrixXd& targetPts);
     double Optimizer(const Eigen::MatrixXd& x);
-    void NaiveRefinement(Eigen::MatrixXd& coordinates,
+    void GSSRefinement(Eigen::MatrixXd& coordinates,
         const Eigen::MatrixXd& USUT, int numLNDMRK);
     double GetBE();
     double GetScalingFactor();
+    double GetRefinementLoop();
+    std::string GetSolverType();
+    bool GetImprovement();
+    int GetImprovementLoop();
+    void ClampPointsToSurface(Eigen::MatrixXd& coords);
     ~SlidingThread();
 signals:
     void CoordinateChanged(Eigen::MatrixXd coordinates);

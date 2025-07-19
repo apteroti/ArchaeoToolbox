@@ -150,7 +150,6 @@
 //#include "ProSetMenu.fwd.h"
 #include "Morphometrics.h"
 #include "RegistrationThread.h"
-#include "SlidingThread.h"
 #include "StatusReporterThread.h"
 
 enum METHOD { Auto = 0, Semi = 1, Manual = 2 };

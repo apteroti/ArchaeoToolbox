@@ -140,219 +140,220 @@ void SlidingThread::run() {
     AssembleU(m_coordinates, Uboundary);
     int numTotalLndmrks = m_coordinates.rows();
     Eigen::MatrixXd reserveLndmrks = m_coordinates;
-    double BEDiff = 1.0;
-    while (BEDiff > 0.01 && (!m_abort)) {
-        auto BEXBefore =
-            m_coordinates.col(0).transpose() * m_BEMat * m_coordinates.col(0);
-        auto BEYBefore =
-            m_coordinates.col(1).transpose() * m_BEMat * m_coordinates.col(1);
-        auto BEZBefore =
-            m_coordinates.col(2).transpose() * m_BEMat * m_coordinates.col(2);
+
+    double minBE = std::numeric_limits<double>::max();
+    Eigen::MatrixXd bestCoords = m_coordinates;
+    
+    m_noImprovementCounter = 0;
+
+    while ((!m_abort)) {
+        auto BEXBefore = m_coordinates.col(0).transpose() * m_BEMat * m_coordinates.col(0);
+        auto BEYBefore = m_coordinates.col(1).transpose() * m_BEMat * m_coordinates.col(1);
+        auto BEZBefore = m_coordinates.col(2).transpose() * m_BEMat * m_coordinates.col(2);
         double BEInitial = std::abs((BEXBefore + BEYBefore + BEZBefore)[0]);
-        double BELastLoop = BEInitial;
+
         Eigen::MatrixXd gamma0 = m_coordinates;
         gamma0.resize(numTotalLndmrks * 3, 1);
+
         Eigen::MatrixXd USU = Uboundary.transpose() * m_SMat * Uboundary;
-        Eigen::MatrixXd USG =
-            (Uboundary.transpose() * m_SMat * gamma0).sparseView();
-        std::chrono::steady_clock
-            sc;  // create an object of `steady_clock` class
-        // auto start = sc.now();     // start timer
+        Eigen::MatrixXd USG = (Uboundary.transpose() * m_SMat * gamma0).sparseView();
 
-        Eigen::CompleteOrthogonalDecomposition<Eigen::MatrixXd> orthoSolver(
-            USU.selfadjointView<Eigen::Lower>());
-        Eigen::MatrixXd T = orthoSolver.solve(USG);
+        Eigen::MatrixXd T;
+        Eigen::LLT<Eigen::MatrixXd> llt(USU);
+        if (llt.info() == Eigen::Success) {
+            m_solverType = "Cholesky";
+            T = llt.solve(USG);
+        } else {
+            // Fall back to complete orthogonal solver
+            m_solverType = "Orthogonal";
+            Eigen::CompleteOrthogonalDecomposition<Eigen::MatrixXd> orthoSolver(USU);
+            T = orthoSolver.solve(USG);
+        }
 
-        USU.resize(0, 0);
-        USG.resize(0, 0);
         Eigen::MatrixXd USUT = Uboundary * T;
-        gamma0.resize(0, 0);
-        NaiveRefinement(m_coordinates, USUT, numTotalLndmrks);
+        GSSRefinement(m_coordinates, USUT, numTotalLndmrks);
 
-        double BEXAfter =
-            m_coordinates.col(0).transpose() * m_BEMat * m_coordinates.col(0);
-        double BEYAfter =
-            m_coordinates.col(1).transpose() * m_BEMat * m_coordinates.col(1);
-        double BEZAfter =
-            m_coordinates.col(2).transpose() * m_BEMat * m_coordinates.col(2);
+        double BEXAfter = m_coordinates.col(0).transpose() * m_BEMat * m_coordinates.col(0);
+        double BEYAfter = m_coordinates.col(1).transpose() * m_BEMat * m_coordinates.col(1);
+        double BEZAfter = m_coordinates.col(2).transpose() * m_BEMat * m_coordinates.col(2);
         m_BEUpdated = std::abs((BEXAfter + BEYAfter + BEZAfter));
-        BEDiff = BEInitial - m_BEUpdated;
-        if (BEDiff < 0.0) {
-            m_coordinates = reserveLndmrks;
-            BEDiff = 0.0;
-            /* std::cout<< "Final Bending Energy:"<<std::endl;
-            std::cout<< m_BEUpdated<<std::endl; */
+
+        if (m_BEUpdated < minBE) {
+            minBE = m_BEUpdated;
+            bestCoords = m_coordinates;
+            m_noImprovementCounter = 0;
+            m_improvement = 0;
+        } else {
+            m_noImprovementCounter++;
+            m_improvement = 1;
+        }
+
+        if (m_noImprovementCounter >= m_maxNoImprovementCount) {
+            m_coordinates = bestCoords;
+            m_improvement = 0;
             break;
         }
-        else {
-            /* std::cout<< "Bending Energy:"<<std::endl;
-            std::cout<< m_BEUpdated<<std::endl; */
-            reserveLndmrks.resize(0, 0);
-            reserveLndmrks = m_coordinates;
 
-            SuperImpose(m_coordinates, m_templateCoordinates);
-            AssembleQ(m_templateCoordinates, m_Q);
-            AssembleK(m_templateCoordinates, m_K);
-            AssembleL(m_Q, m_K, m_L);
-            BEMatrix(m_L, m_Q.rows(), m_SMat, m_BEMat);
-            AssembleU(m_coordinates, Uboundary);
-            emit CoordinateNotChanged(m_coordinates);
-        }
+        reserveLndmrks = m_coordinates;
+
+        SuperImpose(m_coordinates, m_templateCoordinates);
+        AssembleQ(m_templateCoordinates, m_Q);
+        AssembleK(m_templateCoordinates, m_K);
+        AssembleL(m_Q, m_K, m_L);
+        BEMatrix(m_L, m_Q.rows(), m_SMat, m_BEMat);
+        AssembleU(m_coordinates, Uboundary);
+
+        emit CoordinateNotChanged(m_coordinates);
     }
+
     if (!m_abort) {
-        // std::cout<< "Sliding is done!"<<std::endl;
         emit CoordinateChanged(m_coordinates);
     }
 }
 
-void SlidingThread::NaiveRefinement(Eigen::MatrixXd& coordinates,
-    const Eigen::MatrixXd& USUT,
-    int numLNDMRK) {
+// Golden Section Search is a derivative-free optimization method ideal for
+// finding the minimum of a unimodal function on a bounded interval.
+void SlidingThread::GSSRefinement(Eigen::MatrixXd& coordinates,
+                                    const Eigen::MatrixXd& USUT,
+                                    int numLNDMRK) {
+    auto bendingEnergyAtScale = [&](double s) -> std::pair<double, Eigen::MatrixXd> {
+        Eigen::MatrixXd tempCoord = coordinates;
+        Eigen::MatrixXd tempUSUT = USUT * s;
+
+        tempCoord.resize(numLNDMRK * 3, 1);
+        tempCoord -= tempUSUT;
+        tempCoord.resize(numLNDMRK, 3);
+
+        ClampPointsToSurface(tempCoord);  // Clamp to mesh/curve
+
+        double BEX = tempCoord.col(0).transpose() * m_BEMat * tempCoord.col(0);
+        double BEY = tempCoord.col(1).transpose() * m_BEMat * tempCoord.col(1);
+        double BEZ = tempCoord.col(2).transpose() * m_BEMat * tempCoord.col(2);
+        double totalBE = std::abs(BEX + BEY + BEZ);
+
+        return std::make_pair(totalBE, tempCoord);
+    };
+
+    // Golden Section constants
+    const double gr = (std::sqrt(5.0) + 1.0) / 2.0;
+    double a = 0.1;
+    double b = 1.0;
+    double tol = 1e-3;
+
+    double c = b - (b - a) / gr;
+    double d = a + (b - a) / gr;
+
+    auto [fc, coordsC] = bendingEnergyAtScale(c);
+    auto [fd, coordsD] = bendingEnergyAtScale(d);
+
+    while (std::abs(b - a) > tol) {
+        if (fc < fd) {
+            b = d;
+            d = c;
+            fd = fc;
+            coordsD = coordsC;
+            c = b - (b - a) / gr;
+            std::tie(fc, coordsC) = bendingEnergyAtScale(c);
+        } else {
+            a = c;
+            c = d;
+            fc = fd;
+            coordsC = coordsD;
+            d = a + (b - a) / gr;
+            std::tie(fd, coordsD) = bendingEnergyAtScale(d);
+        }
+    }
+
+    double optimalScale = (fc < fd) ? c : d;
+    coordinates = (fc < fd) ? coordsC : coordsD;
+    m_scaleFactor = optimalScale;
+}
+
+// Helper function to clamp points back to mesh/curves
+void SlidingThread::ClampPointsToSurface(Eigen::MatrixXd& coords) {
     int numCurveSliders = 0;
     int numSurfaceSliders = 0;
-    std::vector<double> BEVector;
-    std::vector<double> scaleFactorVector;
-    std::vector<Eigen::MatrixXd>* coordVector =
-        new std::vector<Eigen::MatrixXd>;
 
-    for (double s = 0.1; s <= 1.0; s += 0.1) {
-        vtkNew<vtkCellLocator> mainpointTree;
-        mainpointTree->SetDataSet(m_meshData);
-        mainpointTree->BuildLocator();
-        mainpointTree->Update();
-        scaleFactorVector.push_back(s);
-        Eigen::MatrixXd tempCoord = coordinates;
-        Eigen::MatrixXd tempUSUT = USUT;
-        tempUSUT = tempUSUT * s;
-        tempCoord.resize(numLNDMRK * 3, 1);
-        tempCoord = tempCoord - tempUSUT;
-        tempCoord.resize(numLNDMRK, 3);
-        if (m_curveNOS != 0) {
-            numCurveSliders = m_curveNOS * m_curveNOC;
-            int start = m_typeINOL;
+    if (m_curveNOS != 0) {
+        numCurveSliders = m_curveNOS * m_curveNOC;
+        int start = m_typeINOL;
+        for (int j = 0; j < m_curveNOC; ++j) {
+            vtkPolyData* curveRef = dynamic_cast<vtkPolyData*>(m_curvePolyLineBlock->GetBlock(j));
             vtkNew<vtkCellLocator> pointTree;
-            pointTree->SetDataSet(m_meshData);
+            pointTree->SetDataSet(curveRef);
             pointTree->BuildLocator();
             pointTree->Update();
-            // auto curveCoordsBlock = targetLndmrks.block(start, 0,
-            // numCurveSliders, 3);
-            for (int j = 0; j < m_curveNOC; j++) {
-                vtkPolyData* curveRef = dynamic_cast<vtkPolyData*>(
-                    m_curvePolyLineBlock->GetBlock(j));
-                vtkNew<vtkCellLocator> pointTreeTemp;
-                pointTreeTemp->SetDataSet(curveRef);
-                pointTreeTemp->BuildLocator();
-                pointTreeTemp->Update();
-                for (int k = 0; k < m_curveNOS; k++) {
-                    int curvePtID = start + (j * m_curveNOS) + k;
-                    vtkNew<vtkPoints> tempPts;
-                    tempPts->InsertPoint(0, tempCoord(curvePtID, 0),
-                        tempCoord(curvePtID, 1),
-                        tempCoord(curvePtID, 2));
-                    double closestPoint[3];
-                    vtkIdType closestCellId = -1;
-                    int subId = -1;
-                    double dist = -1;
-                    pointTreeTemp->FindClosestPoint(tempPts->GetPoint(0),
-                        closestPoint, closestCellId,
-                        subId, dist);
-                    tempCoord.operator()(curvePtID, 0) = closestPoint[0];
-                    tempCoord.operator()(curvePtID, 1) = closestPoint[1];
-                    tempCoord.operator()(curvePtID, 2) = closestPoint[2];
-                    tempPts->SetPoint(0, tempCoord(curvePtID, 0),
-                        tempCoord(curvePtID, 1),
-                        tempCoord(curvePtID, 2));
-                    double closestPoint2[3];
-                    closestCellId = -1;
-                    subId = -1;
-                    dist = -1;
-                    pointTree->FindClosestPoint(tempPts->GetPoint(0),
-                        closestPoint2, closestCellId,
-                        subId, dist);
-                    tempCoord.operator()(curvePtID, 0) = closestPoint2[0];
-                    tempCoord.operator()(curvePtID, 1) = closestPoint2[1];
-                    tempCoord.operator()(curvePtID, 2) = closestPoint2[2];
-                }
-            }
-        }
-        if (m_surfacePatchUNOS != 0 && m_surfacePatchVNOS != 0 &&
-            m_surfaceNOS == 0) {
-            numSurfaceSliders =
-                (m_surfacePatchUNOS * m_surfacePatchVNOS) * m_surfacePatchNOP;
-            int start = m_typeINOL + numCurveSliders;
-            for (int j = 0; j < m_surfacePatchNOP; j++) {
-                vtkPolyData* surfaceRef =
-                    dynamic_cast<vtkPolyData*>(m_surfaceMaskBlock->GetBlock(j));
-                vtkNew<vtkCellLocator> pointTree;
-                pointTree->SetDataSet(surfaceRef);
-                pointTree->BuildLocator();
-                pointTree->Update();
-                for (int k = 0; k < (m_surfacePatchUNOS * m_surfacePatchVNOS);
-                    k++) {
-                    int surfacePtID =
-                        start +
-                        (j * (m_surfacePatchUNOS * m_surfacePatchVNOS)) + k;
-                    vtkNew<vtkPoints> tempPts;
-                    tempPts->InsertPoint(0, tempCoord(surfacePtID, 0),
-                        tempCoord(surfacePtID, 1),
-                        tempCoord(surfacePtID, 2));
-                    double closestPoint[3];
-                    vtkIdType closestCellId = -1;
-                    int subId = -1;
-                    double dist = -1;
-                    pointTree->FindClosestPoint(tempPts->GetPoint(0),
-                        closestPoint, closestCellId,
-                        subId, dist);
-                    tempCoord.operator()(surfacePtID, 0) = closestPoint[0];
-                    tempCoord.operator()(surfacePtID, 1) = closestPoint[1];
-                    tempCoord.operator()(surfacePtID, 2) = closestPoint[2];
-                }
-            }
-        }
-        if (m_surfacePatchUNOS == 0 && m_surfacePatchVNOS == 0 &&
-            m_surfaceNOS != 0) {
-            numSurfaceSliders = m_surfaceNOS;
-            int start = m_typeINOL + numCurveSliders;
-            for (int i = 0; i < m_surfaceNOS; i++) {
-                int surfacePtID = start + i;
-                vtkNew<vtkPoints> tempPts;
-                tempPts->InsertPoint(0, tempCoord(surfacePtID, 0),
-                    tempCoord(surfacePtID, 1),
-                    tempCoord(surfacePtID, 2));
+
+            for (int k = 0; k < m_curveNOS; ++k) {
+                int idx = start + j * m_curveNOS + k;
+                double pt[3] = { coords(idx, 0), coords(idx, 1), coords(idx, 2) };
                 double closestPoint[3];
-                vtkIdType closestCellId = -1;
+                vtkIdType cellId = -1;
                 int subId = -1;
                 double dist = -1;
-                mainpointTree->FindClosestPoint(tempPts->GetPoint(0),
-                    closestPoint, closestCellId,
-                    subId, dist);
-                tempCoord.operator()(surfacePtID, 0) = closestPoint[0];
-                tempCoord.operator()(surfacePtID, 1) = closestPoint[1];
-                tempCoord.operator()(surfacePtID, 2) = closestPoint[2];
+                pointTree->FindClosestPoint(pt, closestPoint, cellId, subId, dist);
+                // Snap to closest point on curve
+                coords(idx, 0) = closestPoint[0];
+                coords(idx, 1) = closestPoint[1];
+                coords(idx, 2) = closestPoint[2];
             }
         }
-        double BEXAfter =
-            tempCoord.col(0).transpose() * m_BEMat * tempCoord.col(0);
-        double BEYAfter =
-            tempCoord.col(1).transpose() * m_BEMat * tempCoord.col(1);
-        double BEZAfter =
-            tempCoord.col(2).transpose() * m_BEMat * tempCoord.col(2);
-        double BEUpdated = std::abs((BEXAfter + BEYAfter + BEZAfter));
-        BEVector.push_back(BEUpdated);
-        coordVector->push_back(tempCoord);
     }
-    int minElementIndex =
-        std::min_element(BEVector.begin(), BEVector.end()) - BEVector.begin();
-    m_scaleFactor = scaleFactorVector.at(minElementIndex);
-    // std::cout<< "Scaling factor:" + std::to_string(m_scaleFactor)<<std::endl;
-    coordinates.resize(0, 0);
-    coordinates = coordVector->at(minElementIndex);
-    delete coordVector;
+
+    if (m_surfacePatchUNOS != 0 && m_surfacePatchVNOS != 0 && m_surfaceNOS == 0) {
+        numSurfaceSliders = (m_surfacePatchUNOS * m_surfacePatchVNOS) * m_surfacePatchNOP;
+        int start = m_typeINOL + numCurveSliders;
+        for (int j = 0; j < m_surfacePatchNOP; ++j) {
+            vtkPolyData* surfaceRef = dynamic_cast<vtkPolyData*>(m_surfaceMaskBlock->GetBlock(j));
+            vtkNew<vtkCellLocator> pointTree;
+            pointTree->SetDataSet(surfaceRef);
+            pointTree->BuildLocator();
+            pointTree->Update();
+
+            for (int k = 0; k < (m_surfacePatchUNOS * m_surfacePatchVNOS); ++k) {
+                int idx = start + j * (m_surfacePatchUNOS * m_surfacePatchVNOS) + k;
+                double pt[3] = { coords(idx, 0), coords(idx, 1), coords(idx, 2) };
+                double closestPoint[3];
+                vtkIdType cellId = -1;
+                int subId = -1;
+                double dist = -1;
+                pointTree->FindClosestPoint(pt, closestPoint, cellId, subId, dist);
+                coords(idx, 0) = closestPoint[0];
+                coords(idx, 1) = closestPoint[1];
+                coords(idx, 2) = closestPoint[2];
+            }
+        }
+    }
+
+    if (m_surfacePatchUNOS == 0 && m_surfacePatchVNOS == 0 && m_surfaceNOS != 0) {
+        numSurfaceSliders = m_surfaceNOS;
+        int start = m_typeINOL + numCurveSliders;
+        vtkNew<vtkCellLocator> pointTree;
+        pointTree->SetDataSet(m_meshData);
+        pointTree->BuildLocator();
+        pointTree->Update();
+
+        for (int i = 0; i < m_surfaceNOS; ++i) {
+            int idx = start + i;
+            double pt[3] = { coords(idx, 0), coords(idx, 1), coords(idx, 2) };
+            double closestPoint[3];
+            vtkIdType cellId = -1;
+            int subId = -1;
+            double dist = -1;
+            pointTree->FindClosestPoint(pt, closestPoint, cellId, subId, dist);
+            coords(idx, 0) = closestPoint[0];
+            coords(idx, 1) = closestPoint[1];
+            coords(idx, 2) = closestPoint[2];
+        }
+    }
 }
 
 double SlidingThread::GetBE() { return m_BEUpdated; }
-
 double SlidingThread::GetScalingFactor() { return m_scaleFactor; }
+double SlidingThread::GetRefinementLoop() { return m_noImprovementCounter; }
+std::string SlidingThread::GetSolverType() { return m_solverType; }
+bool SlidingThread::GetImprovement(){ return m_improvement;}
+int SlidingThread::GetImprovementLoop(){return m_noImprovementCounter;}
 
 void SlidingThread::SuperImpose(Eigen::MatrixXd& templatePts,
     Eigen::MatrixXd& targetPts) {
