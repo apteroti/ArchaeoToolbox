@@ -74,7 +74,7 @@ SpecimenDigitiser::SpecimenDigitiser(vtkPolyData* data, MainWindow* parent)
     : m_meshData(data), m_parent(parent) {
     m_ignoreInside = m_parent->GetIgnorSetting();
     this->setWindowTitle("Digitizer");
-    this->resize(600, 500);
+    this->resize(650, 500);
     m_cutMeshData = vtkSmartPointer<vtkPolyData>::New();
     m_curveType = new std::vector<int>;
     m_vtkRenderWidget = new QVTKOpenGLWidget();
@@ -1369,13 +1369,13 @@ void SpecimenDigitiser::OnStatusChanged(int status) {
     std::string progressText = "";
     if (!improving) {
         progressText = "Solver: " + solverType + " | " +
-                       "Scaling Factor: " + scaleStream.str() + " | " +
+                       "Damping Factor: " + scaleStream.str() + " | " +
                        "Bending Energy: " + std::to_string(BE);
     }
     if (improving) {
         progressText =
             "Solver: " + solverType + " | " +
-            " Improving Bending Energy (Loop: " + std::to_string(loopCount) +
+            " Improving BE minimisation (Attempts: " + std::to_string(loopCount) +
             ")";
     }
     progressLineEdit->setText(QString::fromUtf8(progressText.c_str()));

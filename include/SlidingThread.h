@@ -153,17 +153,18 @@
 #include <QEventLoop>
 #include <QFuture>
 #include <QFutureWatcher>
+#include <QMessageBox>
 #include <cmath>
 #include <tuple>
 
 class SlidingThread : public QThread {
     Q_OBJECT
 private:
-    Eigen::MatrixXd m_SMat;
+    Eigen::SparseMatrix<double> m_SMat;
+    Eigen::MatrixXd m_BEMat;
     Eigen::MatrixXd m_K;
     Eigen::MatrixXd m_L;
     Eigen::MatrixXd m_Q;
-    Eigen::MatrixXd m_BEMat;
     Eigen::MatrixXd m_coordinates;
     Eigen::MatrixXd m_templateCoordinates;
     vtkPolyData* m_meshData;
@@ -198,18 +199,19 @@ public:
         Eigen::MatrixXd& coordinates, int mode = 0);
     // SlidingThread();
     void run();
-    void FinalizeDigitization();
-    void AssembleU(Eigen::MatrixXd& targetLndmrks, Eigen::MatrixXd& outputU);
-    void AssembleQ(Eigen::MatrixXd& templatePts, Eigen::MatrixXd& Q);
-    void AssembleK(Eigen::MatrixXd& templatePts, Eigen::MatrixXd& K);
-    void AssembleL(Eigen::MatrixXd& Q, Eigen::MatrixXd& K,
-        Eigen::MatrixXd& OutputL);
-    void BEMatrix(Eigen::MatrixXd& L, int numOfLandmarks,
-        Eigen::MatrixXd& outputSMat, Eigen::MatrixXd& outputBEMat);
+    void AssembleU(const Eigen::MatrixXd& targetLndmrks,
+                   Eigen::SparseMatrix<double>& outputU);
+    void AssembleQ(const Eigen::MatrixXd& templatePts, Eigen::MatrixXd& Q);
+    void AssembleK(const Eigen::MatrixXd& templatePts, Eigen::MatrixXd& K);
+    void AssembleL(const Eigen::MatrixXd& Q, const Eigen::MatrixXd& K,
+                   Eigen::MatrixXd& OutputL);
+    void BEMatrix(const Eigen::MatrixXd& L, int numOfLandmarks,
+                  Eigen::SparseMatrix<double>& outputSMat,
+                  Eigen::MatrixXd& outputBEMat);
     double EucDist(double Ax, double Ay, double Az, double Bx, double By,
         double Bz);
     void PDist(vtkPoints* points, Eigen::MatrixXd& output);
-    void PDist(Eigen::MatrixXd& points, Eigen::MatrixXd& output);
+    void PDist(const Eigen::MatrixXd& points, Eigen::MatrixXd& output);
     void PGeoDist(vtkPolyData* mesh, Eigen::MatrixXd& points, Eigen::MatrixXd& output);
     void CalculateTangent(vtkPolyData* polyMesh, Eigen::MatrixXd& U,
         Eigen::MatrixXd& V);
@@ -219,7 +221,6 @@ public:
     void KillNow();
     bool Killing();
     void SuperImpose(Eigen::MatrixXd& templatePts, Eigen::MatrixXd& targetPts);
-    double Optimizer(const Eigen::MatrixXd& x);
     void GSSRefinement(Eigen::MatrixXd& coordinates,
         const Eigen::MatrixXd& USUT, int numLNDMRK);
     double GetBE();

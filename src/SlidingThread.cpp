@@ -128,7 +128,7 @@ SlidingThread::SlidingThread(
     tempTargetPts->Initialize();
     tempTemplatePts->Initialize();
     tempTemplatePtsPoly->Initialize();
-
+    // Precompute invariant quantities
     AssembleQ(m_templateCoordinates, m_Q);
     AssembleK(m_templateCoordinates, m_K);
     AssembleL(m_Q, m_K, m_L);
@@ -136,48 +136,61 @@ SlidingThread::SlidingThread(
 }
 
 void SlidingThread::run() {
-    Eigen::MatrixXd Uboundary;
+    // U should be sparse due to selector-like structure
+    Eigen::SparseMatrix<double> Uboundary;
     AssembleU(m_coordinates, Uboundary);
+    
     int numTotalLndmrks = m_coordinates.rows();
     Eigen::MatrixXd reserveLndmrks = m_coordinates;
 
     double minBE = std::numeric_limits<double>::max();
     Eigen::MatrixXd bestCoords = m_coordinates;
-    
     m_noImprovementCounter = 0;
 
     while ((!m_abort)) {
-        auto BEXBefore = m_coordinates.col(0).transpose() * m_BEMat * m_coordinates.col(0);
-        auto BEYBefore = m_coordinates.col(1).transpose() * m_BEMat * m_coordinates.col(1);
-        auto BEZBefore = m_coordinates.col(2).transpose() * m_BEMat * m_coordinates.col(2);
-        double BEInitial = std::abs((BEXBefore + BEYBefore + BEZBefore)[0]);
+        // Compute current Bending Energy
+        double BEXBefore = m_coordinates.col(0).transpose() * m_BEMat * m_coordinates.col(0);
+        double BEYBefore = m_coordinates.col(1).transpose() * m_BEMat * m_coordinates.col(1);
+        double BEZBefore = m_coordinates.col(2).transpose() * m_BEMat * m_coordinates.col(2);
+        double BEInitial = std::abs(BEXBefore + BEYBefore + BEZBefore);
 
+        // Flatten coordinates for solving
         Eigen::MatrixXd gamma0 = m_coordinates;
         gamma0.resize(numTotalLndmrks * 3, 1);
 
-        Eigen::MatrixXd USU = Uboundary.transpose() * m_SMat * Uboundary;
-        Eigen::MatrixXd USG = (Uboundary.transpose() * m_SMat * gamma0).sparseView();
+        // Construct sparse matrix products
+        Eigen::SparseMatrix<double> USU =
+            Uboundary.transpose() * m_SMat * Uboundary;
+        Eigen::MatrixXd USG =
+            Uboundary.transpose() * m_SMat * gamma0;  // keep dense
 
+        Eigen::SimplicialLLT<Eigen::SparseMatrix<double>> llt;
+        llt.compute(USU);
         Eigen::MatrixXd T;
-        Eigen::LLT<Eigen::MatrixXd> llt(USU);
+        
+
         if (llt.info() == Eigen::Success) {
             m_solverType = "Cholesky";
-            T = llt.solve(USG);
+            T = llt.solve(USG);  // USG can be dense, this is okay
         } else {
-            // Fall back to complete orthogonal solver
             m_solverType = "Orthogonal";
-            Eigen::CompleteOrthogonalDecomposition<Eigen::MatrixXd> orthoSolver(USU);
-            T = orthoSolver.solve(USG);
+            Eigen::MatrixXd denseUSU = Eigen::MatrixXd(USU);
+            Eigen::CompleteOrthogonalDecomposition<Eigen::MatrixXd> orthoSolver(
+                denseUSU);
+            T = orthoSolver.solve(USG);  // already dense
         }
 
+        // Back project solution to full coordinates
         Eigen::MatrixXd USUT = Uboundary * T;
         GSSRefinement(m_coordinates, USUT, numTotalLndmrks);
 
+        // Recalculate Bending Energy
         double BEXAfter = m_coordinates.col(0).transpose() * m_BEMat * m_coordinates.col(0);
         double BEYAfter = m_coordinates.col(1).transpose() * m_BEMat * m_coordinates.col(1);
         double BEZAfter = m_coordinates.col(2).transpose() * m_BEMat * m_coordinates.col(2);
-        m_BEUpdated = std::abs((BEXAfter + BEYAfter + BEZAfter));
+        m_BEUpdated = std::abs(BEXAfter + BEYAfter + BEZAfter);
 
+        // Check for improvement
         if (m_BEUpdated < minBE) {
             minBE = m_BEUpdated;
             bestCoords = m_coordinates;
@@ -188,19 +201,18 @@ void SlidingThread::run() {
             m_improvement = 1;
         }
 
+        // Exit condition: no improvement for long
         if (m_noImprovementCounter >= m_maxNoImprovementCount) {
             m_coordinates = bestCoords;
             m_improvement = 0;
+            m_BEUpdated = minBE;  // Always report best BE
             break;
         }
 
         reserveLndmrks = m_coordinates;
 
+        // Update coordinates-dependent matrices only
         SuperImpose(m_coordinates, m_templateCoordinates);
-        AssembleQ(m_templateCoordinates, m_Q);
-        AssembleK(m_templateCoordinates, m_K);
-        AssembleL(m_Q, m_K, m_L);
-        BEMatrix(m_L, m_Q.rows(), m_SMat, m_BEMat);
         AssembleU(m_coordinates, Uboundary);
 
         emit CoordinateNotChanged(m_coordinates);
@@ -395,113 +407,6 @@ void SlidingThread::SuperImpose(Eigen::MatrixXd& templatePts,
     }
 }
 
-double SlidingThread::Optimizer(const Eigen::MatrixXd& x) {
-    Eigen::MatrixXd fixedCoordsBlock;
-    Eigen::MatrixXd curveCoordsBlock;
-    Eigen::MatrixXd surfaceCoordsBlock;
-    // m_surfaceBlock;
-    int numCurveSliders = 0;
-    int numSurfaceSliders = 0;
-    int maxColExt = 0;
-
-    if (m_typeINOL != 0) {
-        fixedCoordsBlock = m_coordinates.block(0, 0, m_typeINOL, 3);
-    }
-    if (m_curveNOS != 0) {
-        numCurveSliders = m_curveNOS * m_curveNOC;
-        int start = m_typeINOL;
-        curveCoordsBlock = m_coordinates.block(start, 0, numCurveSliders, 3);
-    }
-
-    if (m_surfacePatchUNOS != 0 && m_surfacePatchVNOS != 0 &&
-        m_surfaceNOS == 0) {
-        numSurfaceSliders =
-            (m_surfacePatchUNOS * m_surfacePatchVNOS) * m_surfacePatchNOP;
-        int start = m_typeINOL + numCurveSliders;
-        surfaceCoordsBlock =
-            m_coordinates.block(start, 0, numSurfaceSliders, 3);
-    }
-
-    int numSliders = numCurveSliders + numSurfaceSliders;
-    int totalNumLandmarks = numSliders + m_typeINOL;
-    Eigen::MatrixXd outputU = Eigen::MatrixXd::Zero(totalNumLandmarks, 3);
-    Eigen::MatrixXd outputV = Eigen::MatrixXd::Zero(totalNumLandmarks, 3);
-
-    int sliderCounter = 0;
-    if (numCurveSliders != 0) {
-        Eigen::MatrixXd curveTangent =
-            Eigen::MatrixXd::Zero(numCurveSliders, 3);
-        for (int i = 0; i < m_curveNOC; i++) {
-            Eigen::MatrixXd tangent;
-            CalculateCurveTangent(m_curvePolyLineBlock, i, tangent);
-            int start = i * m_curveNOS;
-            auto curveSubBlock =
-                curveCoordsBlock.block(start, 0, m_curveNOS, 3);
-            vtkDataObject* dso = m_curvePolyLineBlock->GetBlock(i);
-            vtkPolyData* pd = dynamic_cast<vtkPolyData*>(dso);
-            vtkNew<vtkPointLocator> pointTree;
-            pointTree->SetDataSet(pd);
-            pointTree->BuildLocator();
-            pointTree->Update();
-            for (int j = 0; j < m_curveNOS; j++) {
-                auto ptId = pointTree->FindClosestPoint(curveSubBlock(j, 0),
-                    curveSubBlock(j, 1),
-                    curveSubBlock(j, 2));
-                auto tang = tangent.row(ptId);
-                curveTangent.row(start + j) = tang;
-            }
-        }
-        int curveFirstIndx = m_typeINOL;
-        for (int i = 0; i < numCurveSliders; i++) {
-            outputU.operator()(i + curveFirstIndx, 0) = curveTangent(i, 0);
-            outputU.operator()(i + curveFirstIndx, 1) = curveTangent(i, 1);
-            outputU.operator()(i + curveFirstIndx, 2) = curveTangent(i, 2);
-            sliderCounter += 1;
-        }
-    }
-    if (numSurfaceSliders != 0) {
-        Eigen::MatrixXd UVector;
-        Eigen::MatrixXd VVector;
-        CalculateTangent(m_meshData, UVector, VVector);
-        /* vtkNew<vtkPointLocator> pointTree;
-        pointTree->SetDataSet(m_meshData);
-        pointTree->BuildLocator();
-        pointTree->Update(); */
-        int surfaceFirstIndx = m_typeINOL + numCurveSliders;
-        for (int i = 0; i < numSurfaceSliders; i++) {
-            // auto ptId = pointTree->FindClosestPoint(surfaceCoordsBlock(i, 0),
-            // surfaceCoordsBlock(i, 1), surfaceCoordsBlock(i, 2));
-            outputU.operator()(i + surfaceFirstIndx, 0) = UVector(i, 0);
-            outputU.operator()(i + surfaceFirstIndx, 1) = UVector(i, 1);
-            outputU.operator()(i + surfaceFirstIndx, 2) = UVector(i, 2);
-            outputV.operator()(i + surfaceFirstIndx, 0) = VVector(i, 0);
-            outputV.operator()(i + surfaceFirstIndx, 1) = VVector(i, 1);
-            outputV.operator()(i + surfaceFirstIndx, 2) = VVector(i, 2);
-
-            sliderCounter += 1;
-        }
-    }
-    for (int i = 0; i < x.rows(); i++) {
-        outputU.operator()(i, 0) = outputU(i, 0) * x(i, 0);
-        outputU.operator()(i, 1) = outputU(i, 1) * x(i, 1);
-        outputU.operator()(i, 2) = outputU(i, 2) * x(i, 2);
-
-        outputV.operator()(i, 0) = outputV(i, 0) * x(i, 0);
-        outputV.operator()(i, 1) = outputV(i, 1) * x(i, 1);
-        outputV.operator()(i, 2) = outputV(i, 2) * x(i, 2);
-    }
-
-    auto possibleCoordinates = m_coordinates + outputU + outputV;
-    auto BEX = possibleCoordinates.col(0).transpose() * m_BEMat *
-        possibleCoordinates.col(0);
-    auto BEY = possibleCoordinates.col(1).transpose() * m_BEMat *
-        possibleCoordinates.col(1);
-    auto BEZ = possibleCoordinates.col(2).transpose() * m_BEMat *
-        possibleCoordinates.col(2);
-
-    return std::abs((BEX + BEY + BEZ)[0]);
-}
-
 void SlidingThread::DebugPrintMatrix(Eigen::MatrixXd matrix) {
     Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
     std::string sep = "\n----------------------------------------\n";
@@ -512,140 +417,114 @@ void SlidingThread::KillNow() { m_abort = true; }
 
 bool SlidingThread::Killing() { return m_abort; }
 
-void SlidingThread::AssembleU(Eigen::MatrixXd& targetLndmrks,
-    Eigen::MatrixXd& outputU) {
-    std::chrono::steady_clock sc;
-    // auto start = sc.now();
-
-    outputU.resize(0, 0);
-    // Eigen::MatrixXd fixedCoordsBlock;
-    Eigen::MatrixXd curveCoordsBlock;
-    // Eigen::MatrixXd surfaceCoordsBlock;
-    // m_surfaceBlock;
+void SlidingThread::AssembleU(const Eigen::MatrixXd& targetLndmrks,
+                              Eigen::SparseMatrix<double>& outputU) {
     int numCurveSliders = 0;
     int numSurfaceSliders = 0;
-    int maxColExt = 0;
 
-    if (m_typeINOL != 0) {
-        // fixedCoordsBlock = targetLndmrks.block(0,0,m_typeINOL, 3);
-    }
-    if (m_curveNOS != 0) {
-        numCurveSliders = m_curveNOS * m_curveNOC;
-        int start = m_typeINOL;
-        curveCoordsBlock = targetLndmrks.block(start, 0, numCurveSliders, 3);
-    }
+    if (m_curveNOS != 0) numCurveSliders = m_curveNOS * m_curveNOC;
 
-    if (m_surfacePatchUNOS != 0 && m_surfacePatchVNOS != 0 &&
-        m_surfaceNOS == 0) {
+    if (m_surfacePatchUNOS != 0 && m_surfacePatchVNOS != 0 && m_surfaceNOS == 0)
         numSurfaceSliders =
-            (m_surfacePatchUNOS * m_surfacePatchVNOS) * m_surfacePatchNOP;
-        int start = m_typeINOL + numCurveSliders;
-        // surfaceCoordsBlock = targetLndmrks.block(start, 0, numSurfaceSliders,
-        // 3);
-    }
+            m_surfacePatchUNOS * m_surfacePatchVNOS * m_surfacePatchNOP;
 
-    if (m_surfacePatchUNOS == 0 && m_surfacePatchVNOS == 0 &&
-        m_surfaceNOS != 0) {
+    if (m_surfacePatchUNOS == 0 && m_surfacePatchVNOS == 0 && m_surfaceNOS != 0)
         numSurfaceSliders = m_surfaceNOS;
-    }
 
     int numSliders = numCurveSliders + numSurfaceSliders;
     int totalNumLandmarks = numSliders + m_typeINOL;
-    outputU = Eigen::MatrixXd::Zero(totalNumLandmarks * 3, numSliders * 2);
+
+    std::vector<Eigen::Triplet<double>> triplets;
+
     if (numSliders != 0) {
         int sliderCounter = 0;
+
         if (numCurveSliders != 0) {
+            Eigen::MatrixXd curveCoordsBlock =
+                targetLndmrks.block(m_typeINOL, 0, numCurveSliders, 3);
             Eigen::MatrixXd curveTangent =
                 Eigen::MatrixXd::Zero(numCurveSliders, 3);
+
             for (int i = 0; i < m_curveNOC; i++) {
                 Eigen::MatrixXd tangent;
                 CalculateCurveTangent(m_curvePolyLineBlock, i, tangent);
                 int start = i * m_curveNOS;
                 auto curveSubBlock =
                     curveCoordsBlock.block(start, 0, m_curveNOS, 3);
-                vtkDataObject* dso = m_curvePolyLineBlock->GetBlock(i);
-                vtkPolyData* pd = dynamic_cast<vtkPolyData*>(dso);
+                vtkPolyData* pd = dynamic_cast<vtkPolyData*>(
+                    m_curvePolyLineBlock->GetBlock(i));
                 vtkNew<vtkPointLocator> pointTree;
                 pointTree->SetDataSet(pd);
                 pointTree->BuildLocator();
-                pointTree->Update();
                 for (int j = 0; j < m_curveNOS; j++) {
-                    auto ptId = pointTree->FindClosestPoint(
-                        curveSubBlock(j, 0), curveSubBlock(j, 1),
-                        curveSubBlock(j, 2));
-                    auto tang = tangent.row(ptId);
-                    curveTangent.row(start + j) = tang;
+                    int ptId = pointTree->FindClosestPoint(curveSubBlock(j, 0),
+                                                           curveSubBlock(j, 1),
+                                                           curveSubBlock(j, 2));
+                    curveTangent.row(start + j) = tangent.row(ptId);
                 }
             }
+
             int curveFirstIndx = m_typeINOL;
             for (int i = 0; i < numCurveSliders; i++) {
-                outputU.operator()(i + curveFirstIndx, sliderCounter) =
-                    curveTangent(i, 0);
-                outputU.operator()(i + curveFirstIndx + totalNumLandmarks,
-                    sliderCounter) = curveTangent(i, 1);
-                outputU.operator()(i + curveFirstIndx + (2 * totalNumLandmarks),
-                    sliderCounter) = curveTangent(i, 2);
-                sliderCounter += 1;
+                triplets.emplace_back(i + curveFirstIndx, sliderCounter,
+                                      curveTangent(i, 0));
+                triplets.emplace_back(i + curveFirstIndx + totalNumLandmarks,
+                                      sliderCounter, curveTangent(i, 1));
+                triplets.emplace_back(
+                    i + curveFirstIndx + 2 * totalNumLandmarks, sliderCounter,
+                    curveTangent(i, 2));
+                sliderCounter++;
             }
         }
+
         if (numSurfaceSliders != 0) {
-            Eigen::MatrixXd UVector;
-            Eigen::MatrixXd VVector;
+            Eigen::MatrixXd UVector, VVector;
             CalculateTangent(m_meshData, UVector, VVector);
-            /* vtkNew<vtkPointLocator> pointTree;
-            pointTree->SetDataSet(m_meshData);
-            pointTree->BuildLocator();
-            pointTree->Update(); */
+
             int surfaceFirstIndx = m_typeINOL + numCurveSliders;
             for (int i = 0; i < numSurfaceSliders; i++) {
-                // auto ptId = pointTree->FindClosestPoint(surfaceCoordsBlock(i,
-                // 0), surfaceCoordsBlock(i, 1), surfaceCoordsBlock(i, 2));
-                outputU.operator()(i + surfaceFirstIndx, sliderCounter) =
-                    UVector(i, 0);
-                outputU.operator()(i + surfaceFirstIndx + totalNumLandmarks,
-                    sliderCounter) = UVector(i, 1);
-                outputU.operator()(
-                    i + surfaceFirstIndx + (2 * totalNumLandmarks),
-                    sliderCounter) = UVector(i, 2);
+                triplets.emplace_back(i + surfaceFirstIndx, sliderCounter,
+                                      UVector(i, 0));
+                triplets.emplace_back(i + surfaceFirstIndx + totalNumLandmarks,
+                                      sliderCounter, UVector(i, 1));
+                triplets.emplace_back(
+                    i + surfaceFirstIndx + 2 * totalNumLandmarks, sliderCounter,
+                    UVector(i, 2));
 
-                outputU.operator()(i + surfaceFirstIndx,
-                    sliderCounter + numSliders) = VVector(i, 0);
-                outputU.operator()(i + surfaceFirstIndx + totalNumLandmarks,
-                    sliderCounter + numSliders) = VVector(i, 1);
-                outputU.operator()(
-                    i + surfaceFirstIndx + (2 * totalNumLandmarks),
-                    sliderCounter + numSliders) = VVector(i, 2);
-                sliderCounter += 1;
+                triplets.emplace_back(i + surfaceFirstIndx,
+                                      sliderCounter + numSliders,
+                                      VVector(i, 0));
+                triplets.emplace_back(i + surfaceFirstIndx + totalNumLandmarks,
+                                      sliderCounter + numSliders,
+                                      VVector(i, 1));
+                triplets.emplace_back(
+                    i + surfaceFirstIndx + 2 * totalNumLandmarks,
+                    sliderCounter + numSliders, VVector(i, 2));
+
+                sliderCounter++;
             }
         }
     }
-    /* auto end = sc.now();
-    auto time_span = static_cast<std::chrono::duration<double>>(end - start);
-    std::cout << "Assembling U took: " << time_span.count() << " seconds !!!\n";
-  */
+
+    outputU.resize(totalNumLandmarks * 3, numSliders * 2);
+    outputU.setFromTriplets(triplets.begin(), triplets.end());
 }
 
-void SlidingThread::AssembleQ(Eigen::MatrixXd& templatePoints,
-    Eigen::MatrixXd& Q) {
-    Q.resize(0, 0);
-    Q.setOnes(templatePoints.rows(), 4);
-    for (int i = 0; i < templatePoints.rows(); i++) {
-        Q.operator()(i, 1) = templatePoints(i, 0);
-        Q.operator()(i, 2) = templatePoints(i, 1);
-        Q.operator()(i, 3) = templatePoints(i, 2);
-    }
+void SlidingThread::AssembleQ(const Eigen::MatrixXd& templatePoints,
+                              Eigen::MatrixXd& Q) {
+    Q.resize(templatePoints.rows(), 4);
+    Q.col(0).setOnes();
+    Q.block(0, 1, templatePoints.rows(), 3) = templatePoints;
 }
 
-void SlidingThread::AssembleK(Eigen::MatrixXd& templatePoints,
-    Eigen::MatrixXd& K) {
-    K.resize(0, 0);
+void SlidingThread::AssembleK(const Eigen::MatrixXd& templatePoints,
+                              Eigen::MatrixXd& K) {
     K.setZero(templatePoints.rows(), templatePoints.rows());
-    PDist(templatePoints, K);
-    //PGeoDist(m_templateMesh, templatePoints, K);
+    PDist(templatePoints, K);  // This could potentially be made faster if reused
 }
 
-void SlidingThread::AssembleL(Eigen::MatrixXd& Q, Eigen::MatrixXd& K,
-    Eigen::MatrixXd& OutputL) {
+void SlidingThread::AssembleL(const Eigen::MatrixXd& Q, const Eigen::MatrixXd& K,
+                              Eigen::MatrixXd& OutputL) {
     OutputL.resize(0, 0);
     Eigen::MatrixXd temp1(Q.rows() + 4, Q.rows());
     temp1 << K, Q.transpose();
@@ -654,34 +533,45 @@ void SlidingThread::AssembleL(Eigen::MatrixXd& Q, Eigen::MatrixXd& K,
     temp2 << Q, matrixO;
     OutputL.resize(Q.rows() + 4, Q.rows() + 4);
     OutputL << temp1, temp2;
-    matrixO.resize(0, 0);
-    temp1.resize(0, 0);
-    temp2.resize(0, 0);
 }
 
-void SlidingThread::BEMatrix(Eigen::MatrixXd& L, int numOfLandmarks,
-    Eigen::MatrixXd& outputSMat,
-    Eigen::MatrixXd& outputBEMat) {
-    outputSMat.resize(0, 0);
-    outputBEMat.resize(0, 0);
-    std::chrono::steady_clock sc;  // create an object of `steady_clock` class
-    // auto start = sc.now();     // start timer
-    Eigen::FullPivLU<Eigen::MatrixXd> fpluSolver(
-        L.selfadjointView<Eigen::Lower>());
-    Eigen::MatrixXd LInv = fpluSolver.inverse();
-    /* auto end = sc.now();
-    auto time_span = static_cast<std::chrono::duration<double>>(end - start);
-    std::cout << "Calculating Inverse of L took: " << time_span.count() << "
-    seconds !!!\n"; */
+void SlidingThread::BEMatrix(const Eigen::MatrixXd& L, int numOfLandmarks,
+                              Eigen::SparseMatrix<double>& outputSMat,
+                              Eigen::MatrixXd& outputBEMat) {
+    Eigen::MatrixXd LInv;
+    bool usedLLT = false;
+
+    // Try LLT first (fastest)
+    Eigen::LLT<Eigen::MatrixXd> llt(L.selfadjointView<Eigen::Lower>());
+    if (llt.info() == Eigen::Success) {
+        LInv = llt.solve(Eigen::MatrixXd::Identity(L.rows(), L.cols()));
+        usedLLT = true;
+    } else {
+        Eigen::FullPivLU<Eigen::MatrixXd> fpluSolver(L);
+        LInv = fpluSolver.inverse();
+        if (!fpluSolver.isInvertible()) {
+            QMessageBox::warning(nullptr, 
+                                 "Warning",
+                                 "Matrix L may be singular!"
+            );
+        }
+    }
+
+    // Extract BEMat and store output
     Eigen::MatrixXd BEMat = LInv.block(0, 0, numOfLandmarks, numOfLandmarks);
     outputBEMat = BEMat;
-    Eigen::MatrixXd temp(BEMat.rows() * 3, BEMat.cols() * 3);
-    Eigen::MatrixXd zeros = Eigen::MatrixXd::Zero(BEMat.rows(), BEMat.cols());
-    temp << BEMat, zeros, zeros, zeros, BEMat, zeros, zeros, zeros, BEMat;
-    outputSMat = temp.sparseView();
-    zeros.resize(0, 0);
-    temp.resize(0, 0);
-    BEMat.resize(0, 0);
+
+    // Fill triplets for sparse block diagonal matrix
+    std::vector<Eigen::Triplet<double>> triplets;
+    int n = BEMat.rows();
+    for (int d = 0; d < 3; ++d)
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < n; ++j)
+                if (BEMat(i, j) != 0.0)
+                    triplets.emplace_back(i + d * n, j + d * n, BEMat(i, j));
+
+    outputSMat.resize(n * 3, n * 3);
+    outputSMat.setFromTriplets(triplets.begin(), triplets.end());
 }
 
 double SlidingThread::EucDist(double Ax, double Ay, double Az, double Bx,
@@ -707,7 +597,7 @@ void SlidingThread::PDist(vtkPoints* points, Eigen::MatrixXd& output) {
     output.triangularView<Eigen::Lower>() = output.transpose();
 }
 
-void SlidingThread::PDist(Eigen::MatrixXd& points, Eigen::MatrixXd& output) {
+void SlidingThread::PDist(const Eigen::MatrixXd& points, Eigen::MatrixXd& output) {
     int dim = points.rows();
     for (int i = 0; i < dim; i++) {
         for (int j = i + 1; j < dim; j++) {
@@ -723,8 +613,6 @@ void SlidingThread::PGeoDist(vtkPolyData* mesh, Eigen::MatrixXd& points, Eigen::
     int dim = points.rows();
     for (int i = 0; i < dim; i++) {
         for (int j = i + 1; j < dim; j++) {
-
-            //output.operator()(i, j) = dist; //I might complete this later
         }
     }
 }
