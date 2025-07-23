@@ -88,15 +88,13 @@ BlueNoiseThread::BlueNoiseThread(vtkPolyData* inputPoly, double area, int resol,
     m_kdTree->SetDataSet(m_meshData);
     m_kdTree->BuildLocator();
 
-    vtkNew<vtkDoubleArray> weights;
-    weights->SetName("Weights");
-    weights->SetNumberOfComponents(1);
-    weights->SetNumberOfTuples(m_meshData->GetNumberOfPoints());
-    for (int i = 0; i < weights->GetNumberOfTuples(); i++) {
-        weights->SetValue(i, 0);
+    // Initialize weights vector
+    m_weights.resize(m_meshData->GetNumberOfPoints());
+    for (vtkIdType i = 0; i < m_meshData->GetNumberOfPoints(); ++i) {
+        m_weights[i].ptId = i;
+        m_weights[i].weight = 0.0;
+        m_weights[i].active = true;
     }
-    m_meshData->GetPointData()->AddArray(weights);
-    m_meshData->Modified();
 }
 
 BlueNoiseThread::BlueNoiseThread(vtkPolyData* inputPoly, vtkPoints* fixedLm,
@@ -122,15 +120,13 @@ BlueNoiseThread::BlueNoiseThread(vtkPolyData* inputPoly, vtkPoints* fixedLm,
     m_kdTree->SetDataSet(m_meshData);
     m_kdTree->BuildLocator();
 
-    vtkNew<vtkDoubleArray> weights;
-    weights->SetName("Weights");
-    weights->SetNumberOfComponents(1);
-    weights->SetNumberOfTuples(m_meshData->GetNumberOfPoints());
-    for (int i = 0; i < weights->GetNumberOfTuples(); i++) {
-        weights->SetValue(i, 0);
+    // Initialize weights vector
+    m_weights.resize(m_meshData->GetNumberOfPoints());
+    for (vtkIdType i = 0; i < m_meshData->GetNumberOfPoints(); ++i) {
+        m_weights[i].ptId = i;
+        m_weights[i].weight = 0.0;
+        m_weights[i].active = true;
     }
-    m_meshData->GetPointData()->AddArray(weights);
-    m_meshData->Modified();
 }
 
 void BlueNoiseThread::IntegrateLandmarks(vtkPoints* fixedLm,
@@ -161,72 +157,55 @@ void BlueNoiseThread::IntegrateLandmarks(vtkPoints* fixedLm,
     }
 
     lmNeighborSet->Modified();
+    for (vtkIdType i = 0; i < lmNeighborSet->GetNumberOfIds(); i++) {
+        vtkIdType ptId = lmNeighborSet->GetId(i);
+        m_weights[ptId].active = false;
 
-    for (int i = 0; i < lmNeighborSet->GetNumberOfIds(); i++) {
-        m_meshData->GetPointData()->GetArray("Weights")->SetTuple1(
-            lmNeighborSet->GetId(i), -1);
-        m_meshData->GetPointData()->GetArray("Weights")->Modified();
-        m_meshData->Modified();
         vtkNew<vtkIdList> neighborSet;
-        m_kdTree->FindPointsWithinRadius(
-            m_rMax, m_meshData->GetPoint(lmNeighborSet->GetId(i)), neighborSet);
-        for (int j = 0; j < neighborSet->GetNumberOfIds(); j++) {
-            double w =
-                m_meshData->GetPointData()->GetArray("Weights")->GetTuple1(
-                    neighborSet->GetId(j));
-            if (w >= 0) {
-                double dist =
-                    EucDist(m_meshData->GetPoint(lmNeighborSet->GetId(i))[0],
-                            m_meshData->GetPoint(lmNeighborSet->GetId(i))[1],
-                            m_meshData->GetPoint(lmNeighborSet->GetId(i))[2],
-                            m_meshData->GetPoint(neighborSet->GetId(j))[0],
-                            m_meshData->GetPoint(neighborSet->GetId(j))[1],
-                            m_meshData->GetPoint(neighborSet->GetId(j))[2]);
-                double dHat = 0.0;
-                if (dist > m_rMin) {
-                    dHat = std::min(dist, m_rMax);
-                } else {
-                    dHat = m_rMin;
-                }
-                double tempW = std::pow(1.0 - (dHat / m_rMax), 8);
-                double updatedWeight = w - tempW;
+        m_kdTree->FindPointsWithinRadius(m_rMax, m_meshData->GetPoint(ptId),
+                                         neighborSet);
 
-                m_meshData->GetPointData()->GetArray("Weights")->SetTuple1(
-                    neighborSet->GetId(j), updatedWeight);
-                m_meshData->GetPointData()->GetArray("Weights")->Modified();
-                m_meshData->Modified();
+        for (vtkIdType j = 0; j < neighborSet->GetNumberOfIds(); j++) {
+            vtkIdType nbrId = neighborSet->GetId(j);
+            if (m_weights[nbrId].active) {
+                double dist = EucDist(m_meshData->GetPoint(ptId)[0],
+                                      m_meshData->GetPoint(ptId)[1],
+                                      m_meshData->GetPoint(ptId)[2],
+                                      m_meshData->GetPoint(nbrId)[0],
+                                      m_meshData->GetPoint(nbrId)[1],
+                                      m_meshData->GetPoint(nbrId)[2]);
+
+                double dHat = (dist > m_rMin) ? std::min(dist, m_rMax) : m_rMin;
+                double tempW = std::pow(1.0 - (dHat / m_rMax), 8);
+                m_weights[nbrId].weight -= tempW;
             }
         }
     }
     m_resolution += lmNeighborSet->GetNumberOfIds();
 }
 
-void BlueNoiseThread::CalculateWeight(vtkPolyData* inputPoly,
-                                      vtkStaticPointLocator* tree, double rMax,
-                                      double rMin, int res) {
-    for (int i = 0; i < inputPoly->GetNumberOfPoints(); i++) {
+void BlueNoiseThread::CalculateWeight() {
+    for (int i = 0; i < m_meshData->GetNumberOfPoints(); i++) {
+        if (!m_weights[i].active) continue;
+
         vtkNew<vtkIdList> tempPtsId;
-        tree->FindPointsWithinRadius(rMax, inputPoly->GetPoint(i), tempPtsId);
+        m_kdTree->FindPointsWithinRadius(m_rMax, m_meshData->GetPoint(i),
+                                         tempPtsId);
         double weight = 0.0;
+
         for (int j = 0; j < tempPtsId->GetNumberOfIds(); j++) {
-            double dist =
-                EucDist(inputPoly->GetPoint(i)[0], inputPoly->GetPoint(i)[1],
-                        inputPoly->GetPoint(i)[2],
-                        inputPoly->GetPoint(tempPtsId->GetId(j))[0],
-                        inputPoly->GetPoint(tempPtsId->GetId(j))[1],
-                        inputPoly->GetPoint(tempPtsId->GetId(j))[2]);
-            double dHat = 0.0;
-            if (dist > rMin) {
-                dHat = std::min(dist, rMax);
-            } else {
-                dHat = rMin;
-            }
-            weight += std::pow(1.0 - (dHat / rMax), 8);
+            vtkIdType nbrId = tempPtsId->GetId(j);
+            if (!m_weights[nbrId].active) continue;
+
+            double dist = EucDist(
+                m_meshData->GetPoint(i)[0], m_meshData->GetPoint(i)[1],
+                m_meshData->GetPoint(i)[2], m_meshData->GetPoint(nbrId)[0],
+                m_meshData->GetPoint(nbrId)[1], m_meshData->GetPoint(nbrId)[2]);
+
+            double dHat = (dist > m_rMin) ? std::min(dist, m_rMax) : m_rMin;
+            weight += std::pow(1.0 - (dHat / m_rMax), 8);
         }
-        inputPoly->GetPointData()->GetArray("Weights")->SetComponent(i, 0,
-                                                                     weight);
-        inputPoly->GetPointData()->GetArray("Weights")->Modified();
-        inputPoly->Modified();
+        m_weights[i].weight = weight;
     }
 }
 
@@ -239,106 +218,139 @@ double BlueNoiseThread::EucDist(double Ax, double Ay, double Az, double Bx,
     return dist;
 }
 
-int BlueNoiseThread::FindIndexOfLargest(vtkPolyData* poly,
-                                        std::string arrName) {
-    double maxVal =
-        poly->GetPointData()->GetArray(arrName.data())->GetRange()[1];
-    vtkDoubleArray* tempArr = vtkDoubleArray::SafeDownCast(
-        poly->GetPointData()->GetArray(arrName.data()));
+int BlueNoiseThread::FindIndexOfLargest() {
+    if (m_meshData->GetNumberOfPoints() > m_parallelThreshold) {
+        struct MaxInfo {
+            double weight = -std::numeric_limits<double>::max();
+            int index = -1;
+        } globalMax;
 
-    auto begin = tempArr->GetPointer(0);
-    double* end = begin + tempArr->GetNumberOfValues();
-    double* it = std::find(begin, end, maxVal);
-    int targetId = std::distance(begin, it);
-    return targetId;
+#pragma omp parallel
+        {
+            MaxInfo threadLocalMax;  // Each thread tracks its own max
+
+// Parallel loop (no false sharing)
+#pragma omp for nowait
+            for (int i = 0; i < static_cast<int>(m_weights.size()); i++) {
+                if (m_weights[i].active &&
+                    m_weights[i].weight > threadLocalMax.weight) {
+                    threadLocalMax.weight = m_weights[i].weight;
+                    threadLocalMax.index = i;
+                }
+            }
+
+// Merge thread-local results (minimal critical section)
+#pragma omp critical
+            {
+                if (threadLocalMax.weight > globalMax.weight) {
+                    globalMax = threadLocalMax;
+                }
+            }
+        }
+        return globalMax.index;
+    } else {
+        double maxVal = -std::numeric_limits<double>::max();
+        vtkIdType maxPtId = -1;
+
+        for (const auto& entry : m_weights) {
+            if (entry.active && entry.weight > maxVal) {
+                maxVal = entry.weight;
+                maxPtId = entry.ptId;
+            }
+        }
+        return maxPtId;
+    }
 }
 
-void BlueNoiseThread::PerformCalculations(vtkPolyData* poly,
-                                          vtkStaticPointLocator* tree,
-                                          std::string arrName, int targetId,
-                                          double rMin, double rMax) {
-    poly->GetPointData()
-        ->GetArray(arrName.data())
-        ->SetComponent(targetId, 0, -1);
-    poly->GetPointData()->GetArray(arrName.data())->Modified();
-    poly->Modified();
-    vtkNew<vtkIdList> neighborSet;
-    tree->FindPointsWithinRadius(rMax, poly->GetPoint(targetId), neighborSet);
-    for (int i = 0; i < neighborSet->GetNumberOfIds(); i++) {
-        double w = poly->GetPointData()
-                       ->GetArray(arrName.data())
-                       ->GetTuple1(neighborSet->GetId(i));
-        if (w >= 0.0) {
-            double dist = EucDist(poly->GetPoint(targetId)[0],
-                                  poly->GetPoint(targetId)[1],
-                                  poly->GetPoint(targetId)[2],
-                                  poly->GetPoint(neighborSet->GetId(i))[0],
-                                  poly->GetPoint(neighborSet->GetId(i))[1],
-                                  poly->GetPoint(neighborSet->GetId(i))[2]);
-            double dHat = 0.0;
-            if (dist > rMin) {
-                dHat = std::min(dist, rMax);
-            } else {
-                dHat = rMin;
-            }
-            double tempW = std::pow(1.0 - (dHat / rMax), 8);
-            double updatedWeight = w - tempW;
+void BlueNoiseThread::PerformCalculations(int targetId) {
+    if (targetId < 0) return;
+    m_weights[targetId].active = false;
 
-            poly->GetPointData()
-                ->GetArray(arrName.data())
-                ->SetTuple1(neighborSet->GetId(i), updatedWeight);
-            poly->GetPointData()->GetArray(arrName.data())->Modified();
-            poly->Modified();
+    vtkNew<vtkIdList> neighborSet;
+    m_kdTree->FindPointsWithinRadius(m_rMax, m_meshData->GetPoint(targetId),
+                                     neighborSet);
+    if (m_meshData->GetNumberOfPoints() > m_parallelThreshold) {
+        // Each thread gets its own buffer
+        std::vector<double> weightUpdates(neighborSet->GetNumberOfIds(), 0.0);
+
+#pragma omp parallel for
+        for (int i = 0; i < neighborSet->GetNumberOfIds(); i++) {
+            vtkIdType nbrId = neighborSet->GetId(i);
+            if (m_weights[nbrId].active) {
+                double dist = EucDist(m_meshData->GetPoint(targetId)[0],
+                                      m_meshData->GetPoint(targetId)[1],
+                                      m_meshData->GetPoint(targetId)[2],
+                                      m_meshData->GetPoint(nbrId)[0],
+                                      m_meshData->GetPoint(nbrId)[1],
+                                      m_meshData->GetPoint(nbrId)[2]);
+                double dHat = (dist > m_rMin) ? std::min(dist, m_rMax) : m_rMin;
+                weightUpdates[i] = std::pow(1.0 - (dHat / m_rMax), 8);
+            }
+        }
+
+        // Single-threaded merge
+        for (int i = 0; i < neighborSet->GetNumberOfIds(); i++) {
+            vtkIdType nbrId = neighborSet->GetId(i);
+            if (m_weights[nbrId].active) {
+                m_weights[nbrId].weight -= weightUpdates[i];
+            }
+        }
+    } else {
+        for (int i = 0; i < neighborSet->GetNumberOfIds(); i++) {
+            vtkIdType nbrId = neighborSet->GetId(i);
+
+            if (m_weights[nbrId].active) {
+                double dist = EucDist(m_meshData->GetPoint(targetId)[0],
+                                      m_meshData->GetPoint(targetId)[1],
+                                      m_meshData->GetPoint(targetId)[2],
+                                      m_meshData->GetPoint(nbrId)[0],
+                                      m_meshData->GetPoint(nbrId)[1],
+                                      m_meshData->GetPoint(nbrId)[2]);
+
+                double dHat = (dist > m_rMin) ? std::min(dist, m_rMax) : m_rMin;
+                double tempW = std::pow(1.0 - (dHat / m_rMax), 8);
+                m_weights[nbrId].weight -= tempW;
+            }
         }
     }
 }
 
 void BlueNoiseThread::run() {
-    CalculateWeight(m_meshData, m_kdTree, m_rMax, m_rMin, m_resolution);
+    CalculateWeight();
     if (m_fixedLm || m_curveLm) {
         IntegrateLandmarks(m_fixedLm, m_curveLm);
     }
-    int remaining = m_meshData->GetNumberOfPoints();
-    int target = remaining - m_resolution;
+    int target = m_weights.size() - m_resolution;
 
-    //auto start = std::chrono::high_resolution_clock::now();
-    //#pragma omp parallel for 
     for (int i = 0; i < target; i++) {
-        m_mutex->lock();
-        int targetId = FindIndexOfLargest(m_meshData, "Weights");
-        
-        PerformCalculations(m_meshData, m_kdTree, "Weights", targetId, m_rMin,
-                            m_rMax);
-        m_mutex->unlock();
+        int targetId = FindIndexOfLargest();
+        if (targetId >= 0) {
+            PerformCalculations(targetId);
+        }
     }
-    /* auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> duration = end - start;
-    std::cout << "Elapsed time: " << duration.count() << " seconds\n"; */
 
-    m_mutex->lock();
-    vtkNew<vtkThresholdPoints> threshold;
-    threshold->SetInputData(m_meshData);
-    threshold->ThresholdByUpper(0.0);
-    threshold->SetInputArrayToProcess(
-        0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, "Weights");
-    threshold->Update();
-    vtkPoints* tempPts = threshold->GetOutput()->GetPoints();
+    int count = 0;
+    for (const auto& w : m_weights) {
+        if (w.active == true) {
+            ++count;
+        }
+    }
 
-    m_meshData->GetPointData()->RemoveArray("Weights");
-    m_meshData->Modified();
-    m_mutex->unlock();
-    if (tempPts->GetNumberOfPoints() == m_initRes) {
+    if (count == m_initRes) {
         m_mutex->lock();
-        m_output->DeepCopy(tempPts);
+        m_output->Initialize();
+        for (const auto& entry : m_weights) {
+            if (entry.active) {
+                m_output->InsertNextPoint(m_meshData->GetPoint(entry.ptId));
+            }
+        }
         m_output->Modified();
         m_mutex->unlock();
     } else {
         std::cout << "Problem in Blue Noise Thread, Debug" << std::endl;
-        std::cout << tempPts->GetNumberOfPoints() << std::endl;
+        std::cout << "Expected: " << m_initRes << ", Found: " << count
+                  << std::endl;
     }
-
-    /* vtkNew<vtkPoints> outputPts;
-    outputPts->DeepCopy(threshold->GetOutput()->GetPoints()); */
 
     SamplingIsDone();
 }

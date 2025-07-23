@@ -11,7 +11,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Debug or Release
 set(CMAKE_BUILD_TYPE Debug)
 
-# Common source files
+# Source files
 set(SOURCE_FILES
     main.cpp
     src/MainWindow.cpp src/SpecimenDigitiser.cpp src/DataBase.cpp src/ProSetMenu.cpp
@@ -36,6 +36,7 @@ set(SOURCE_FILES
 # Windows-specific
 if(WIN32)
     message(STATUS "Configuring for Windows")
+
     set(WIN32_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Resources/icon.rc)
     list(APPEND SOURCE_FILES ${WIN32_RESOURCES})
 
@@ -66,7 +67,7 @@ if(UNIX)
     )
 endif()
 
-# Find packages (shared across both platforms)
+# Find packages (common)
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui Charts Test Help)
 find_package(Cpd REQUIRED)
 find_package(OpenCASCADE REQUIRED)
@@ -103,14 +104,26 @@ find_package(VTK REQUIRED COMPONENTS
     vtkRenderingVolumeOpenGL2
 )
 
-# Build target
-add_executable("${PROJECT_NAME}" ${SOURCE_FILES})
+# Add executable
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-# Link libraries
-target_link_libraries("${PROJECT_NAME}"
+# Find and enable OpenMP
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    message(STATUS "OpenMP found and enabled")
+    target_compile_options(${PROJECT_NAME} PUBLIC
+        $<$<CXX_COMPILER_ID:MSVC>:/openmp>
+        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-fopenmp>)
+    target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_CXX)
+else()
+    message(WARNING "OpenMP not found. Parallelization disabled")
+endif()
+
+# Link libraries (use keyword form consistently)
+target_link_libraries(${PROJECT_NAME} PUBLIC
     ${VTK_LIBRARIES}
-    ${PCL_LIBRARIES}
     Qt5::Widgets Qt5::Gui Qt5::Core Qt5::Charts Qt5::Help Qt5::Test
-    Cpd::Library-C++ TKIVtk TKIGES TKSTEP TKFeat TKOffset 
+    Cpd::Library-C++
+    TKIVtk TKIGES TKSTEP TKFeat TKOffset 
     TKShHealing
 )
