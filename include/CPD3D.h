@@ -18,8 +18,9 @@
 #ifndef CPD_3D_H
 #define CPD_3D_H
 
-#include <Eigen/Dense>
 #include <omp.h>
+
+#include <Eigen/Dense>
 #include <chrono>
 #include <cmath>
 #include <limits>
@@ -88,12 +89,15 @@ class Nonrigid {
     void init(const Matrix& moving);
     double default_sigma2(const Matrix& fixed, const Matrix& moving) const;
     Matrix affinity(const Matrix& x, const Matrix& y, double beta) const;
-    Probabilities compute_probabilities(const Matrix& fixed, const Matrix& moving, double sigma2) const;
-    NonrigidResult compute_one(const Matrix& fixed, const Matrix& moving, const Probabilities& probs, double sigma2) const;
+    Probabilities compute_probabilities(const Matrix& fixed,
+                                        const Matrix& moving,
+                                        double sigma2) const;
+    NonrigidResult compute_one(const Matrix& fixed, const Matrix& moving,
+                               const Probabilities& probs, double sigma2) const;
 };
 
 NonrigidResult nonrigid(const Matrix& fixed, const Matrix& moving);
 
-}  // namespace cpd
+}  // namespace CPD
 
-#endif // CPD_3D_H
+#endif  // CPD_3D_H

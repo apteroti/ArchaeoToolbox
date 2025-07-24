@@ -55,9 +55,9 @@ void NonrigidResult::denormalize(const Normalization& normalization) {
 
 // Constructor: set default parameter values for Nonrigid registration
 Nonrigid::Nonrigid()
-    : m_lambda(3.0),              // Regularization weight (smoothness)
-      m_beta(3.0),                // Gaussian kernel width (influence radius)
-      m_linked(true),             // Whether to use linked normalization
+    : m_lambda(3.0),   // Regularization weight (smoothness)
+      m_beta(3.0),     // Gaussian kernel width (influence radius, flexibility)
+      m_linked(true),  // Whether to use linked normalization
       m_max_iterations(150),      // Maximum iterations for EM algorithm
       m_normalize(true),          // Whether to normalize input point sets
       m_outliers(0.1),            // Outlier weight (expected proportion)
