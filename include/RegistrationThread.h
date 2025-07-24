@@ -144,12 +144,7 @@
 #include <random>
 #include <iostream>
 #include "BlueNoiseThread.h"
-
-#include <cpd/nonrigid.hpp>
-#include <cpd/gauss_transform.hpp>
-
-/* #include <cyPoint.h>
-#include <cySampleElim.h> */
+#include "CPD3D.h"
 
 
 class RegistrationThread : public QThread {
@@ -166,16 +161,11 @@ class RegistrationThread : public QThread {
     QMutex* m_mutex;
     int m_resampledRes = 10;
     BlueNoiseThread* m_BlueNoiseThread = nullptr;
-    
+    int m_flexibility = 4; //Beta
+    int m_smoothness = 3; //Lambda
+
    public:
     RegistrationThread(vtkPolyData* templateMesh, vtkPolyData* sourceMesh, vtkPolyData* outMesh, bool ignoreInside, int res, QMutex* mutex, bool preAlign = 0);
-    void BestBoundingBox(std::string const& axis, vtkPolyData* templ,
-                         vtkPolyData* source, vtkPolyData* templateResampled, vtkPolyData* sourceResampled);
-    double HausdorffDistance(vtkPolyData* inputA, vtkPolyData* inputB);
-    
-    void AlignBBoxToWorld(vtkPolyData* tempelateMesh, vtkPolyData* sourceMesh,
-                   vtkPolyData* outTemplate, vtkPolyData* outSource,
-                   vtkLandmarkTransform* invTrans);
     void PrealignMesh(vtkPolyData* sourceMesh, vtkPolyData* templateMesh, vtkPolyData* alignedOutput);
     void ComputeCentroid(vtkPolyData* mesh, double centroid[3]);
     Eigen::Matrix3d ComputeCovarianceMatrix(vtkPolyData* mesh, const double centroid[3]);

@@ -19,7 +19,7 @@ set(SOURCE_FILES
     src/TemplateViewer.cpp src/SuperImpositionThread.cpp src/SuperImposition.cpp
     src/SlidingThread.cpp src/StatusReporterThread.cpp src/PCAWindow.cpp
     src/RecoverLMThread.cpp src/ExportDialogue.cpp src/RegistrationThread.cpp
-    src/BlueNoiseThread.cpp src/HelpBrowser.cpp src/ImportThread.cpp src/ExclusionPaint.cpp
+    src/BlueNoiseThread.cpp src/HelpBrowser.cpp src/ImportThread.cpp src/ExclusionPaint.cpp src/CPD3D.cpp
 
     include/MainWindow.h include/SpecimenDigitiser.h include/DataBase.h
     include/MainWindow.fwd.h include/ProSetMenu.h include/ProSetMenu.fwd.h
@@ -28,7 +28,7 @@ set(SOURCE_FILES
     include/SuperImpositionThread.h include/SuperImposition.h include/SlidingThread.h
     include/StatusReporterThread.h include/PCAWindow.h include/RecoverLMThread.h
     include/ExportDialogue.h include/RegistrationThread.h include/BlueNoiseThread.h
-    include/HelpBrowser.h include/ImportThread.h include/ExclusionPaint.h
+    include/HelpBrowser.h include/ImportThread.h include/ExclusionPaint.h include/CPD3D.h
 
     Resources/resources.qrc
 )
@@ -41,7 +41,6 @@ if(WIN32)
     list(APPEND SOURCE_FILES ${WIN32_RESOURCES})
 
     set(OpenCASCADE_DIR "C:/Program Files/OCCT/cmake")
-    set(Cpd_DIR "C:/Repo/cpd/install/lib/cmake/cpd")
 
     include_directories(
         ./include
@@ -49,7 +48,6 @@ if(WIN32)
         "C:/Program Files/VTK8/include/vtk-8.2"
         "C:/Program Files/OCCT/inc"
         "C:/Qt/5.15.2/msvc2019_64/include"
-        "C:/Program Files/cpd/include"
     )
 endif()
 
@@ -69,7 +67,6 @@ endif()
 
 # Find packages (common)
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui Charts Test Help)
-find_package(Cpd REQUIRED)
 find_package(OpenCASCADE REQUIRED)
 find_package(VTK REQUIRED COMPONENTS
     vtkCommonColor
@@ -123,7 +120,6 @@ endif()
 target_link_libraries(${PROJECT_NAME} PUBLIC
     ${VTK_LIBRARIES}
     Qt5::Widgets Qt5::Gui Qt5::Core Qt5::Charts Qt5::Help Qt5::Test
-    Cpd::Library-C++
     TKIVtk TKIGES TKSTEP TKFeat TKOffset 
     TKShHealing
 )

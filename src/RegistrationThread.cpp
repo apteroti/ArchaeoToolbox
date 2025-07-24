@@ -154,8 +154,13 @@ void RegistrationThread::run() {
         }
     }
     
-    cpd::NonrigidResult results = cpd::nonrigid(templateMatrix, sourceMatrix);
-    auto deformedSourceMatrix = results.points;
+    //Beta (Kernel Width) determines the "flexibility" of the deformation
+    //Lambda determines smoothness of deformation
+    CPD::Nonrigid nonrigid;
+    nonrigid.beta(m_flexibility);
+    nonrigid.lambda(m_smoothness);
+    auto deformedSourceMatrix = nonrigid.run(templateMatrix, sourceMatrix).points;
+    
     
     vtkNew<vtkPoints> sourceResampledDeformed;
     for (int i = 0; i < deformedSourceMatrix.rows(); i++) {
@@ -285,149 +290,6 @@ void RegistrationThread::ComputeCentroid(vtkPolyData* mesh, double centroid[3]) 
     centroid[2] /= numPoints;
 }
 
-void RegistrationThread::AlignBBoxToWorld(vtkPolyData* tempelateMesh,
-                                          vtkPolyData* sourceMesh,
-                                          vtkPolyData* outTemplate,
-                                          vtkPolyData* outSource,
-                                          vtkLandmarkTransform* invTrans) {
-    vtkNew<vtkOBBTree> sourceOBBTree;
-    sourceOBBTree->SetDataSet(sourceMesh);
-    sourceOBBTree->SetMaxLevel(1);
-    sourceOBBTree->BuildLocator();
-    vtkNew<vtkPolyData> sourceLandmarks;
-    sourceOBBTree->GenerateRepresentation(0, sourceLandmarks);
-
-    vtkNew<vtkOBBTree> templateOBBTree;
-    templateOBBTree->SetDataSet(tempelateMesh);
-    templateOBBTree->SetMaxLevel(1);
-    templateOBBTree->BuildLocator();
-    vtkNew<vtkPolyData> templateLandmarks;
-    templateOBBTree->GenerateRepresentation(0, templateLandmarks);
-
-    // first align template bbox to world coordinates
-    vtkNew<vtkCubeSource> cubeSource;
-    cubeSource->SetCenter(0, 0, 0);
-    cubeSource->Update();
-    vtkNew<vtkOBBTree> boxOBBTree;
-    boxOBBTree->SetDataSet(cubeSource->GetOutput());
-    boxOBBTree->SetMaxLevel(1);
-    boxOBBTree->BuildLocator();
-    vtkNew<vtkPolyData> boxLandmarks;
-    boxOBBTree->GenerateRepresentation(0, boxLandmarks);
-    vtkNew<vtkLandmarkTransform> boxLmTransformer;
-    boxLmTransformer->SetSourceLandmarks(templateLandmarks->GetPoints());
-    boxLmTransformer->SetTargetLandmarks(boxLandmarks->GetPoints());
-    boxLmTransformer->SetModeToSimilarity();
-    boxLmTransformer->Update();
-
-    invTrans->DeepCopy(boxLmTransformer);
-
-    vtkNew<vtkTransformPolyDataFilter> templatePdt;
-    templatePdt->SetInputData(tempelateMesh);
-    templatePdt->SetTransform(boxLmTransformer);
-    templatePdt->Update();
-    outTemplate->Initialize();
-    outTemplate->DeepCopy(templatePdt->GetOutput());
-
-    vtkNew<vtkOBBTree> newTemplateOBBTree;
-    newTemplateOBBTree->SetDataSet(outTemplate);
-    newTemplateOBBTree->SetMaxLevel(1);
-    newTemplateOBBTree->BuildLocator();
-    vtkNew<vtkPolyData> newTemplateLandmarks;
-    newTemplateOBBTree->GenerateRepresentation(0, newTemplateLandmarks);
-
-    // then align target to this new template
-    vtkNew<vtkLandmarkTransform> lmTransformer;
-    lmTransformer->SetSourceLandmarks(sourceLandmarks->GetPoints());
-    lmTransformer->SetTargetLandmarks(newTemplateLandmarks->GetPoints());
-    lmTransformer->SetModeToSimilarity();
-    lmTransformer->Update();
-
-    vtkNew<vtkTransformPolyDataFilter> pdt;
-    pdt->SetInputData(sourceMesh);
-    pdt->SetTransform(lmTransformer);
-    pdt->Update();
-
-    outSource->Initialize();
-    outSource->DeepCopy(pdt->GetOutput());
-}
-
-void RegistrationThread::BestBoundingBox(std::string const& axis,
-                                         vtkPolyData* templ,
-                                         vtkPolyData* source,
-                                         vtkPolyData* templateResampled,
-                                         vtkPolyData* sourceResampled) {
-    double bestDistance = VTK_DOUBLE_MAX;
-
-    /* std::vector<double> permutationDistance;
-    std::vector<double> permutationAngle; */
-
-    int angleResolution = 4;
-    double delta = 360.0 / angleResolution;
-    for (int i = 0; i < angleResolution; ++i) {
-        double angle = delta * i;
-        vtkNew<vtkOBBTree> sourceOBBTree;
-        sourceOBBTree->SetDataSet(source);
-        sourceOBBTree->SetMaxLevel(1);
-        sourceOBBTree->BuildLocator();
-        vtkNew<vtkPolyData> sourceBboxLandmarks;
-        sourceOBBTree->GenerateRepresentation(0, sourceBboxLandmarks);
-        double sourceCenter[3];
-        sourceBboxLandmarks->GetCenter(sourceCenter);
-        vtkNew<vtkTransform> bBoxTransformer;
-        bBoxTransformer->Identity();
-        bBoxTransformer->Translate(sourceCenter[0], sourceCenter[1],
-                                   sourceCenter[2]);
-        if (axis == "X") {
-            bBoxTransformer->RotateX(angle);
-        } else if (axis == "Y") {
-            bBoxTransformer->RotateY(angle);
-        } else {
-            bBoxTransformer->RotateZ(angle);
-        }
-        bBoxTransformer->Translate(-sourceCenter[0], -sourceCenter[1],
-                                   -sourceCenter[2]);
-
-        bBoxTransformer->Modified();
-        bBoxTransformer->Update();
-        vtkNew<vtkTransformPolyDataFilter> bBoxTpd;
-        bBoxTpd->SetTransform(bBoxTransformer);
-        bBoxTpd->SetInputData(sourceBboxLandmarks);
-        bBoxTpd->Update();
-        auto rotatedBbox = bBoxTpd->GetOutput();
-        vtkNew<vtkLandmarkTransform> bBoxLt;
-        bBoxLt->SetModeToSimilarity();
-        bBoxLt->SetTargetLandmarks(rotatedBbox->GetPoints());
-        bBoxLt->SetSourceLandmarks(sourceBboxLandmarks->GetPoints());
-        bBoxLt->Update();
-
-        vtkNew<vtkTransformPolyDataFilter> meshTpd;
-        meshTpd->SetTransform(bBoxLt);
-        meshTpd->SetInputData(source);
-        meshTpd->Update();
-
-        vtkNew<vtkTransformPolyDataFilter> resampledPtsTpd;
-        resampledPtsTpd->SetTransform(bBoxLt);
-        resampledPtsTpd->SetInputData(sourceResampled);
-        resampledPtsTpd->Update();
-
-        double testDistance =
-            HausdorffDistance(templateResampled, resampledPtsTpd->GetOutput());
-        // double testDistance = HausdorffDistance(templ, meshTpd->GetOutput());
-
-        /* std::cout<< "Angle"<<std::endl;
-        std::cout<< angle<<std::endl;
-        std::cout<< "Distance"<<std::endl;
-        std::cout<< testDistance<<std::endl; */
-
-        if (testDistance < bestDistance) {
-            bestDistance = testDistance;
-            source->DeepCopy(meshTpd->GetOutput());
-            sourceResampled->DeepCopy(resampledPtsTpd->GetOutput());
-        }
-    }
-}
-
 void RegistrationThread::Resample(vtkPolyData* mesh, int resolution,
                                   vtkPoints* out) {
     std::vector<int>* idList = new std::vector<int>;
@@ -534,60 +396,6 @@ double RegistrationThread::GetMeshCellArea(std::vector<double>* probab,
         probab->push_back(val / totalArea);
     }
     return totalArea;
-}
-
-double RegistrationThread::HausdorffDistance(vtkPolyData* inputA,
-                                             vtkPolyData* inputB) {
-    double RelativeDistance[2];
-    RelativeDistance[0] = 0.0;
-    RelativeDistance[1] = 0.0;
-    double HausdorffDistance = 0;
-    vtkNew<vtkKdTreePointLocator> pointLocatorA;
-    vtkNew<vtkKdTreePointLocator> pointLocatorB;
-
-    pointLocatorA->SetDataSet(inputA);
-    pointLocatorA->BuildLocator();
-    pointLocatorB->SetDataSet(inputB);
-    pointLocatorB->BuildLocator();
-
-    double dist;
-    double currentPoint[3];
-    double closestPoint[3];
-
-    // Find the nearest neighbors to each point and add edges between them,
-    // if they do not already exist and they are not self loops
-    for (int i = 0; i < inputA->GetNumberOfPoints(); i++) {
-        inputA->GetPoint(i, currentPoint);
-        vtkIdType closestPointId =
-            pointLocatorB->FindClosestPoint(currentPoint);
-        inputB->GetPoint(closestPointId, closestPoint);
-        dist = std::sqrt(std::pow(currentPoint[0] - closestPoint[0], 2) +
-                         std::pow(currentPoint[1] - closestPoint[1], 2) +
-                         std::pow(currentPoint[2] - closestPoint[2], 2));
-
-        if (dist > RelativeDistance[0]) {
-            RelativeDistance[0] = dist;
-        }
-    }
-    for (int i = 0; i < inputB->GetNumberOfPoints(); i++) {
-        inputB->GetPoint(i, currentPoint);
-        vtkIdType closestPointId =
-            pointLocatorA->FindClosestPoint(currentPoint);
-        inputA->GetPoint(closestPointId, closestPoint);
-        dist = std::sqrt(std::pow(currentPoint[0] - closestPoint[0], 2) +
-                         std::pow(currentPoint[1] - closestPoint[1], 2) +
-                         std::pow(currentPoint[2] - closestPoint[2], 2));
-
-        if (dist > RelativeDistance[1]) {
-            RelativeDistance[1] = dist;
-        }
-    }
-    if (RelativeDistance[0] >= RelativeDistance[1]) {
-        HausdorffDistance = RelativeDistance[0];
-    } else {
-        HausdorffDistance = RelativeDistance[1];
-    }
-    return HausdorffDistance;
 }
 
 RegistrationThread::~RegistrationThread() {
