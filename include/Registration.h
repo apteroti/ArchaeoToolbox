@@ -142,13 +142,12 @@
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QToolBar>
+#include <QtWidgets/QSpinBox>
 
 #include <cpd/gauss_transform.hpp>
 #include <iostream>
 
 #include "SpecimenDigitiser.fwd.h"
-//#include "ProSetMenu.fwd.h"
-#include "Morphometrics.h"
 #include "RegistrationThread.h"
 #include "StatusReporterThread.h"
 
@@ -186,13 +185,16 @@ class Registration : public QMainWindow {
     vtkSmartPointer<vtkPoints> m_curveSliders; */
     
     int m_resampledRes = 300;
-    
+    int m_flexibility = 4; //Beta
+    int m_smoothness = 3; //Lambda
     StatusReporterThread* m_morphingStatThread = nullptr;
     RegistrationThread* m_regThread = nullptr;
     // Toolbar
     QToolBar* mainToolbar;
     QComboBox* registerTypeComboBox;
     QLineEdit* progressLineEdit;
+    QSpinBox *betaSpinBox;
+    QSpinBox *lambdaSpinBox;
     // Buttons
     QPushButton* morphButton;
     QPushButton* sliderButton;
@@ -291,8 +293,8 @@ class Registration : public QMainWindow {
                                  vtkTransform* outTrans, bool scale);
     void ResetOverlay();
     void ResetTool();
-    //void Refine();
-    //void Morph();
+    void SetBeta(int beta);
+    void SetLambda(int lambda);
     void FinalizeDigitization(Eigen::MatrixXd& Lndmrks, bool sendOffData);
     void PCA(Eigen::MatrixXd& data, Eigen::MatrixXd& out);
     ~Registration();

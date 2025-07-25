@@ -68,232 +68,201 @@
 
 #include "../include/DataBase.h"
 
-
-DataBase::DataBase() {
-    head = nullptr;
-    curr = nullptr;
-    temp = nullptr;
-}
+DataBase::DataBase() : head(nullptr), curr(nullptr), temp(nullptr) {}
 
 DataBase::DataBase(const DataBase& db) {
-    //Copy constructor
-    std::cout << "Copy constructor" << std::endl;
-    head = db.head;
-    curr = db.curr;
-    temp = db.temp;
-
+    // Improved copy constructor with proper deep copy
+    if (db.head) {
+        head = std::make_shared<node>(*db.head);
+        curr = head;
+        temp = head;
+        
+        auto srcNode = db.head->next;
+        while (srcNode) {
+            curr->next = std::make_shared<node>(*srcNode);
+            curr = curr->next;
+            srcNode = srcNode->next;
+        }
+    }
 }
 
-DataBase& DataBase::operator=(const DataBase& t) {
-    //std::cout<< "Assignment constructor" <<std::endl;
+DataBase& DataBase::operator=(const DataBase& rhs) {
+    if (this != &rhs) {
+        DataBase temp(rhs);
+        std::swap(head, temp.head);
+        std::swap(curr, temp.curr);
+        std::swap(this->temp, temp.temp);
+    }
     return *this;
 }
 
-void DataBase::AddNode(string name, vtkPolyData* poly, string dataType) {
-    std::shared_ptr<node> n
-        = std::shared_ptr<node>(new node);
+void DataBase::AddNode(std::string name, vtkPolyData* poly, std::string dataType) {
+    auto n = std::make_shared<node>();
     n->next = nullptr;
     n->nodeName = name;
     n->geometryType = dataType;
-    n->nodePoly->DeepCopy(poly);
-    //n->nodePoly = poly;
-    if (head != nullptr) {
-        curr = head;
-        while (curr->next != nullptr)
-        {
-            curr = curr->next;
-        }
-        curr->next = n;
+    if (poly) {
+        n->nodePoly->DeepCopy(poly);
     }
-    else {
-        head = n;
-    }
-}
 
-void DataBase::ChangePoly(string name, vtkPolyData* poly) {
+    if (!head) {
+        head = n;
+        return;
+    }
+
     curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
+    while (curr->next) {
         curr = curr->next;
     }
-    if (curr == nullptr) {
-        std::cout << "Can't change the poly, Node Not found\n";
+    curr->next = n;
+}
+
+void DataBase::ChangePoly(std::string name, vtkPolyData* poly) {
+    if (!poly) return;
+
+    curr = head;
+    while (curr && curr->nodeName != name) {
+        curr = curr->next;
     }
-    else {
+
+    if (curr) {
         curr->nodePoly->Initialize();
         curr->nodePoly->DeepCopy(poly);
     }
 }
 
-void DataBase::AddNode(string name, vtkStructuredGrid* grid) {
-    std::shared_ptr<node> n
-        = std::shared_ptr<node>(new node);
+void DataBase::AddNode(std::string name, vtkStructuredGrid* grid) {
+    if (!grid) return;
+
+    auto n = std::make_shared<node>();
     n->next = nullptr;
     n->nodeName = name;
-    n->nodeDICOM = grid;
+    n->nodeDICOM->DeepCopy(grid);
 
-    if (head != nullptr) {
-        curr = head;
-        while (curr->next != nullptr)
-        {
-            curr = curr->next;
-        }
-        curr->next = n;
-    }
-    else {
+    if (!head) {
         head = n;
+        return;
     }
-}
 
-void DataBase::RenameNode(string name, string newName) {
     curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
+    while (curr->next) {
         curr = curr->next;
     }
-    if (curr == nullptr) {
-        std::cout << "Can't rename, Node Not found\n";
+    curr->next = n;
+}
+
+void DataBase::RenameNode(std::string name, std::string newName) {
+    curr = head;
+    while (curr && curr->nodeName != name) {
+        curr = curr->next;
     }
-    else {
+
+    if (curr) {
         curr->nodeName = newName;
     }
 }
 
-void DataBase::DeleteNode(string name) {
-    std::shared_ptr<node> delPtr = nullptr;
+void DataBase::DeleteNode(std::string name) {
+    if (!head) return;
+
+    if (head->nodeName == name) {
+        head = head->next;
+        return;
+    }
+
     temp = head;
-    curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
+    curr = head->next;
+    
+    while (curr && curr->nodeName != name) {
         temp = curr;
         curr = curr->next;
     }
-    if (curr == nullptr) {
-        std::cout << "Can't delete, Node not found\n";
-    }
-    else {
-        if (curr == head) {
-            delPtr = head;
-            head = head->next;
-            delPtr = nullptr;
-        }
-        else {
-            delPtr = curr;
-            curr = curr->next;
-            temp->next = curr;
-            delPtr = nullptr;
-        }
+
+    if (curr) {
+        temp->next = curr->next;
     }
 }
 
-void DataBase::InsertTypeI(string name, vtkPoints* type1) {
+void DataBase::InsertTypeI(std::string name, vtkPoints* type1) {
+    if (!type1) return;
+
     curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
+    while (curr && curr->nodeName != name) {
         curr = curr->next;
     }
-    if (curr == nullptr) {
-        std::cout << "Can't insert T1, Node not found\n";
-    }
-    else {
+
+    if (curr) {
         curr->typeI->Initialize();
         curr->typeI->DeepCopy(type1);
-        //curr->typeI = type1;
         UpdateDataBase(name);
     }
 }
 
-/* void DataBase::InsertSliders(string name, vtkPoints* sliders){
+void DataBase::InsertCurveSliders(std::string name, vtkPoints* sliders) {
+    if (!sliders) return;
+
     curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
+    while (curr && curr->nodeName != name) {
         curr = curr->next;
-    }
-    if(curr == nullptr){
-        std::cout<<"Can't insert Sliders, Node not found\n";
-    }
-    else{
-        curr->slider->Initialize();
-        curr->slider->DeepCopy(sliders);
-        //curr->slider = sliders;
-        UpdateDataBase(name);
     }
 
-} */
-void DataBase::InsertCurveSliders(string name, vtkPoints* sliders) {
-    curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
-        curr = curr->next;
-    }
-    if (curr == nullptr) {
-        std::cout << "Can't insert Sliders, Node not found\n";
-    }
-    else {
+    if (curr) {
         curr->curveSlider->Initialize();
         curr->curveSlider->DeepCopy(sliders);
         UpdateDataBase(name);
     }
-
 }
 
-void DataBase::InsertSurfaceSliders(string name, vtkPoints* sliders) {
+void DataBase::InsertSurfaceSliders(std::string name, vtkPoints* sliders) {
+    if (!sliders) return;
+
     curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
+    while (curr && curr->nodeName != name) {
         curr = curr->next;
     }
-    if (curr == nullptr) {
-        std::cout << "Can't insert Sliders, Node not found\n";
-    }
-    else {
+
+    if (curr) {
         curr->surfaceSlider->Initialize();
         curr->surfaceSlider->DeepCopy(sliders);
         UpdateDataBase(name);
     }
-
 }
 
-void DataBase::SetLandMarks(string name, vtkPolyData* landmarks) {
+void DataBase::SetLandMarks(std::string name, vtkPolyData* landmarks) {
+    if (!landmarks) return;
+
     curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
+    while (curr && curr->nodeName != name) {
         curr = curr->next;
     }
-    if (curr == nullptr) {
-        std::cout << "Can't insert Landmarks, Node not found\n";
-    }
-    else {
+
+    if (curr) {
         curr->totalLM->Initialize();
         curr->totalLM->DeepCopy(landmarks);
     }
 }
 
-void DataBase::SetProcDistance(string name, vtkDoubleArray* magnitudeArray) {
+void DataBase::SetProcDistance(std::string name, vtkDoubleArray* magnitudeArray) {
+    if (!magnitudeArray) return;
+
     curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
+    while (curr && curr->nodeName != name) {
         curr = curr->next;
     }
-    if (curr == nullptr) {
-        std::cout << "Can't insert Landmarks, Node not found\n";
-    }
-    else {
+
+    if (curr) {
         curr->procDistance->Initialize();
         curr->procDistance->DeepCopy(magnitudeArray);
     }
 }
 
-void DataBase::DeleteTypeI(string name) {
+void DataBase::DeleteTypeI(std::string name) {
     curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
+    while (curr && curr->nodeName != name) {
         curr = curr->next;
     }
-    if (curr == nullptr) {
-        std::cout << "Node not found\n";
-    }
-    else {
+
+    if (curr) {
         curr->typeI->Initialize();
         curr->procDistance->Initialize();
         curr->nodePoly->GetPointData()->RemoveArray("ProcrustesResidualMagnitude");
@@ -302,17 +271,13 @@ void DataBase::DeleteTypeI(string name) {
     }
 }
 
-void DataBase::DeleteSliders(string name) {
+void DataBase::DeleteSliders(std::string name) {
     curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
+    while (curr && curr->nodeName != name) {
         curr = curr->next;
     }
-    if (curr == nullptr) {
-        std::cout << "Node not found\n";
-    }
-    else {
-        //curr->slider->Initialize();
+
+    if (curr) {
         curr->curveSlider->Initialize();
         curr->surfaceSlider->Initialize();
         curr->procDistance->Initialize();
@@ -322,16 +287,13 @@ void DataBase::DeleteSliders(string name) {
     }
 }
 
-void::DataBase::DeleteAllLandmarks(string name) {
+void DataBase::DeleteAllLandmarks(std::string name) {
     curr = head;
-    while (curr != nullptr && curr->nodeName != name) {
+    while (curr && curr->nodeName != name) {
         curr = curr->next;
     }
-    if (curr == nullptr) {
-        std::cout << "Node not found\n";
-    }
-    else {
-        //curr->slider->Initialize();
+
+    if (curr) {
         curr->curveSlider->Initialize();
         curr->surfaceSlider->Initialize();
         curr->typeI->Initialize();
@@ -343,258 +305,152 @@ void::DataBase::DeleteAllLandmarks(string name) {
     }
 }
 
-void::DataBase::DeleteWarpMagnitude(string name) {
+void DataBase::DeleteWarpMagnitude(std::string name) {
     curr = head;
-    while (curr != nullptr && curr->nodeName != name) {
+    while (curr && curr->nodeName != name) {
         curr = curr->next;
     }
-    if (curr == nullptr) {
-        std::cout << "Can't delete warp array, Node not found\n";
-    }
-    else {
+
+    if (curr) {
         curr->procDistance->Initialize();
     }
 }
 
-vtkPoints* DataBase::GetTypeI(string name) {
-    curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
-        curr = curr->next;
+vtkPoints* DataBase::GetTypeI(std::string name)const {
+    auto current = head.get();
+    while (current && current->nodeName != name) {
+        current = current->next.get();
     }
-    if (curr == nullptr) {
-        std::cout << "Can't Get T1, Node not found\n";
-        return nullptr;
+    return current ? current->typeI : nullptr;
+}
+
+vtkPoints* DataBase::GetCurveSliders(std::string name)const {
+    auto current = head.get();
+    while (current && current->nodeName != name) {
+        current = current->next.get();
     }
-    else {
-        if (curr->typeI != nullptr) {
-            return curr->typeI;
-        }
-        else {
-            std::cout << "TypeI not found\n";
-            return nullptr;
-        }
+    return current ? current->curveSlider : nullptr;
+}
+
+vtkPoints* DataBase::GetSurfaceSliders(std::string name)const {
+    auto current = head.get();
+    while (current && current->nodeName != name) {
+        current = current->next.get();
+    }
+    return current ? current->surfaceSlider : nullptr;
+}
+
+vtkPolyData* DataBase::GetPolyNode(std::string name)const {
+    auto current = head.get();
+    while (current && current->nodeName != name) {
+        current = current->next.get();
+    }
+    return current ? current->nodePoly : nullptr;
+}
+
+vtkPolyData* DataBase::GetTotalLandmarks(std::string name)const {
+    auto current = head.get();
+    while (current && current->nodeName != name) {
+        current = current->next.get();
+    }
+    return current ? current->totalLM : nullptr;
+}
+
+vtkStructuredGrid* DataBase::GetGridNode(std::string name)const {
+    auto current = head.get();
+    while (current && current->nodeName != name) {
+        current = current->next.get();
+    }
+    return current ? current->nodeDICOM : nullptr;
+}
+
+vtkDoubleArray* DataBase::GetProcDistance(std::string name)const {
+    auto current = head.get();
+    while (current && current->nodeName != name) {
+        current = current->next.get();
+    }
+    return current ? current->procDistance : nullptr;
+}
+
+std::string DataBase::GetGeometryType(std::string name)const {
+    auto current = head.get();
+    while (current && current->nodeName != name) {
+        current = current->next.get();
+    }
+    return current ? current->geometryType : std::string();
+}
+
+void DataBase::PrintNode()const {
+    auto current = head.get();
+    while (current) {
+        std::cout << current->nodeName << std::endl;
+        current = current->next.get();
     }
 }
 
-/* vtkPoints* DataBase::GetSliders(string name){
-    curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
-        curr = curr->next;
-    }
-    if(curr == nullptr){
-        std::cout<<"Can't Get Sliders,Node not found\n";
-        return nullptr;
-    }
-    else{
-        if(curr->slider != nullptr){
-            return curr->slider;
-        }
-        else{
-            std::cout<<"Slider not found\n";
-            return nullptr;
-        }
-    }
-} */
-
-vtkPoints* DataBase::GetCurveSliders(string name) {
-    curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
-        curr = curr->next;
-    }
-    if (curr == nullptr) {
-        std::cout << "Can't Get Sliders,Node not found\n";
-        return nullptr;
-    }
-    else {
-        if (curr->curveSlider != nullptr) {
-            return curr->curveSlider;
-        }
-        else {
-            std::cout << "Curve Slider not found\n";
-            return nullptr;
-        }
-    }
-}
-
-vtkPoints* DataBase::GetSurfaceSliders(string name) {
-    curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
-        curr = curr->next;
-    }
-    if (curr == nullptr) {
-        std::cout << "Can't Get Sliders,Node not found\n";
-        return nullptr;
-    }
-    else {
-        if (curr->surfaceSlider != nullptr) {
-            return curr->surfaceSlider;
-        }
-        else {
-            std::cout << "Surface Slider not found\n";
-            return nullptr;
-        }
-    }
-}
-
-vtkPolyData* DataBase::GetPolyNode(string name) {
-    curr = head;
-    while (curr != nullptr && curr->nodeName != name) {
-        curr = curr->next;
-    }
-    if (curr == nullptr) {
-        std::cout << "Can't Get The poly,Node not found\n";
-        return nullptr;
-    }
-    else {
-        return curr->nodePoly;
-    }
-}
-
-vtkPolyData* DataBase::GetTotalLandmarks(string name) {
-    curr = head;
-    while (curr != nullptr && curr->nodeName != name) {
-        curr = curr->next;
-    }
-    if (curr == nullptr) {
-        std::cout << "Can't Get the Total Landmarks,Node not found\n";
-        return nullptr;
-    }
-    else {
-        return curr->totalLM;
-    }
-}
-
-vtkStructuredGrid* DataBase::GetGridNode(string name) {
-    curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
-        curr = curr->next;
-    }
-    if (curr == nullptr) {
-        std::cout << "Can't Get The Grid, Node not found\n";
-        return nullptr;
-    }
-    else {
-        return curr->nodeDICOM;
-    }
-}
-
-vtkDoubleArray* DataBase::GetProcDistance(string name) {
-    curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
-        curr = curr->next;
-    }
-    if (curr == nullptr) {
-        std::cout << "Can't Get The Warp Magnitude, Node not found\n";
-        return nullptr;
-    }
-    else {
-        return curr->procDistance;
-    }
-}
-
-string DataBase::GetGeometryType(string name) {
-    curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
-        curr = curr->next;
-    }
-    if (curr == nullptr) {
-        std::cout << "Can't Get T1, Node not found\n";
-        return nullptr;
-    }
-    else {
-        if (curr->typeI != nullptr) {
-            return curr->geometryType;
-        }
-        else {
-            std::cout << "TypeI not found\n";
-            return nullptr;
-        }
-    }
-}
-
-void DataBase::PrintNode() {
-    curr = head;
-    while (curr != nullptr)
-    {
-        std::cout << curr->nodeName << std::endl;
-        curr = curr->next;
-    }
-}
-
-std::vector<std::string> DataBase::GetNodeNames() {
+std::vector<std::string> DataBase::GetNodeNames()const {
     std::vector<std::string> nameList;
-    curr = head;
-    while (curr != nullptr)
-    {
-        nameList.push_back(curr->nodeName);
-        curr = curr->next;
+    auto current = head.get();
+    while (current) {
+        nameList.push_back(current->nodeName);
+        current = current->next.get();
     }
     return nameList;
 }
 
-int DataBase::GetNumberOfNodes() {
+int DataBase::GetNumberOfNodes()const noexcept {
     int numNodes = 0;
-    curr = head;
-    while (curr != nullptr)
-    {
-        numNodes += 1;
-        curr = curr->next;
+    auto current = head.get();
+    while (current) {
+        numNodes++;
+        current = current->next.get();
     }
     return numNodes;
 }
 
-bool DataBase::CheckMembership(string name) {
-    curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
-        curr = curr->next;
+bool DataBase::CheckMembership(std::string name)const noexcept {
+    auto current = head.get();
+    while (current && current->nodeName != name) {
+        current = current->next.get();
     }
-    if (curr == nullptr) {
-        return 0;
-    }
-    else {
-        return 1;
-    }
+    return current != nullptr;
 }
 
-void DataBase::UpdateDataBase(string name) {
+void DataBase::UpdateDataBase(std::string name) {
     curr = head;
-    while (curr != nullptr && curr->nodeName != name)
-    {
+    while (curr && curr->nodeName != name) {
         curr = curr->next;
     }
-    if (curr == nullptr) {
-        std::cout << "Can't Update Landmarks, Node not found\n";
-    }
-    else {
-        vtkNew<vtkPoints> tempTotalLM;
-        vtkPoints* tempTypeI = curr->typeI;
-        vtkPoints* tempCurveSliders = curr->curveSlider;
-        vtkPoints* tempSurfaceSliders = curr->surfaceSlider;
 
-        for (int i = 0; i < tempTypeI->GetNumberOfPoints(); i++) {
-            tempTotalLM->InsertNextPoint(tempTypeI->GetPoint(i));
+    if (!curr) return;
+
+    vtkNew<vtkPoints> tempTotalLM;
+    if (curr->typeI) {
+        for (int i = 0; i < curr->typeI->GetNumberOfPoints(); i++) {
+            tempTotalLM->InsertNextPoint(curr->typeI->GetPoint(i));
         }
-        for (int i = 0; i < tempCurveSliders->GetNumberOfPoints(); i++) {
-            tempTotalLM->InsertNextPoint(tempCurveSliders->GetPoint(i));
-        }
-        for (int i = 0; i < tempSurfaceSliders->GetNumberOfPoints(); i++) {
-            tempTotalLM->InsertNextPoint(tempSurfaceSliders->GetPoint(i));
-        }
-        vtkNew<vtkPolyData> tempTotalLMPoly;
-        tempTotalLMPoly->SetPoints(tempTotalLM);
-        tempTotalLMPoly->Modified();
-        curr->totalLM->Initialize();
-        curr->totalLM->DeepCopy(tempTotalLMPoly);
     }
+    if (curr->curveSlider) {
+        for (int i = 0; i < curr->curveSlider->GetNumberOfPoints(); i++) {
+            tempTotalLM->InsertNextPoint(curr->curveSlider->GetPoint(i));
+        }
+    }
+    if (curr->surfaceSlider) {
+        for (int i = 0; i < curr->surfaceSlider->GetNumberOfPoints(); i++) {
+            tempTotalLM->InsertNextPoint(curr->surfaceSlider->GetPoint(i));
+        }
+    }
+
+    vtkNew<vtkPolyData> tempTotalLMPoly;
+    tempTotalLMPoly->SetPoints(tempTotalLM);
+    curr->totalLM->Initialize();
+    curr->totalLM->DeepCopy(tempTotalLMPoly);
 }
 
 DataBase::~DataBase() {
+    while (head) {
+        auto next = head->next;
+        head->next.reset();
+        head = next;
+    }
 }

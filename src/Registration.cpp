@@ -70,26 +70,12 @@
 
 #include "../include/SpecimenDigitiser.h"
 
-/* Registration::Registration(){
-    m_templateRenderWidget = new QVTKOpenGLWidget();
-    m_overlayRenderWidget = new QVTKOpenGLWidget();
-    m_targetRenderWidget = new QVTKOpenGLWidget();
-} */
-
 Registration::Registration(vtkPolyData* data, vtkPolyData* templateMesh,
                            vtkPoints* sliders, SpecimenDigitiser* parent)
     : m_parent(parent),
       m_meshData(data),
       m_templateMesh(templateMesh),
       m_templateSliders(sliders) {
-        
-    /* m_templateTypeII = m_parent->GetTemplateTypeI();
-    m_templateCurveSliders = vtkSmartPointer<vtkPoints>::New();
-    m_parent->GetTemplateCurveSliders(m_templateCurveSliders);
-
-    m_typeII = m_parent->GetTypeI();
-    m_curveSliders = vtkSmartPointer<vtkPoints>::New();
-    m_parent->GetCurveSliders(m_curveSliders); */
     m_mutex = new QMutex();
     vtkNew<vtkIntArray> OrgIds;
     OrgIds->SetName("OriginalID");
@@ -189,11 +175,29 @@ Registration::Registration(vtkPolyData* data, vtkPolyData* templateMesh,
     mainToolbar->addWidget(registerTypeLabel);
     mainToolbar->addWidget(registerTypeComboBox);
     // set buttons
+    mainToolbar->addSeparator();
     morphButton = new QPushButton("Morph");
     morphButton->setToolTip("Morph target to Template");
     morphButton->setCheckable(false);
     morphButton->setEnabled(0);
     mainToolbar->addWidget(morphButton);
+
+    QLabel* selectBetaLabel = new QLabel(tr("Beta:"));
+    selectBetaLabel->setToolTip("Flexibility");
+    betaSpinBox = new QSpinBox();
+    betaSpinBox->setRange(1, 10);
+    betaSpinBox->setValue(4);
+    mainToolbar->addWidget(selectBetaLabel);
+    mainToolbar->addWidget(betaSpinBox);
+
+    QLabel* selectLambdaLabel = new QLabel(tr("Lambda:"));
+    selectLambdaLabel->setToolTip("Smoothness");
+    lambdaSpinBox = new QSpinBox();
+    lambdaSpinBox->setRange(1, 10);
+    lambdaSpinBox->setValue(3);
+    mainToolbar->addWidget(selectLambdaLabel);
+    mainToolbar->addWidget(lambdaSpinBox);
+    mainToolbar->addSeparator();
 
     sliderButton = new QPushButton("Set Sliders");
     sliderButton->setToolTip("Set Primitive Sliders");
@@ -209,10 +213,15 @@ Registration::Registration(vtkPolyData* data, vtkPolyData* templateMesh,
     connect(sliderButton, &QPushButton::clicked, this,
             &Registration::SliderTool);
     connect(resetButton, &QPushButton::clicked, this, &Registration::ResetTool);
-    // connect(refineButton, &QPushButton::clicked, this,
-    // &Registration::Refine);
+
     void (QComboBox ::*fp)(int) = &QComboBox ::currentIndexChanged;
     connect(registerTypeComboBox, fp, this, &Registration::ChangeRegisterMode);
+
+    void (QSpinBox ::*SetBetaFp)(int) = &QSpinBox ::valueChanged;
+    connect(betaSpinBox, SetBetaFp, this, &Registration::SetBeta);
+
+    void (QSpinBox ::*SetLambdaFp)(int) = &QSpinBox ::valueChanged;
+    connect(lambdaSpinBox, SetLambdaFp, this, &Registration::SetLambda);
 
     progressLineEdit = new QLineEdit();
     progressLineEdit->setReadOnly(1);
@@ -247,7 +256,9 @@ void Registration::Register() {
         sliderButton->setEnabled(0);
         resetButton->setEnabled(0);
         registerTypeComboBox->setEnabled(0);
-        if(m_anchorStat){
+        betaSpinBox->setEnabled(0);
+        lambdaSpinBox->setEnabled(0);
+        if (m_anchorStat) {
             vtkNew<vtkLandmarkTransform> landmarkTransform;
             landmarkTransform->SetTargetLandmarks(m_templateAnchor);
             landmarkTransform->SetSourceLandmarks(m_sourceAnchor);
@@ -261,39 +272,40 @@ void Registration::Register() {
 
             vtkPolyData* tempMeshData = transformFilter->GetOutput();
 
-            if(!m_accuracy){
+            if (!m_accuracy) {
                 QMessageBox::warning(
-                this,
-                tr("Potential Inaccuracy"),
-                tr("Automated Registration needs to have other types of landmarks as anchors to get acceptable results.\n"
-                "There will be a possibility of getting inaccurate landmark distribution after the sliding process!"),
-                QMessageBox::Ok);
+                    this, tr("Potential Inaccuracy"),
+                    tr("Automated Registration needs to have other types of "
+                       "landmarks as anchors to get acceptable results.\n"
+                       "There will be a possibility of getting inaccurate "
+                       "landmark distribution after the sliding process!"),
+                    QMessageBox::Ok);
             }
 
             delete m_regThread;
-            m_regThread =
-                new RegistrationThread(m_templateMesh, tempMeshData, m_morphedMesh,
-                                   m_ignoreInside, m_resampledRes, m_mutex, true);
+            m_regThread = new RegistrationThread(
+                m_templateMesh, tempMeshData, m_morphedMesh, m_flexibility,
+                m_smoothness, m_ignoreInside, m_resampledRes, m_mutex, true);
             m_regThread->setParent(this);
             connect(m_regThread, &RegistrationThread::MeshMorphed, this,
-                &Registration::OnMeshMorphed);
+                    &Registration::OnMeshMorphed);
             m_regThread->start();
             RegistrationStatus();
-        }
-        else{
+        } else {
             QMessageBox::warning(
-                this,
-                tr("Landmark Digitisation Required"),
-                tr("You need to digitise other types of landmarks (Type I-II or curve sliders) first.\n"
-                "You will possibly get inaccurate landmark distribution after the sliding process!"),
+                this, tr("Landmark Digitisation Required"),
+                tr("You need to digitise other types of landmarks (Type I-II "
+                   "or curve sliders) first.\n"
+                   "You will possibly get inaccurate landmark distribution "
+                   "after the sliding process!"),
                 QMessageBox::Ok);
             delete m_regThread;
-            m_regThread =
-                new RegistrationThread(m_templateMesh, m_meshData, m_morphedMesh,
-                                   m_ignoreInside, m_resampledRes, m_mutex, false);
+            m_regThread = new RegistrationThread(
+                m_templateMesh, m_meshData, m_morphedMesh, m_flexibility,
+                m_smoothness, m_ignoreInside, m_resampledRes, m_mutex, false);
             m_regThread->setParent(this);
             connect(m_regThread, &RegistrationThread::MeshMorphed, this,
-                &Registration::OnMeshMorphed);
+                    &Registration::OnMeshMorphed);
             m_regThread->start();
             RegistrationStatus();
         }
@@ -317,8 +329,8 @@ void Registration::RegistrationStatus() {
         delete m_morphingStatThread;
         m_morphingStatThread = new StatusReporterThread(m_regThread);
         m_morphingStatThread->setParent(this);
-        connect(m_morphingStatThread, &StatusReporterThread::StatusChanged, this,
-                &Registration::OnRegisterStatusChanged);
+        connect(m_morphingStatThread, &StatusReporterThread::StatusChanged,
+                this, &Registration::OnRegisterStatusChanged);
         m_morphingStatThread->start();
     }
 }
@@ -336,6 +348,8 @@ void Registration::OnMeshMorphed() {
     resetButton->setEnabled(1);
     registerTypeComboBox->setEnabled(1);
     morphButton->setEnabled(1);
+    betaSpinBox->setEnabled(1);
+    lambdaSpinBox->setEnabled(1);
     m_mutex->unlock();
 }
 
@@ -454,7 +468,6 @@ void Registration::OnRegisterStatusChanged(int status) {
         progressLabel->setPixmap(QPixmap(":/icons/graphics/icons/idle.svg"));
     }
 }
-
 
 void Registration::DebugPrintMatrix(Eigen::MatrixXd matrix) {
     Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
@@ -700,12 +713,11 @@ void Registration::SetTargetScene() {
 
         m_targetMeshActor->SetMapper(m_targetMapper);
         m_targetMeshActor->GetProperty()->SetOpacity(1);
-    } 
-    else {
+    } else {
         m_targetMapper->SetInputData(m_meshData);
         m_targetMeshActor->SetMapper(m_targetMapper);
         m_targetMeshActor->GetProperty()->SetColor(1, 0.992, 0.815);
-    }    
+    }
     m_targetRenderer->AddActor(m_targetMeshActor);
     // Point properties and color etc
     vtkNew<vtkMassProperties> prop;
@@ -891,7 +903,7 @@ void Registration::SetOverlayScene() {
     m_overlayRenderer->AddActor(m_overlayTemplateActor);
 
     // Point properties and color etc
-    double sphereScaleRatio = 0.01; // ~1% of geometry diagonal
+    double sphereScaleRatio = 0.01;  // ~1% of geometry diagonal
 
     double bounds[6];
     m_meshData->GetBounds(bounds);
@@ -947,11 +959,13 @@ void Registration::MorphTool() {
         resetButton->setEnabled(0);
         registerTypeComboBox->setEnabled(0);
         morphButton->setEnabled(0);
+        betaSpinBox->setEnabled(0);
+        lambdaSpinBox->setEnabled(0);
 
         delete m_regThread;
-        m_regThread = new RegistrationThread(m_templateMesh, m_overlaidMesh,
-                                             m_morphedMesh, m_ignoreInside,
-                                             m_resampledRes, m_mutex, true);
+        m_regThread = new RegistrationThread(
+            m_templateMesh, m_overlaidMesh, m_morphedMesh, m_flexibility,
+            m_smoothness, m_ignoreInside, m_resampledRes, m_mutex, true);
         m_regThread->setParent(this);
         connect(m_regThread, &RegistrationThread::MeshMorphed, this,
                 &Registration::OnMeshMorphed);
@@ -966,6 +980,8 @@ void Registration::SliderTool() {
     m_preSliderHighlightPoints->Initialize();
     sliderButton->setEnabled(0);
     morphButton->setEnabled(0);
+    betaSpinBox->setEnabled(0);
+    lambdaSpinBox->setEnabled(0);
     // refineButton->setEnabled(1);
     overlayLabel->setText(tr("Specimen & Sliders"));
     vtkNew<vtkNamedColors> colors;
@@ -1161,6 +1177,12 @@ void Registration::ResetTool() {
     registerTypeComboBox->setEnabled(1);
     registerTypeComboBox->setCurrentIndex(0);
     morphButton->setEnabled(0);
+    betaSpinBox->setValue(4);
+    lambdaSpinBox->setValue(3);
+    m_flexibility = 3;
+    m_smoothness = 3;
+    betaSpinBox->setEnabled(1);
+    lambdaSpinBox->setEnabled(1);
     Register();
     // refineButton->setEnabled(0);
 }
@@ -1249,15 +1271,18 @@ bool Registration::IsRunning() {
     return status;
 }
 
-void Registration::SetAnchors(vtkPoints* sourceAnchor, vtkPoints* templateAnchor){
+void Registration::SetAnchors(vtkPoints* sourceAnchor,
+                              vtkPoints* templateAnchor) {
     m_templateAnchor->DeepCopy(templateAnchor);
     m_sourceAnchor->DeepCopy(sourceAnchor);
     m_anchorStat = 1;
 }
 
-void Registration::SetAccuracy(bool accuracy){
-    m_accuracy = accuracy;
-}
+void Registration::SetAccuracy(bool accuracy) { m_accuracy = accuracy; }
+
+void Registration::SetBeta(int beta) { m_flexibility = beta; }
+
+void Registration::SetLambda(int lambda) { m_smoothness = lambda; }
 
 Registration::~Registration() {
     delete m_templateRenderWidget;

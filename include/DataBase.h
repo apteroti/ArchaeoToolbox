@@ -68,8 +68,12 @@
 
 #ifndef DATABASE_H
 #define DATABASE_H
+
 #include <map>
-//#include <boost/variant.hpp>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include <vtkPolyData.h>
 #include <vtkPointData.h>
 #include <vtkPoints.h>
@@ -78,79 +82,70 @@
 #include <vtkDoubleArray.h>
 
 
-using std::string;
-
-
 class DataBase
 {
 private:
     struct node
     {
-        string nodeName;
-        string geometryType;
-        vtkSmartPointer<vtkPolyData> nodePoly
-            = vtkSmartPointer<vtkPolyData>::New();
-        vtkSmartPointer<vtkStructuredGrid> nodeDICOM
-            = vtkSmartPointer<vtkStructuredGrid>::New();
-        vtkSmartPointer<vtkPoints> typeI
-            = vtkSmartPointer<vtkPoints>::New();
-        /* vtkSmartPointer<vtkPoints> slider
-        = vtkSmartPointer<vtkPoints>::New(); */
-        vtkSmartPointer<vtkPoints> curveSlider
-            = vtkSmartPointer<vtkPoints>::New();
-        vtkSmartPointer<vtkPoints> surfaceSlider
-            = vtkSmartPointer<vtkPoints>::New();
-        vtkSmartPointer<vtkPolyData> totalLM
-            = vtkSmartPointer<vtkPolyData>::New();
-        vtkSmartPointer<vtkDoubleArray> procDistance
-            = vtkSmartPointer<vtkDoubleArray>::New();
+        std::string nodeName;
+        std::string geometryType;
+        vtkSmartPointer<vtkPolyData> nodePoly = vtkSmartPointer<vtkPolyData>::New();
+        vtkSmartPointer<vtkStructuredGrid> nodeDICOM = vtkSmartPointer<vtkStructuredGrid>::New();
+        vtkSmartPointer<vtkPoints> typeI = vtkSmartPointer<vtkPoints>::New();
+        vtkSmartPointer<vtkPoints> curveSlider = vtkSmartPointer<vtkPoints>::New();
+        vtkSmartPointer<vtkPoints> surfaceSlider = vtkSmartPointer<vtkPoints>::New();
+        vtkSmartPointer<vtkPolyData> totalLM = vtkSmartPointer<vtkPolyData>::New();
+        vtkSmartPointer<vtkDoubleArray> procDistance = vtkSmartPointer<vtkDoubleArray>::New();
 
         std::shared_ptr<node> next;
     };
+    
     std::shared_ptr<node> head;
     std::shared_ptr<node> curr;
     std::shared_ptr<node> temp;
-    void UpdateDataBase(string name);
+    
+    void UpdateDataBase(std::string name);
 
 public:
     DataBase();
     DataBase(const DataBase& db);
     DataBase& operator=(const DataBase& db);
-    void AddNode(string name, vtkPolyData* poly, string dataType);
-    void ChangePoly(string name, vtkPolyData* poly);
-    void AddNode(string name, vtkStructuredGrid* poly);
-    void InsertTypeI(string name, vtkPoints* type1);
-    //void InsertSliders(string name, vtkPoints* sliders);
-    void InsertCurveSliders(string name, vtkPoints* sliders);
-    void InsertSurfaceSliders(string name, vtkPoints* sliders);
-    void SetLandMarks(string name, vtkPolyData* landmarks);
-    void SetProcDistance(string name, vtkDoubleArray* magnitudeArray);
-    void DeleteTypeI(string name);
-    void DeleteSliders(string name);
-    void DeleteAllLandmarks(string name);
-    void DeleteWarpMagnitude(string name);
-    vtkPoints* GetTypeI(string name);
-    //vtkPoints* GetSliders(string name);
-    vtkPoints* GetCurveSliders(string name);
-    vtkPoints* GetSurfaceSliders(string name);
-    vtkPolyData* GetPolyNode(string name);
-    vtkPolyData* GetTotalLandmarks(string name);
-    vtkStructuredGrid* GetGridNode(string name);
-    vtkDoubleArray* GetProcDistance(string name);
-    string GetGeometryType(string name);
-    std::vector<std::string> GetNodeNames();
-    int GetNumberOfNodes();
-    void DeleteNode(string name);
-    void RenameNode(string name, string newName);
-    void PrintNode();
-
-    bool CheckMembership(string name);
-
     ~DataBase();
+
+    // Node management
+    void AddNode(std::string name, vtkPolyData* poly, std::string dataType);
+    void AddNode(std::string name, vtkStructuredGrid* grid);
+    void ChangePoly(std::string name, vtkPolyData* poly);
+    void DeleteNode(std::string name);
+    void RenameNode(std::string name, std::string newName);
+    
+    // Landmark management
+    void InsertTypeI(std::string name, vtkPoints* type1);
+    void InsertCurveSliders(std::string name, vtkPoints* sliders);
+    void InsertSurfaceSliders(std::string name, vtkPoints* sliders);
+    void SetLandMarks(std::string name, vtkPolyData* landmarks);
+    void SetProcDistance(std::string name, vtkDoubleArray* magnitudeArray);
+    
+    // Deletion methods
+    void DeleteTypeI(std::string name);
+    void DeleteSliders(std::string name);
+    void DeleteAllLandmarks(std::string name);
+    void DeleteWarpMagnitude(std::string name);
+    
+    // Getters
+    vtkPoints* GetTypeI(std::string name)const;
+    vtkPoints* GetCurveSliders(std::string name)const;
+    vtkPoints* GetSurfaceSliders(std::string name)const;
+    vtkPolyData* GetPolyNode(std::string name)const;
+    vtkPolyData* GetTotalLandmarks(std::string name)const;
+    vtkStructuredGrid* GetGridNode(std::string name)const;
+    vtkDoubleArray* GetProcDistance(std::string name) const;
+    std::string GetGeometryType(std::string name) const;
+    
+    // Utility functions
+    std::vector<std::string> GetNodeNames() const;
+    int GetNumberOfNodes() const noexcept;
+    bool CheckMembership(std::string name) const noexcept;
+    void PrintNode() const;
 };
-
-
-
-
-
 #endif

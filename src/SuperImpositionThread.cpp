@@ -67,8 +67,26 @@
 ***********************************************************************************************/
 
 #include "../include/SuperImpositionThread.h"
+/**
+ * @class SuperImpositionThread
+ * @brief A class for performing Procrustes superimposition (Generalized Procrustes Analysis) on 3D landmark data
+ * 
+ * This class implements Procrustes superimposition using Kabsch algorithm to align 3D shapes by
+ * removing translation, rotation, and optionally scaling differences between landmark configurations.
+ * It also computes Procrustes residuals and distances after alignment.
+ */
 
-
+/**
+ * @brief Constructor for SuperImpositionThread
+ * @param dataBase Pointer to the database containing landmark data
+ * @param nameList List of specimen names to process
+ * @param lmIdList Pointer to vector of landmark IDs to use for alignment
+ * @param method Alignment method: 0 for with scaling, 1 for without scaling
+ * @param mutex QMutex for thread-safe operations
+ * 
+ * Initializes the superimposition thread and sets up template landmarks.
+ * The template is used as the reference for all subsequent alignments.
+ */
 SuperImpositionThread::SuperImpositionThread(
     DataBase* dataBase, const std::vector<std::string>& nameList,
     std::vector<int>* lmIdList, int method, QMutex* mutex)
@@ -85,6 +103,14 @@ SuperImpositionThread::SuperImpositionThread(
         m_dataBase->GetSurfaceSliders("Template")->GetNumberOfPoints();
 }
 
+/**
+ * @brief Extracts specified landmarks from a specimen and stores them in a matrix
+ * @param name Name of the specimen
+ * @param lmIdList Pointer to vector of landmark IDs to extract
+ * @param[out] outLandmarks Output matrix (n x 3) where n is number of landmarks
+ * 
+ * Each row in the output matrix represents a landmark's 3D coordinates (x,y,z).
+ */
 void SuperImpositionThread::GetAnchors(std::string name,
                                        const std::vector<int>* lmIdList,
                                        Eigen::MatrixXd& outLandmarks) {
@@ -98,12 +124,37 @@ void SuperImpositionThread::GetAnchors(std::string name,
     }
 }
 
+/**
+ * @brief Debug utility to print a matrix to console
+ * @param matrix The Eigen matrix to print
+ * 
+ * Formats the matrix with 4 decimal places and adds separators for readability.
+ */
 void SuperImpositionThread::DebugPrintMatrix(Eigen::MatrixXd matrix) {
     Eigen::IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
     std::string sep = "\n----------------------------------------\n";
     std::cout << matrix.format(CleanFmt) << sep;
 }
 
+/**
+ * @brief Computes the Kabsch transformation to align specimen to template
+ * @param tmplate Reference template landmarks (n x 3 matrix)
+ * @param specimen Specimen landmarks to align (n x 3 matrix)
+ * @param[out] outTrans Output VTK transform containing the computed transformation
+ * @param scale Whether to include scaling in the transformation (true for full Procrustes)
+ * 
+ * Uses Umeyama's algorithm to compute the optimal rigid (or similarity) transformation.
+ * The transformation minimizes the least-squares error between corresponding points:
+ * 
+ * min ‖s·R·X + t - Y‖²
+ * 
+ * where:
+ * - R is the rotation matrix
+ * - t is the translation vector
+ * - s is the scaling factor (if scale=true)
+ * - X is the specimen matrix
+ * - Y is the template matrix
+ */
 void SuperImpositionThread::GetKabschTransformation(
     const Eigen::MatrixXd& tmplate, Eigen::MatrixXd& specimen,
     vtkTransform* outTrans, bool scale) {
@@ -111,8 +162,6 @@ void SuperImpositionThread::GetKabschTransformation(
     Eigen::Matrix4d rt =
         Eigen::umeyama(specimen.transpose(), tmplate.transpose(), scale);
 
-    /* Eigen::MatrixXd test = rt * specimen.transpose().colwise().homogeneous();
-    DebugPrintMatrix(test.transpose()); */
 
     vtkNew<vtkMatrix4x4> tempTrans;
     for (int i = 0; i < 4; i++) {
@@ -128,6 +177,18 @@ void SuperImpositionThread::GetKabschTransformation(
     outTrans->DeepCopy(trans);
 }
 
+/**
+ * @brief Main thread execution function that performs the superimposition
+ * 
+ * For each specimen in the name list:
+ * 1. Extracts landmarks
+ * 2. Computes Kabsch transformation
+ * 3. Applies transformation to all relevant data (landmarks, mesh)
+ * 4. Computes Procrustes residuals and distances
+ * 5. Updates the database with transformed data
+ * 
+ * Emits signals to notify GUI of progress and completion.
+ */
 void SuperImpositionThread::run() {
     for (std::string name : m_nameList) {
         Eigen::MatrixXd specimen;
@@ -298,15 +359,14 @@ void SuperImpositionThread::run() {
         m_dataBase->SetLandMarks(name, transSpecimenTotalLms);
         m_dataBase->SetProcDistance(name, ProcDistArray);
         
-        /* bool test = 1;
-        while (test) {
-        } */
         
         m_mutex->unlock();
         emit CoordinateChanged(name);
     }
-    //emit Done();
 }
 
+/**
+ * @brief Destructor for SuperImpositionThread
+ */
 SuperImpositionThread::~SuperImpositionThread() {
 }

@@ -68,6 +68,7 @@
 
 #include "../include/BlueNoiseThread.h"
 
+// Constructor for basic blue noise sampling without landmarks
 BlueNoiseThread::BlueNoiseThread(vtkPolyData* inputPoly, double area, int resol,
                                  vtkPoints* output, QMutex* mutex)
     : m_resolution(resol),
@@ -77,26 +78,33 @@ BlueNoiseThread::BlueNoiseThread(vtkPolyData* inputPoly, double area, int resol,
       m_mutex(mutex) {
     m_output->Initialize();
 
+    // Calculate area per sample point
     m_area = area / (double)resol;
     int M = m_meshData->GetNumberOfPoints();
     double ratio = (double)resol / (double)M;
+    
+    // Calculate maximum radius based on desired sample density
     m_rMax = 2.0 * (std::sqrt(m_area / (2.0 * std::sqrt(3.0))));
+    // Calculate minimum radius with gamma correction for point distribution
     m_rMin = (m_rMax * (1.0 - std::pow(ratio, m_gamma)) * m_beta);
+    // Buffer zone around landmarks
     m_lmBuffer = m_rMin * 0.25;
 
+    // Initialize KD-tree for efficient spatial queries
     m_kdTree = vtkSmartPointer<vtkStaticPointLocator>::New();
     m_kdTree->SetDataSet(m_meshData);
     m_kdTree->BuildLocator();
 
-    // Initialize weights vector
+    // Initialize weights vector for all mesh points
     m_weights.resize(m_meshData->GetNumberOfPoints());
     for (vtkIdType i = 0; i < m_meshData->GetNumberOfPoints(); ++i) {
         m_weights[i].ptId = i;
         m_weights[i].weight = 0.0;
-        m_weights[i].active = true;
+        m_weights[i].active = true;  // All points start as candidates
     }
 }
 
+// Constructor with landmarks support
 BlueNoiseThread::BlueNoiseThread(vtkPolyData* inputPoly, vtkPoints* fixedLm,
                                  vtkPoints* curveLm, double area, int resol,
                                  vtkPoints* output, QMutex* mutex)
@@ -109,6 +117,7 @@ BlueNoiseThread::BlueNoiseThread(vtkPolyData* inputPoly, vtkPoints* fixedLm,
       m_mutex(mutex) {
     m_output->Initialize();
 
+    // Same initialization as basic constructor
     m_area = area / (double)resol;
     int M = m_meshData->GetNumberOfPoints();
     double ratio = (double)resol / (double)M;
@@ -120,7 +129,6 @@ BlueNoiseThread::BlueNoiseThread(vtkPolyData* inputPoly, vtkPoints* fixedLm,
     m_kdTree->SetDataSet(m_meshData);
     m_kdTree->BuildLocator();
 
-    // Initialize weights vector
     m_weights.resize(m_meshData->GetNumberOfPoints());
     for (vtkIdType i = 0; i < m_meshData->GetNumberOfPoints(); ++i) {
         m_weights[i].ptId = i;
@@ -129,21 +137,27 @@ BlueNoiseThread::BlueNoiseThread(vtkPolyData* inputPoly, vtkPoints* fixedLm,
     }
 }
 
+// Integrate landmarks into the sampling process
 void BlueNoiseThread::IntegrateLandmarks(vtkPoints* fixedLm,
                                          vtkPoints* curveSliders) {
-    //  Handling landmarks if they were digitised
+    // Find all mesh points near landmarks
     vtkNew<vtkIdList> lmNeighborSet;
+    
+    // Process fixed landmarks if they exist
     if (fixedLm) {
         for (int i = 0; i < fixedLm->GetNumberOfPoints(); i++) {
             vtkNew<vtkIdList> tempNeighborSet;
+            // Find mesh points within buffer distance of landmark
             m_kdTree->FindPointsWithinRadius(m_lmBuffer, fixedLm->GetPoint(i),
                                              tempNeighborSet);
+            // Add to combined neighbor set
             for (int j = 0; j < tempNeighborSet->GetNumberOfIds(); j++) {
                 lmNeighborSet->InsertUniqueId(tempNeighborSet->GetId(j));
             }
         }
     }
 
+    // Process curve landmarks if they exist
     if (curveSliders) {
         for (int i = 0; i < curveSliders->GetNumberOfPoints(); i++) {
             vtkNew<vtkIdList> tempNeighborSet;
@@ -157,17 +171,22 @@ void BlueNoiseThread::IntegrateLandmarks(vtkPoints* fixedLm,
     }
 
     lmNeighborSet->Modified();
+    
+    // Process all points near landmarks
     for (vtkIdType i = 0; i < lmNeighborSet->GetNumberOfIds(); i++) {
         vtkIdType ptId = lmNeighborSet->GetId(i);
-        m_weights[ptId].active = false;
+        m_weights[ptId].active = false;  // Exclude from sampling
 
+        // Find neighbors of landmark-adjacent points
         vtkNew<vtkIdList> neighborSet;
         m_kdTree->FindPointsWithinRadius(m_rMax, m_meshData->GetPoint(ptId),
                                          neighborSet);
 
+        // Update weights of neighbors to enforce exclusion zone
         for (vtkIdType j = 0; j < neighborSet->GetNumberOfIds(); j++) {
             vtkIdType nbrId = neighborSet->GetId(j);
             if (m_weights[nbrId].active) {
+                // Calculate Euclidean distance
                 double dist = EucDist(m_meshData->GetPoint(ptId)[0],
                                       m_meshData->GetPoint(ptId)[1],
                                       m_meshData->GetPoint(ptId)[2],
@@ -175,24 +194,29 @@ void BlueNoiseThread::IntegrateLandmarks(vtkPoints* fixedLm,
                                       m_meshData->GetPoint(nbrId)[1],
                                       m_meshData->GetPoint(nbrId)[2]);
 
+                // Apply distance-based weighting
                 double dHat = (dist > m_rMin) ? std::min(dist, m_rMax) : m_rMin;
                 double tempW = std::pow(1.0 - (dHat / m_rMax), 8);
-                m_weights[nbrId].weight -= tempW;
+                m_weights[nbrId].weight -= tempW;  // Reduce selection probability
             }
         }
     }
+    // Adjust target resolution to account for landmark points
     m_resolution += lmNeighborSet->GetNumberOfIds();
 }
 
+// Calculate initial weights for all points
 void BlueNoiseThread::CalculateWeight() {
     for (int i = 0; i < m_meshData->GetNumberOfPoints(); i++) {
-        if (!m_weights[i].active) continue;
+        if (!m_weights[i].active) continue;  // Skip inactive points
 
         vtkNew<vtkIdList> tempPtsId;
+        // Find neighbors within maximum radius
         m_kdTree->FindPointsWithinRadius(m_rMax, m_meshData->GetPoint(i),
                                          tempPtsId);
         double weight = 0.0;
 
+        // Sum influence from all active neighbors
         for (int j = 0; j < tempPtsId->GetNumberOfIds(); j++) {
             vtkIdType nbrId = tempPtsId->GetId(j);
             if (!m_weights[nbrId].active) continue;
@@ -202,6 +226,7 @@ void BlueNoiseThread::CalculateWeight() {
                 m_meshData->GetPoint(i)[2], m_meshData->GetPoint(nbrId)[0],
                 m_meshData->GetPoint(nbrId)[1], m_meshData->GetPoint(nbrId)[2]);
 
+            // Apply distance-based weighting function
             double dHat = (dist > m_rMin) ? std::min(dist, m_rMax) : m_rMin;
             weight += std::pow(1.0 - (dHat / m_rMax), 8);
         }
@@ -209,6 +234,7 @@ void BlueNoiseThread::CalculateWeight() {
     }
 }
 
+// Euclidean distance calculation between two 3D points
 double BlueNoiseThread::EucDist(double Ax, double Ay, double Az, double Bx,
                                 double By, double Bz) {
     double dx = Ax - Bx;
@@ -218,6 +244,7 @@ double BlueNoiseThread::EucDist(double Ax, double Ay, double Az, double Bx,
     return dist;
 }
 
+// Find the point with maximum weight (parallel version for large datasets)
 int BlueNoiseThread::FindIndexOfLargest() {
     if (m_meshData->GetNumberOfPoints() > m_parallelThreshold) {
         struct MaxInfo {
@@ -249,6 +276,7 @@ int BlueNoiseThread::FindIndexOfLargest() {
         }
         return globalMax.index;
     } else {
+        // Sequential version for smaller datasets
         double maxVal = -std::numeric_limits<double>::max();
         vtkIdType maxPtId = -1;
 
@@ -262,15 +290,18 @@ int BlueNoiseThread::FindIndexOfLargest() {
     }
 }
 
+// Perform calculations when a point is selected as a sample
 void BlueNoiseThread::PerformCalculations(int targetId) {
     if (targetId < 0) return;
-    m_weights[targetId].active = false;
+    m_weights[targetId].active = false;  // Mark as excluded
 
     vtkNew<vtkIdList> neighborSet;
     m_kdTree->FindPointsWithinRadius(m_rMax, m_meshData->GetPoint(targetId),
                                      neighborSet);
+                                     
+    // Parallel version for large datasets
     if (m_meshData->GetNumberOfPoints() > m_parallelThreshold) {
-        // Each thread gets its own buffer
+        // Each thread gets its own buffer to avoid race conditions
         std::vector<double> weightUpdates(neighborSet->GetNumberOfIds(), 0.0);
 
 #pragma omp parallel for
@@ -288,7 +319,7 @@ void BlueNoiseThread::PerformCalculations(int targetId) {
             }
         }
 
-        // Single-threaded merge
+        // Single-threaded merge of weight updates
         for (int i = 0; i < neighborSet->GetNumberOfIds(); i++) {
             vtkIdType nbrId = neighborSet->GetId(i);
             if (m_weights[nbrId].active) {
@@ -296,6 +327,7 @@ void BlueNoiseThread::PerformCalculations(int targetId) {
             }
         }
     } else {
+        // Sequential version for smaller datasets
         for (int i = 0; i < neighborSet->GetNumberOfIds(); i++) {
             vtkIdType nbrId = neighborSet->GetId(i);
 
@@ -309,26 +341,46 @@ void BlueNoiseThread::PerformCalculations(int targetId) {
 
                 double dHat = (dist > m_rMin) ? std::min(dist, m_rMax) : m_rMin;
                 double tempW = std::pow(1.0 - (dHat / m_rMax), 8);
-                m_weights[nbrId].weight -= tempW;
+                m_weights[nbrId].weight -= tempW;  // Reduce neighbor weights
             }
         }
     }
 }
 
+// Main execution thread function
 void BlueNoiseThread::run() {
+    // === 1. INITIAL WEIGHT CALCULATION ===
+    // Compute initial weights for all points based on neighbor density.
+    // Uses a kernel function to penalize proximity, encouraging dispersion.
     CalculateWeight();
+
+    // === 2. LANDMARK INTEGRATION (OPTIONAL) ===
+    // If landmarks exist, force them into the sample set and suppress their neighbors.
+    // This preserves user-defined features while maintaining blue noise properties.
     if (m_fixedLm || m_curveLm) {
         IntegrateLandmarks(m_fixedLm, m_curveLm);
     }
-    int target = m_weights.size() - m_resolution;
 
+    // === 3. MAIN SAMPLING LOOP ===
+    // Determine how many points to eliminate (target = total points - desired samples).
+    // The loop eliminates points iteratively, leaving only the optimally spaced samples.
+    int target = m_weights.size() - m_resolution;
     for (int i = 0; i < target; i++) {
+        // 3.1. Select the point with the highest weight:
+        // - High weight = "under-sampled" region (far from existing samples).
+        // - Parallelized for large datasets via FindIndexOfLargest().
         int targetId = FindIndexOfLargest();
+        
         if (targetId >= 0) {
+            // 3.2. Eliminate the selected point from future consideration:
+            // - Marks it as inactive (it will *not* be part of the final output).
+            // - Updates weights of its neighbors to suppress clustering.
             PerformCalculations(targetId);
         }
     }
 
+    // === 4. RESULT VALIDATION & OUTPUT ===
+    // Count remaining active points (should match desired resolution).
     int count = 0;
     for (const auto& w : m_weights) {
         if (w.active == true) {
@@ -336,23 +388,29 @@ void BlueNoiseThread::run() {
         }
     }
 
+    // 4.1. Success case: Copy active points to output.
     if (count == m_initRes) {
         m_mutex->lock();
         m_output->Initialize();
         for (const auto& entry : m_weights) {
             if (entry.active) {
+                // Active points = optimally spaced blue noise samples.
                 m_output->InsertNextPoint(m_meshData->GetPoint(entry.ptId));
             }
         }
         m_output->Modified();
         m_mutex->unlock();
-    } else {
+    }
+    // 4.2. Error handling (debugging only).
+    else {
         std::cout << "Problem in Blue Noise Thread, Debug" << std::endl;
         std::cout << "Expected: " << m_initRes << ", Found: " << count
                   << std::endl;
     }
 
+    // Signal completion.
     SamplingIsDone();
 }
 
+// Destructor
 BlueNoiseThread::~BlueNoiseThread() {}

@@ -69,16 +69,13 @@
 #ifndef REGISTRATIONTHREAD_H
 #define REGISTRATIONTHREAD_H
 
-#include <QObject>
-#include <QThread>
-#include <QtConcurrent/QtConcurrentRun>
-#include <QMutex>
-
 #include <QVTKOpenGLWidget.h>
+#include <omp.h>
 #include <vtkActor.h>
 #include <vtkActor2D.h>
 #include <vtkAxesActor.h>
 #include <vtkCamera.h>
+#include <vtkCellData.h>
 #include <vtkCellLocator.h>
 #include <vtkCellPicker.h>
 #include <vtkCubeSource.h>
@@ -99,6 +96,7 @@
 #include <vtkMaskPoints.h>
 #include <vtkMassProperties.h>
 #include <vtkMatrix4x4.h>
+#include <vtkMeshQuality.h>
 #include <vtkNamedColors.h>
 #include <vtkNew.h>
 #include <vtkOBBTree.h>
@@ -109,6 +107,7 @@
 #include <vtkPointPicker.h>
 #include <vtkPoints.h>
 #include <vtkPolyData.h>
+#include <vtkPolyDataConnectivityFilter.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkProperty.h>
 #include <vtkProperty2D.h>
@@ -125,10 +124,6 @@
 #include <vtkTransformPolyDataFilter.h>
 #include <vtkVertexGlyphFilter.h>
 #include <vtkXMLPolyDataWriter.h>
-#include <vtkMeshQuality.h>
-#include <vtkCellData.h>
-#include <vtkPolyDataConnectivityFilter.h>
-#include <vtkMaskPoints.h>
 
 #include <Eigen/Dense>
 #include <Eigen/Eigen>
@@ -137,23 +132,25 @@
 #include <QEventLoop>
 #include <QFuture>
 #include <QFutureWatcher>
-
+#include <QMutex>
+#include <QObject>
+#include <QThread>
+#include <QtConcurrent/QtConcurrentRun>
 #include <cmath>
-#include <omp.h>
-#include <tuple>
-#include <random>
 #include <iostream>
+#include <random>
+#include <tuple>
+
 #include "BlueNoiseThread.h"
 #include "CPD3D.h"
-
 
 class RegistrationThread : public QThread {
     Q_OBJECT
    private:
     bool m_preAlign = 0;
-    bool m_ignoreInside = true;  
-    //vtkPolyData* m_templateMesh;
-    //vtkPolyData* m_sourceMesh;
+    bool m_ignoreInside = true;
+    // vtkPolyData* m_templateMesh;
+    // vtkPolyData* m_sourceMesh;
     vtkSmartPointer<vtkPolyData> m_templateMesh;
     vtkSmartPointer<vtkPolyData> m_sourceMesh;
     vtkPolyData* m_outMesh;
@@ -161,18 +158,25 @@ class RegistrationThread : public QThread {
     QMutex* m_mutex;
     int m_resampledRes = 10;
     BlueNoiseThread* m_BlueNoiseThread = nullptr;
-    int m_flexibility = 4; //Beta
-    int m_smoothness = 3; //Lambda
+    int m_flexibility = 4;  // Beta
+    int m_smoothness = 3;   // Lambda
 
    public:
-    RegistrationThread(vtkPolyData* templateMesh, vtkPolyData* sourceMesh, vtkPolyData* outMesh, bool ignoreInside, int res, QMutex* mutex, bool preAlign = 0);
-    void PrealignMesh(vtkPolyData* sourceMesh, vtkPolyData* templateMesh, vtkPolyData* alignedOutput);
+    RegistrationThread(vtkPolyData* templateMesh, vtkPolyData* sourceMesh,
+                       vtkPolyData* outMesh, int beta, int lambda,
+                       bool ignoreInside, int res, QMutex* mutex,
+                       bool preAlign = 0);
+    void PrealignMesh(vtkPolyData* sourceMesh, vtkPolyData* templateMesh,
+                      vtkPolyData* alignedOutput);
     void ComputeCentroid(vtkPolyData* mesh, double centroid[3]);
-    Eigen::Matrix3d ComputeCovarianceMatrix(vtkPolyData* mesh, const double centroid[3]);
-    
+    Eigen::Matrix3d ComputeCovarianceMatrix(vtkPolyData* mesh,
+                                            const double centroid[3]);
+
     void Resample(vtkPolyData* mesh, int resolution, vtkPoints* out);
     double GetMeshCellArea(std::vector<double>* probab, vtkPolyData* inputMesh);
-    void RandomChoice(vtkPolyData* mesh, int outputSize,std::vector<double> *probab,std::vector<int> *idList, vtkPoints* points);
+    void RandomChoice(vtkPolyData* mesh, int outputSize,
+                      std::vector<double>* probab, std::vector<int>* idList,
+                      vtkPoints* points);
     void DebugPrintMatrix(Eigen::MatrixXd matrix);
     double RandomFloat(double maximum);
     void run();

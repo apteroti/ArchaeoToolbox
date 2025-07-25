@@ -241,14 +241,13 @@ private:
     vtkSmartPointer<vtkChartXY> m_scatterChart;
     
     vtkSmartPointer <vtkStringArray> m_graphLabelArray;
-    /* vtkSmartPointer<vtkPolyData> m_graphLabelPoly;
-    vtkSmartPointer<vtkActor2D> m_graphLabelActor; */
     vtkSmartPointer<vtkBillboardTextActor3D>m_MILLabelActor[1];
+    vtkSmartPointer<vtkColorTransferFunction> m_ctf;
 
     // toolbar etc
     QToolBar *mainToolbar;
-    QSpinBox *select1stPCsComboBox;
-    QSpinBox *select2ndPCsComboBox;
+    QSpinBox *select1stPCsSpinBox;
+    QSpinBox *select2ndPCsSpinBox;
     QLabel *m_meshRenLabel;
     QDockWidget *m_dockedToolbar;
     QTreeWidget *specimenTreeWidget;

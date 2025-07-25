@@ -122,21 +122,6 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
 
         m_dockedToolbar->setWidget(specimenTreeWidget);
 
-        /* m_graphChart = new QtCharts::QChart();
-        m_graphChart->setBackgroundVisible(false);
-        m_graphChart->legend()->hide();
-        m_axisX = new QtCharts::QValueAxis();
-        m_axisY = new QtCharts::QValueAxis();
-        m_graphChartView = new QtCharts::QChartView();
-        //Handle series
-        UpdateAxis(m_x, m_y);
-        m_graphChart->addAxis(m_axisX, Qt::AlignBottom);
-        m_graphChart->addAxis(m_axisY, Qt::AlignLeft);
-        m_graphChart->addSeries(m_graphRenderSeries);
-        m_graphRenderSeries->attachAxis(m_axisX);
-        m_graphRenderSeries->attachAxis(m_axisY);
-        m_graphChartView->setChart(m_graphChart); */
-
         std::string renLabelTitle =
             "Contribution Plot of PC " + std::to_string(m_x);
         m_meshRenLabel = new QLabel(QString::fromStdString(renLabelTitle));
@@ -159,13 +144,14 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         mainToolbar->setMovable(false);
         QLabel *selectPCsLabel1 = new QLabel(tr("Select The First PC:"));
         QLabel *selectPCsLabel2 = new QLabel(tr("Select The Next PC:"));
-        select1stPCsComboBox = new QSpinBox();
-        select1stPCsComboBox->setRange(1, m_eigenVectors.cols());
-        select1stPCsComboBox->setValue(m_x);
+        select1stPCsSpinBox = new QSpinBox();
+        select1stPCsSpinBox->setRange(1, m_eigenVectors.cols());
+        select1stPCsSpinBox->setValue(m_x);
+        
 
-        select2ndPCsComboBox = new QSpinBox();
-        select2ndPCsComboBox->setRange(1, m_eigenVectors.cols());
-        select2ndPCsComboBox->setValue(m_y);
+        select2ndPCsSpinBox = new QSpinBox();
+        select2ndPCsSpinBox->setRange(1, m_eigenVectors.cols());
+        select2ndPCsSpinBox->setValue(m_y);
 
         QLabel *showMIL = new QLabel();
         showMIL->setText(tr(" MIL"));
@@ -175,7 +161,7 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         milLineEdit->setPlaceholderText("0");
         milLineEdit->setReadOnly(1);
         milLineEdit->setMaximumWidth(50);
-        //milLineEdit->setValidator(new QIntValidator(0, 10000, this));
+        
 
         QLabel *showPtsIdsLabel = new QLabel();
         showPtsIdsLabel->setText(tr("  Show Landmark ids"));
@@ -189,10 +175,10 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         showPtsIdsBox->setChecked(false);
 
         mainToolbar->addWidget(selectPCsLabel1);
-        mainToolbar->addWidget(select1stPCsComboBox);
+        mainToolbar->addWidget(select1stPCsSpinBox);
 
         mainToolbar->addWidget(selectPCsLabel2);
-        mainToolbar->addWidget(select2ndPCsComboBox);
+        mainToolbar->addWidget(select2ndPCsSpinBox);
         // mainToolbar->addWidget(exportButton);
         mainToolbar->addWidget(showMIL);
         mainToolbar->addWidget(milLineEdit);
@@ -205,20 +191,23 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
                 &PCAWindow::Export2Csv);
 
         void (QSpinBox ::*change1stPCFp)(int) = &QSpinBox ::valueChanged;
-        connect(select1stPCsComboBox, change1stPCFp, this,
+        connect(select1stPCsSpinBox, change1stPCFp, this,
                 &PCAWindow::Update1stPC);
 
         void (QSpinBox ::*change2ndPCFp)(int) = &QSpinBox ::valueChanged;
-        connect(select2ndPCsComboBox, change2ndPCFp, this,
+        connect(select2ndPCsSpinBox, change2ndPCFp, this,
                 &PCAWindow::Update2ndPC);
 
         connect(showPtsIdsBox, &QCheckBox::stateChanged, this,
                 &PCAWindow::ShowPtsIds);
-        // connect(m_graphRenderSeries, &QtCharts::QScatterSeries::pressed,
-        // this, &PCAWindow::ShowSpecimenIds);
-
         //--------------------------
         vtkNew<vtkNamedColors> colors;
+        m_ctf = vtkSmartPointer<vtkColorTransferFunction>::New();
+        m_ctf->SetColorSpaceToDiverging();
+        m_ctf->AddRGBPoint(0, 0.231373, 0.298039, 0.752941);
+        m_ctf->AddRGBPoint(0.5, 0.865003, 0.865003, 0.865003);
+        m_ctf->AddRGBPoint(1, 0.705882, 0.0156863, 0.14902);
+
         m_meshRenderer = vtkSmartPointer<vtkRenderer>::New();
         m_meshRenWin = m_meshRenderWidget->GetRenderWindow();
         m_style = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
@@ -302,8 +291,6 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         for (int i = 0; i < m_nameList.size(); i++) {
             m_graphLabelArray->InsertNextValue(m_nameList[i]);
         }
-        /* m_graphLabelPoly = vtkSmartPointer<vtkPolyData>::New();
-        m_graphLabelActor = vtkSmartPointer<vtkActor2D>::New(); */
         m_scatterChartView = vtkSmartPointer<vtkContextView>::New();
         m_scatterChart = vtkSmartPointer<vtkChartXY>::New();
 
@@ -399,17 +386,11 @@ void PCAWindow::UpdateContribution(int pc) {
     m_lmVertexFilter->SetInputData(m_landmarksPoly);
     m_lmVertexFilter->Update();
 
-    vtkNew<vtkColorTransferFunction> ctf;
-    ctf->SetColorSpaceToDiverging();
-    ctf->AddRGBPoint(0, 0.231373, 0.298039, 0.752941);
-    ctf->AddRGBPoint(0.5, 0.865003, 0.865003, 0.865003);
-    ctf->AddRGBPoint(1, 0.705882, 0.0156863, 0.14902);
-    ctf->SetScaleToLinear();
-
     double maxContr = scalars->GetRange()[1];
     vtkIdType maxIndex = 0;
+    double* scalarArray = static_cast<double*>(scalars->GetVoidPointer(0));
     for (vtkIdType i = 1; i < scalars->GetNumberOfTuples(); ++i) {
-        if (scalars->GetTuple1(i) == maxContr) {
+        if (scalarArray[i] == maxContr) {
             maxIndex = i;
             break;
         }
@@ -437,7 +418,7 @@ void PCAWindow::UpdateContribution(int pc) {
     lut->SetTableRange(scalars->GetRange());
     for (int i = 0; i < lut->GetNumberOfColors(); ++i) {
         std::array<double, 3> rgb;
-        ctf->GetColor(double(i) / lut->GetNumberOfColors(), rgb.data());
+        m_ctf->GetColor(double(i) / lut->GetNumberOfColors(), rgb.data());
         std::array<double, 4> rgba{0.0, 0.0, 0.0, 1.0};
         std::copy(std::begin(rgb), std::end(rgb), std::begin(rgba));
         lut->SetTableValue(i, rgba.data());
@@ -451,11 +432,6 @@ void PCAWindow::UpdateContribution(int pc) {
     m_lmMapper->SetLookupTable(lut);
     m_lmMapper->Update();
 
-    // Update scalar bar
-    m_scalarBar->SetLookupTable(m_lmMapper->GetLookupTable());
-    m_scalarBar->Modified();
-
-    m_meshRenderer->GetRenderWindow()->Render();
     InterpolateTPSContributionToMesh(scalars);
 }
 
@@ -531,13 +507,6 @@ void PCAWindow::InterpolateTPSContributionToMesh(vtkDoubleArray* scalars) {
     m_meshData->GetPointData()->SetScalars(interpolatedScalars);
     m_meshData->Modified();
 
-    // Color setup like before
-    vtkNew<vtkColorTransferFunction> ctf;
-    ctf->SetColorSpaceToDiverging();
-    ctf->AddRGBPoint(0, 0.231373, 0.298039, 0.752941);
-    ctf->AddRGBPoint(0.5, 0.865003, 0.865003, 0.865003);
-    ctf->AddRGBPoint(1, 0.705882, 0.0156863, 0.14902);
-
     vtkNew<vtkLookupTable> lut;
     lut->SetNumberOfTableValues(512);
     double range[2];
@@ -546,7 +515,7 @@ void PCAWindow::InterpolateTPSContributionToMesh(vtkDoubleArray* scalars) {
     for (int i = 0; i < lut->GetNumberOfTableValues(); ++i) {
         double val = static_cast<double>(i) / (lut->GetNumberOfTableValues() - 1);
         double rgb[3];
-        ctf->GetColor(val, rgb);
+        m_ctf->GetColor(val, rgb);
         lut->SetTableValue(i, rgb[0], rgb[1], rgb[2], 1.0);
     }
     lut->Build();
@@ -565,14 +534,15 @@ void PCAWindow::InterpolateTPSContributionToMesh(vtkDoubleArray* scalars) {
 }
 
 void PCAWindow::Update1stPC(int PC1) {
+    select1stPCsSpinBox->setEnabled(false);
     m_x = PC1;
     UpdateScatter(m_x, m_y);
-
     std::string renLabelTitle =
         "Contribution Plot of PC " + std::to_string(m_x);
     m_meshRenLabel->setText(QString::fromStdString(renLabelTitle));
     m_meshRenLabel->update();
     UpdateContribution(m_x);
+    select1stPCsSpinBox->setEnabled(true);
 }
 void PCAWindow::Update2ndPC(int PC2) {
     m_y = PC2;
@@ -607,62 +577,72 @@ M PCAWindow::LoadCSV(const std::string &path) {
 void PCAWindow::Calculate(Eigen::MatrixXd &data, bool standardise) {
     Eigen::MatrixXd centeredMatrix;
     Eigen::MatrixXd covarianceMatrix;
+    // Calculate mean of each column (feature)
+    // Formula: μ = (Σx)/n for each column
     Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::ColMajor> mean =
         data.colwise().sum() / (data.rows());
+    // Calculate variance of each column (feature)
+    // Formula: σ² = Σ(x-μ)²/(n-1) for each column
     Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::ColMajor> variance =
         (data.rowwise() - mean.transpose()).array().pow(2).colwise().sum() /
         (data.rows() - 1);
+    // Calculate standard deviation (square root of variance)
     Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::ColMajor> std =
         variance.array().sqrt();
-
+    // Center the data by subtracting the mean from each feature
     centeredMatrix = data.rowwise() - mean.transpose();
+    // If standardization requested, scale each feature by its standard deviation
     if (standardise) {
         centeredMatrix.array().rowwise() /=
-            std.transpose().array();  // Standardize data.
+            std.transpose().array();  // Standardize data (z-score normalization)
     }
 
-    // Compute covariance matrix
+    // Compute covariance matrix of the centered (and possibly standardized) data
+    // Formula: cov(X) = (Xᵀ * X)/(n-1)
     covarianceMatrix = (centeredMatrix.adjoint().operator*(centeredMatrix)) /
                        (data.rows() - 1);
+    // Perform eigendecomposition of the covariance matrix
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> es;
     es.compute(covarianceMatrix);
-
+    // Get eigenvalues and eigenvectors from the decomposition
     auto eigen_values = es.eigenvalues();
     auto eigen_vectors = es.eigenvectors();
     //DebugPrintMatrix(eigen_vectors);
-
+    // Pair eigenvalues with their original indices for sorting
     typedef std::pair<double, int> eigen_pair;
     std::vector<eigen_pair> ep;
     for (int i = 0; i < data.cols(); ++i) {
         ep.push_back(std::make_pair(eigen_values(i), i));
     }
+    // Sort eigenvalues in descending order (default behavior)
     sort(ep.begin(), ep.end());  // Ascending order by default
-    // Sort them all in descending order
+    // Initialize member matrices for results
     m_eigenVectors =
         Eigen::MatrixXd::Zero(eigen_vectors.rows(), eigen_vectors.cols());
     m_eigenValues = Eigen::VectorXd::Zero(data.cols());
     m_expVariance = Eigen::VectorXd::Zero(data.cols());
+    // Store eigenvalues and vectors in descending order (most significant first)
     int colnum = 0;
     for (int i = ep.size() - 1; i > -1; i--) {
-        m_eigenValues(colnum) = ep[i].first;
-        m_eigenVectors.col(colnum) += eigen_vectors.col(ep[i].second);
+        m_eigenValues(colnum) = ep[i].first;    // Store sorted eigenvalues
+        m_eigenVectors.col(colnum) += eigen_vectors.col(ep[i].second);  // Store corresponding eigenvectors
         colnum++;
     }
+    // Calculate principal component scores (projected data)
+    // Formula: scores = centered_data * eigenvectors
     m_eigenScores = centeredMatrix.operator*(m_eigenVectors);
     
-    // DebugPrintMatrix(m_eigenScores);
-
     // each column of eigenvector correlates with PCs, and each row with
     // variables e.g. for pc1, we separate column 0, and check the loading
     // DebugPrintMatrix(m_eigenVectors);
 
-    // Explained Variance
+    // Calculate explained variance for each principal component
+    // Formula: λ_i / Σλ (eigenvalue divided by sum of all eigenvalues)
     double sumTotVar = m_eigenValues.sum();
     for (int i = 0; i < data.cols(); i++) {
         m_expVariance(i) = m_eigenValues(i) / sumTotVar;
     }
-    //DebugPrintMatrix(m_expVariance);
-
+    // Free memory by resizing working matrices to 0
     centeredMatrix.resize(0, 0);
     covarianceMatrix.resize(0, 0);
 }

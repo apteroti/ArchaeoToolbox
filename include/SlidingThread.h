@@ -212,7 +212,6 @@ public:
         double Bz);
     void PDist(vtkPoints* points, Eigen::MatrixXd& output);
     void PDist(const Eigen::MatrixXd& points, Eigen::MatrixXd& output);
-    void PGeoDist(vtkPolyData* mesh, Eigen::MatrixXd& points, Eigen::MatrixXd& output);
     void CalculateTangent(vtkPolyData* polyMesh, Eigen::MatrixXd& U,
         Eigen::MatrixXd& V);
     void CalculateCurveTangent(vtkMultiBlockDataSet* inputCurve, int id,
@@ -223,13 +222,14 @@ public:
     void SuperImpose(Eigen::MatrixXd& templatePts, Eigen::MatrixXd& targetPts);
     void GSSRefinement(Eigen::MatrixXd& coordinates,
         const Eigen::MatrixXd& USUT, int numLNDMRK);
+    void ClampPointsToSurface(Eigen::MatrixXd& coords);
     double GetBE();
     double GetScalingFactor();
     double GetRefinementLoop();
     std::string GetSolverType();
     bool GetImprovement();
     int GetImprovementLoop();
-    void ClampPointsToSurface(Eigen::MatrixXd& coords);
+    
     ~SlidingThread();
 signals:
     void CoordinateChanged(Eigen::MatrixXd coordinates);

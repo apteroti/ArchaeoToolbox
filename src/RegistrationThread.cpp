@@ -70,10 +70,13 @@
 
 RegistrationThread::RegistrationThread(vtkPolyData* templateMesh,
                                        vtkPolyData* sourceMesh,
-                                       vtkPolyData* outMesh, bool ignoreInside,
-                                       int res, QMutex* mutex, bool preAlign)
+                                       vtkPolyData* outMesh, int beta,
+                                       int lambda, bool ignoreInside, int res,
+                                       QMutex* mutex, bool preAlign)
     : m_outMesh(outMesh),
       m_ignoreInside(ignoreInside),
+      m_flexibility(beta),
+      m_smoothness(lambda),
       m_res(res),
       m_mutex(mutex),
       m_preAlign(preAlign) {
@@ -108,31 +111,31 @@ void RegistrationThread::run() {
     if (!m_preAlign) {
         PrealignMesh(m_sourceMesh, m_templateMesh, alignedMesh);
     }
-    
+
     int resampleResolution = m_res;
 
-    if(m_templateMesh->GetNumberOfPoints() <  alignedMesh->GetNumberOfPoints() || 
-        m_templateMesh->GetNumberOfPoints() <  m_sourceMesh->GetNumberOfPoints()){
-        if(m_templateMesh->GetNumberOfPoints() < m_res){
+    if (m_templateMesh->GetNumberOfPoints() <
+            alignedMesh->GetNumberOfPoints() ||
+        m_templateMesh->GetNumberOfPoints() <
+            m_sourceMesh->GetNumberOfPoints()) {
+        if (m_templateMesh->GetNumberOfPoints() < m_res) {
             resampleResolution = m_templateMesh->GetNumberOfPoints() / 1.0;
         }
-    }
-    else{
-        if (!m_preAlign){
-            if(alignedMesh->GetNumberOfPoints() < m_res){
+    } else {
+        if (!m_preAlign) {
+            if (alignedMesh->GetNumberOfPoints() < m_res) {
                 resampleResolution = alignedMesh->GetNumberOfPoints() / 1.0;
             }
-        }
-        else{
-            if(m_sourceMesh->GetNumberOfPoints() < m_res){
+        } else {
+            if (m_sourceMesh->GetNumberOfPoints() < m_res) {
                 resampleResolution = m_sourceMesh->GetNumberOfPoints() / 1.0;
             }
         }
     }
-    
+
     vtkNew<vtkPoints> templateResampled;
     Resample(m_templateMesh, resampleResolution, templateResampled);
-    
+
     vtkNew<vtkPoints> sourceResampled;
     if (!m_preAlign) {
         Resample(alignedMesh, resampleResolution, sourceResampled);
@@ -153,15 +156,15 @@ void RegistrationThread::run() {
             sourceMatrix.operator()(i, j) = sourceResampled->GetPoint(i)[j];
         }
     }
-    
-    //Beta (Kernel Width) determines the "flexibility" of the deformation
-    //Lambda determines smoothness of deformation
+
+    // Beta (Kernel Width) determines the "flexibility" of the deformation
+    // Lambda determines smoothness of deformation
     CPD::Nonrigid nonrigid;
     nonrigid.beta(m_flexibility);
     nonrigid.lambda(m_smoothness);
-    auto deformedSourceMatrix = nonrigid.run(templateMatrix, sourceMatrix).points;
-    
-    
+    auto deformedSourceMatrix =
+        nonrigid.run(templateMatrix, sourceMatrix).points;
+
     vtkNew<vtkPoints> sourceResampledDeformed;
     for (int i = 0; i < deformedSourceMatrix.rows(); i++) {
         sourceResampledDeformed->InsertNextPoint(
@@ -193,8 +196,9 @@ void RegistrationThread::DebugPrintMatrix(Eigen::MatrixXd matrix) {
     std::cout << matrix.format(CleanFmt) << sep;
 }
 
-void RegistrationThread::PrealignMesh(
-    vtkPolyData* sourceMesh, vtkPolyData* templateMesh, vtkPolyData* alignedOutput) {
+void RegistrationThread::PrealignMesh(vtkPolyData* sourceMesh,
+                                      vtkPolyData* templateMesh,
+                                      vtkPolyData* alignedOutput) {
     // Step 1: Compute centroids
     double sourceCentroid[3];
     double templateCentroid[3];
@@ -202,8 +206,10 @@ void RegistrationThread::PrealignMesh(
     ComputeCentroid(templateMesh, templateCentroid);
 
     // Step 2: Compute eigenvectors of covariance matrices
-    Eigen::Matrix3d covSource = ComputeCovarianceMatrix(sourceMesh, sourceCentroid);
-    Eigen::Matrix3d covTemplate = ComputeCovarianceMatrix(templateMesh, templateCentroid);
+    Eigen::Matrix3d covSource =
+        ComputeCovarianceMatrix(sourceMesh, sourceCentroid);
+    Eigen::Matrix3d covTemplate =
+        ComputeCovarianceMatrix(templateMesh, templateCentroid);
 
     Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> eigSource(covSource);
     Eigen::SelfAdjointEigenSolver<Eigen::Matrix3d> eigTemplate(covTemplate);
@@ -232,7 +238,8 @@ void RegistrationThread::PrealignMesh(
     transform->PostMultiply();
 
     // Move to origin
-    transform->Translate(-sourceCentroid[0], -sourceCentroid[1], -sourceCentroid[2]);
+    transform->Translate(-sourceCentroid[0], -sourceCentroid[1],
+                         -sourceCentroid[2]);
 
     // Apply rotation using vtkMatrix4x4
     vtkNew<vtkMatrix4x4> vtkRotMatrix;
@@ -255,7 +262,8 @@ void RegistrationThread::PrealignMesh(
     alignedOutput->ShallowCopy(filter->GetOutput());
 }
 
-Eigen::Matrix3d RegistrationThread::ComputeCovarianceMatrix(vtkPolyData* mesh, const double centroid[3]) {
+Eigen::Matrix3d RegistrationThread::ComputeCovarianceMatrix(
+    vtkPolyData* mesh, const double centroid[3]) {
     vtkPoints* points = mesh->GetPoints();
     vtkIdType numPoints = points->GetNumberOfPoints();
     Eigen::MatrixXd centered(3, numPoints);
@@ -272,7 +280,8 @@ Eigen::Matrix3d RegistrationThread::ComputeCovarianceMatrix(vtkPolyData* mesh, c
     return (centered * centered.transpose()) / static_cast<double>(numPoints);
 }
 
-void RegistrationThread::ComputeCentroid(vtkPolyData* mesh, double centroid[3]) {
+void RegistrationThread::ComputeCentroid(vtkPolyData* mesh,
+                                         double centroid[3]) {
     vtkPoints* points = mesh->GetPoints();
     vtkIdType numPoints = points->GetNumberOfPoints();
 
@@ -398,6 +407,4 @@ double RegistrationThread::GetMeshCellArea(std::vector<double>* probab,
     return totalArea;
 }
 
-RegistrationThread::~RegistrationThread() {
-    delete m_BlueNoiseThread;
-}
+RegistrationThread::~RegistrationThread() { delete m_BlueNoiseThread; }

@@ -120,11 +120,6 @@ SuperImposition::SuperImposition(DataBase *dataBase, MainWindow *parent, QMutex*
 
     nameQList = new QListWidget;
 
-    // lmInputList->setMaximumWidth(lmInputList->sizeHintForColumn(0) +
-    // lmInputList->frameWidth() * 2);
-    // lmOutputList->setMaximumWidth(lmOutputList->sizeHintForColumn(0) +
-    // lmOutputList->frameWidth() * 2);
-
     btnAllToSelected = new QToolButton();
     btnAllToSelected->setText(">>");
     btnMoveToSelected = new QToolButton();
@@ -357,6 +352,7 @@ void SuperImposition::Plot() {
 
     // Mesh properties and color etc
     vtkNew<vtkDataSetMapper> mapper;
+    mapper->ScalarVisibilityOff();  // <- disables scalar-based coloring
     mapper->SetInputData(m_meshData);
     m_meshActor->SetMapper(mapper);
     m_meshActor->GetProperty()->SetColor(1, 0.992, 0.815);

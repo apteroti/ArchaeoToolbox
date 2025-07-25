@@ -156,7 +156,7 @@
 #include <thread>
 //#include <sqlite3.h> 
 
-
+using std::string;
 
 enum class STATUS {
     outdated = 0,
