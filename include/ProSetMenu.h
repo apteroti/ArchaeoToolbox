@@ -82,6 +82,7 @@
 #include <vtkPolygon.h>
 #include <vtkSmartPointer.h>
 #include <vtkMultiBlockDataSet.h>
+#include <vtkPLYReader.h>
 
 
 #include "MainWindow.fwd.h"

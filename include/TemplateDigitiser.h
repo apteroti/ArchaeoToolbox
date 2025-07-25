@@ -380,7 +380,6 @@ private:
     vtkSmartPointer<vtkActor> m_meshBoundActor;
     vtkSmartPointer<vtkPolyData> m_meshBoundaries;
 
-    double m_area =0;
     double m_sizeConstant = 0;
 
     //Toolbar

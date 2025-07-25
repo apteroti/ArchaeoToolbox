@@ -141,6 +141,9 @@ public:
     vtkStructuredGrid* GetGridNode(std::string name)const;
     vtkDoubleArray* GetProcDistance(std::string name) const;
     std::string GetGeometryType(std::string name) const;
+    int GetNumberOfTypeI(std::string name)const;
+    int GetNumberOfCurveSliders(std::string name)const;
+    int GetNumberOfSurfaceSliders(std::string name)const;
     
     // Utility functions
     std::vector<std::string> GetNodeNames() const;

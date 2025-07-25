@@ -102,7 +102,7 @@ void RecoverLMThread::run() {
                         sampleName += "_Duplicate";
                     }
                     m_dataBase->AddNode(sampleName, cleanFilter->GetOutput(),
-                                        "OBJ");
+                                        "Mesh");
                     m_mutex->unlock();
                     // check number of landmarks
                     vtkNew<vtkPoints> fixedPts;

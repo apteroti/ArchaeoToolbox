@@ -1631,8 +1631,7 @@ void TemplateDigitiser::FinalizeSurfaceScene() {
         m_surfaceCurveTubeFilterDeactive->Modified();
 
         m_renderer->GetRenderWindow()->Render();
-    }
-    else {
+    } else {
         QMessageBox warning;
         warning.setText(
             "Number of digitized Surface Patches are less than the decided "
@@ -1642,8 +1641,8 @@ void TemplateDigitiser::FinalizeSurfaceScene() {
 }
 
 void TemplateDigitiser::UpdateCurveData(vtkPoints* pts, vtkPolyData* outputLine,
-                                   vtkPoints* outputPoints,
-                                   vtkPolyData* baseMesh) {
+                                        vtkPoints* outputPoints,
+                                        vtkPolyData* baseMesh) {
     // Here put closed or open curve
     if (pts->GetNumberOfPoints() > 2) {
         // m_curveActor->SetVisibility(1);
@@ -1733,7 +1732,7 @@ void TemplateDigitiser::UpdateCurveData(vtkPoints* pts, vtkPolyData* outputLine,
 }
 
 void TemplateDigitiser::ConstructSurfaceData(vtkPolyData* CtrlPtsPoly,
-                                        vtkPoints* outputSliders) {
+                                             vtkPoints* outputSliders) {
     outputSliders->Initialize();
     std::vector<int>* outlineIds = new std::vector<int>();
     OutlineIdFinder(m_surfacePatchUNOS, m_surfacePatchVNOS, outlineIds);
@@ -1754,10 +1753,10 @@ void TemplateDigitiser::ConstructSurfaceData(vtkPolyData* CtrlPtsPoly,
 }
 
 void TemplateDigitiser::ConstructSurfaceData(vtkPoints* pts,
-                                        vtkPoints* outputSliders,
-                                        vtkPolyData* outputCtrlPtsPoly,
-                                        vtkPolyData* outputCurvePoly,
-                                        int resolution) {
+                                             vtkPoints* outputSliders,
+                                             vtkPolyData* outputCtrlPtsPoly,
+                                             vtkPolyData* outputCurvePoly,
+                                             int resolution) {
     if (pts->GetNumberOfPoints() > 2) {
         outputSliders->Initialize();
         outputCtrlPtsPoly->Initialize();
@@ -2087,24 +2086,32 @@ void TemplateDigitiser::Plot() {
     vtkNew<vtkMassProperties> prop;
     prop->SetInputData(m_meshData);
     prop->Update();
-    m_area = prop->GetSurfaceArea();
-    m_area = std::sqrt(m_area);
-    m_sizeConstant =
-        (m_typeINOL + m_surfaceNOS +
-         (m_surfacePatchNOP * m_surfacePatchUNOS * m_surfacePatchVNOS) +
-         (m_curveNOS * m_curveNOC));
-    if (m_sizeConstant < 100) {
-        m_sizeConstant = 100;
-    }
-    if (m_sizeConstant > 300) {
-        m_sizeConstant = 300;
-    }
+    const double area = prop->GetSurfaceArea();
+    const double diagonal =
+        std::sqrt(area);  // Approximate characteristic length
+    // Compute size factor based on application-specific parameters
+    // Normalized between 0-1 range first, then scaled
+
+    double sizeFactor =
+        (m_typeINOL * 0.03 +
+         (m_surfacePatchNOP * m_surfacePatchUNOS * m_surfacePatchVNOS) * 0.025 +
+         (m_curveNOS * m_curveNOC) * 0.025);
+    // Apply sigmoid function for smooth clamping
+    sizeFactor =
+        1.0 /
+        (1.0 + std::exp(-0.1 * (sizeFactor - 50.0)));  // Sigmoid normalization
+
+    // Map to reasonable visual range (1%-5% of characteristic length)
+    const double minSize = 0.01 * diagonal;
+    const double maxSize = 0.05 * diagonal;
+    m_sizeConstant = minSize + sizeFactor * (maxSize - minSize);
+    // Apply to sphere source
     vtkNew<vtkSphereSource> sphereSource;
-    sphereSource->SetRadius(m_area / (m_sizeConstant));
+    sphereSource->SetRadius(m_sizeConstant);
     vtkNew<vtkSphereSource> sphereSource2;
-    sphereSource2->SetRadius((m_area / m_sizeConstant) * 1.5);
+    sphereSource2->SetRadius(m_sizeConstant * 1.5);
     vtkNew<vtkSphereSource> sphereSource3;
-    sphereSource3->SetRadius((m_area / m_sizeConstant) * 0.5);
+    sphereSource3->SetRadius(m_sizeConstant * 0.5);
     //--------------------------------------------
     vtkNew<vtkGlyph3DMapper> fixedPointMapper;
     fixedPointMapper->SetInputData(m_fixedVertexFilter->GetOutput());
@@ -2526,8 +2533,8 @@ void TemplateDigitiser::Resample(int resolution, vtkPolyData* mesh) {
 }
 
 void TemplateDigitiser::PoissonDisk(vtkPolyData* inputPoly, vtkPoints* fixedLm,
-                               vtkPoints* curveSliders, double area, int resol,
-                               vtkPoints* outPutPts) {
+                                    vtkPoints* curveSliders, double area,
+                                    int resol, vtkPoints* outPutPts) {
     bool hasFixed = 1;
     bool hasCurve = 1;
 
@@ -2546,8 +2553,8 @@ void TemplateDigitiser::PoissonDisk(vtkPolyData* inputPoly, vtkPoints* fixedLm,
                                   QMessageBox::Yes | QMessageBox::No)) {
             PrepareBNSampling(1);
             delete m_BlueNoiseThread;
-            m_BlueNoiseThread = new BlueNoiseThread(inputPoly, area, resol,
-                                                    m_surfaceHighlightPoints, m_mutex);
+            m_BlueNoiseThread = new BlueNoiseThread(
+                inputPoly, area, resol, m_surfaceHighlightPoints, m_mutex);
             m_BlueNoiseThread->setParent(this);
 
             connect(m_BlueNoiseThread, &BlueNoiseThread::SamplingIsDone, this,
@@ -2631,7 +2638,7 @@ void TemplateDigitiser::RunStatThread(QThread* thread) {
 }
 
 double TemplateDigitiser::GetMeshCellArea(std::vector<double>* probab,
-                                     vtkPolyData* inputMesh) {
+                                          vtkPolyData* inputMesh) {
     vtkNew<vtkMeshQuality> qualityFilter;
     qualityFilter->SetInputData(inputMesh);
     qualityFilter->SetTriangleQualityMeasureToArea();
@@ -2650,8 +2657,9 @@ double TemplateDigitiser::GetMeshCellArea(std::vector<double>* probab,
 }
 
 void TemplateDigitiser::RandomChoice(vtkPolyData* inputMesh, int outputSize,
-                                std::vector<double>* probab,
-                                std::vector<int>* idList, vtkPoints* points) {
+                                     std::vector<double>* probab,
+                                     std::vector<int>* idList,
+                                     vtkPoints* points) {
     std::discrete_distribution distribution(probab->begin(), probab->end());
     std::vector<decltype(distribution)::result_type> indices;
     indices.reserve(outputSize);
@@ -2695,7 +2703,7 @@ double TemplateDigitiser::RandomFloat(double maximum) {
 }
 
 double TemplateDigitiser::EucDist(double Ax, double Ay, double Az, double Bx,
-                             double By, double Bz) {
+                                  double By, double Bz) {
     double dx = Ax - Bx;
     double dy = Ay - By;
     double dz = Az - Bz;
@@ -2736,7 +2744,7 @@ void TemplateDigitiser::ProjectOnMesh(vtkPoints* point, vtkPolyData* mask) {
 }
 
 void TemplateDigitiser::ProjectOnMesh(vtkPolyData* Poly, vtkPolyData* mask,
-                                 std::vector<int>* ids) {
+                                      std::vector<int>* ids) {
     /* vtkNew<vtkSelectPolyDataModified> loop;
     loop->SetLoop(tempPts);
     loop->SetInputData(m_meshData);
@@ -2787,8 +2795,8 @@ void TemplateDigitiser::ProjectOnMesh(vtkPolyData* Poly, vtkPolyData* mask,
 }
 
 void TemplateDigitiser::DijkstraEdgeSearch(vtkPolyData* mesh,
-                                      vtkPolyData* closedCurve,
-                                      vtkIdList* edgePointIds) {
+                                           vtkPolyData* closedCurve,
+                                           vtkIdList* edgePointIds) {
     vtkNew<vtkDijkstraGraphGeodesicPath> edgeSearchFilter;
     edgeSearchFilter->StopWhenEndReachedOn();
     edgeSearchFilter->SetInputData(mesh);
@@ -2833,7 +2841,7 @@ void TemplateDigitiser::DijkstraEdgeSearch(vtkPolyData* mesh,
 }
 
 void TemplateDigitiser::MeshCutter(vtkPolyData* poly, vtkPoints* curvePts,
-                              vtkPolyData* outMask) {
+                                   vtkPolyData* outMask) {
     outMask->Initialize();
     vtkNew<vtkIdList> cutterIdList;
     GetCutterCurve(poly, curvePts, cutterIdList);
@@ -2875,7 +2883,7 @@ void TemplateDigitiser::MeshCutter(vtkPolyData* poly, vtkPoints* curvePts,
 }
 
 void TemplateDigitiser::GetCutterCurve(vtkPolyData* Poly, vtkPoints* curvePts,
-                                  vtkIdList* outCurveIds) {
+                                       vtkIdList* outCurveIds) {
     /* vtkNew<vtkCellArray> tempLine;
     tempLine->InsertNextCell(curvePts->GetNumberOfPoints() + 1);
     for(int i=0; i < curvePts->GetNumberOfPoints(); i++){
@@ -2943,43 +2951,32 @@ void TemplateDigitiser::ChangeBrushSize(int index) {
 }
 
 void TemplateDigitiser::ChangePointSize(int index) {
-    index *= 2;
-    // Point properties and color etc
-    vtkNew<vtkMassProperties> prop;
-    prop->SetInputData(m_meshData);
-    prop->Update();
-    double area = prop->GetSurfaceArea();
-    area = std::sqrt(area);
-    double sizeConstant =
-        (m_typeINOL + m_surfaceNOS +
-         (m_surfacePatchNOP * m_surfacePatchUNOS * m_surfacePatchVNOS) +
-         (m_curveNOS * m_curveNOC));
-    if (sizeConstant < 100) {
-        sizeConstant = 100;
-    }
-    if (sizeConstant > 300) {
-        sizeConstant = 300;
-    }
+    // Clamp index to reasonable range
+    index = std::clamp(index, -5, 5);
+    // Calculate size with minimum bound
+    double sizeConstant = m_sizeConstant; // Start with default size
     vtkNew<vtkSphereSource> sphereSource;
     vtkNew<vtkSphereSource> sphereSource2;
     vtkNew<vtkSphereSource> sphereSource3;
     if (index < 0) {
-        sizeConstant -= index * 9;
-        sphereSource->SetRadius(area / sizeConstant);
-        sphereSource2->SetRadius(area / sizeConstant * 1.5);
-        sphereSource3->SetRadius(area / sizeConstant * 0.5);
+        // Negative index: divide size exponentially (-1 → 1/2, -2 → 1/4)
+        sizeConstant /= (1 << (-index)); // Bit shift for power-of-2 division
+        sphereSource->SetRadius(sizeConstant);
+        sphereSource2->SetRadius(sizeConstant * 1.5);
+        sphereSource3->SetRadius(sizeConstant * 0.5);
     }
     if (index > 0) {
-        sizeConstant -= index * 9;
-
-        sphereSource->SetRadius(area / sizeConstant);
-        sphereSource2->SetRadius(area / sizeConstant * 1.5);
-        sphereSource3->SetRadius(area / sizeConstant * 0.5);
+        // Positive indices: 1=1.5x, 2=2x, 3=3x, etc.
+        sizeConstant *= (index == 1) ? 1.5 : index;
+        sphereSource->SetRadius(sizeConstant);
+        sphereSource2->SetRadius(sizeConstant * 1.5);
+        sphereSource3->SetRadius(sizeConstant * 0.5);
     }
     if (index == 0) {
-        sphereSource->SetRadius(area / sizeConstant);
-        sphereSource2->SetRadius(area / sizeConstant * 1.5);
-        sphereSource3->SetRadius(area / sizeConstant * 0.5);
+        sizeConstant = m_sizeConstant;
+        sphereSource->SetRadius(sizeConstant);
+        sphereSource2->SetRadius(sizeConstant * 1.5);
+        sphereSource3->SetRadius(sizeConstant * 0.5);
     }
 
     vtkNew<vtkGlyph3DMapper> fixedPointMapper;
@@ -3068,27 +3065,29 @@ void TemplateDigitiser::ChangePointSize(int index) {
 }
 
 void TemplateDigitiser::ChangeLineSize(int index) {
-    index *= 2;
+    int magnifier = 2;
+    // Clamp index to reasonable range
+    index = std::clamp(index, -5, 5);
     if (index > 0) {
         if (m_surfaceTubeFilter->GetOutput()->GetNumberOfPoints() > 0) {
-            m_surfaceTubeFilter->SetRadius(0.1 * index);
+            m_surfaceTubeFilter->SetRadius(0.1 * index*magnifier);
             m_surfaceTubeFilter->Update();
         }
         if (m_surfaceCurveTubeFilterDeactive->GetOutput()->GetNumberOfPoints() >
             0) {
-            m_surfaceCurveTubeFilterDeactive->SetRadius(0.3 * index);
+            m_surfaceCurveTubeFilterDeactive->SetRadius(0.3 * index*magnifier);
             m_surfaceCurveTubeFilterDeactive->Update();
         }
         if (m_surfaceCurveTubeFilter->GetOutput()->GetNumberOfPoints() > 0) {
-            m_surfaceCurveTubeFilter->SetRadius(0.3 * index);
+            m_surfaceCurveTubeFilter->SetRadius(0.3 * index*magnifier);
             m_surfaceCurveTubeFilter->Update();
         }
         if (m_curveTubeFilterDeactive->GetOutput()->GetNumberOfPoints() > 0) {
-            m_curveTubeFilterDeactive->SetRadius(0.3 * index);
+            m_curveTubeFilterDeactive->SetRadius(0.3 * index*magnifier);
             m_curveTubeFilterDeactive->Update();
         }
         if (m_curveTubeFilter->GetOutput()->GetNumberOfPoints() > 0) {
-            m_curveTubeFilter->SetRadius(0.3 * index);
+            m_curveTubeFilter->SetRadius(0.3 * index*magnifier);
             m_curveTubeFilter->Update();
         }
     }
@@ -3096,24 +3095,24 @@ void TemplateDigitiser::ChangeLineSize(int index) {
     if (index < 0) {
         index = std::abs(index);
         if (m_surfaceTubeFilter->GetOutput()->GetNumberOfPoints() > 0) {
-            m_surfaceTubeFilter->SetRadius(0.1 / index);
+            m_surfaceTubeFilter->SetRadius(0.1 / (index*magnifier));
             m_surfaceTubeFilter->Update();
         }
         if (m_surfaceCurveTubeFilterDeactive->GetOutput()->GetNumberOfPoints() >
             0) {
-            m_surfaceCurveTubeFilterDeactive->SetRadius(0.3 / index);
+            m_surfaceCurveTubeFilterDeactive->SetRadius(0.3 / (index*magnifier));
             m_surfaceCurveTubeFilterDeactive->Update();
         }
         if (m_surfaceCurveTubeFilter->GetOutput()->GetNumberOfPoints() > 0) {
-            m_surfaceCurveTubeFilter->SetRadius(0.3 / index);
+            m_surfaceCurveTubeFilter->SetRadius(0.3 / (index*magnifier));
             m_surfaceCurveTubeFilter->Update();
         }
         if (m_curveTubeFilterDeactive->GetOutput()->GetNumberOfPoints() > 0) {
-            m_curveTubeFilterDeactive->SetRadius(0.3 / index);
+            m_curveTubeFilterDeactive->SetRadius(0.3 / (index*magnifier));
             m_curveTubeFilterDeactive->Update();
         }
         if (m_curveTubeFilter->GetOutput()->GetNumberOfPoints() > 0) {
-            m_curveTubeFilter->SetRadius(0.3 / index);
+            m_curveTubeFilter->SetRadius(0.3 / (index*magnifier));
             m_curveTubeFilter->Update();
         }
     }
@@ -3305,8 +3304,8 @@ void TemplateDigitiser::CycleThroughPatches(int index) {
 }
 
 void TemplateDigitiser::MakeArrow(vtkPolyData* inputMesh,
-                             vtkMultiBlockDataSet* inputCurveBlock,
-                             int liftScale, vtkPolyData* output) {
+                                  vtkMultiBlockDataSet* inputCurveBlock,
+                                  int liftScale, vtkPolyData* output) {
     vtkNew<vtkPointLocator> ptLocator;
     ptLocator->SetDataSet(inputMesh);
     ptLocator->BuildLocator();
@@ -3443,7 +3442,8 @@ void TemplateDigitiser::CurveTool() {
     }
 }
 
-void TemplateDigitiser::CosmeticCurve(vtkPoints* ctrlPts, vtkPolyData* outputCurve) {
+void TemplateDigitiser::CosmeticCurve(vtkPoints* ctrlPts,
+                                      vtkPolyData* outputCurve) {
     outputCurve->Initialize();
     if (ctrlPts->GetNumberOfPoints() > 1) {
         if (surfaceSliderButton->isChecked()) {
@@ -3477,7 +3477,7 @@ void TemplateDigitiser::CosmeticCurve(vtkPoints* ctrlPts, vtkPolyData* outputCur
 }
 
 void TemplateDigitiser::PickFunc(vtkObject* caller, long unsigned int eventId,
-                            void* callData) {
+                                 void* callData) {
     if (landmarkButton->isChecked()) {
         if (m_iren->GetControlKey()) {
             if (m_typeINOL -
@@ -3759,7 +3759,6 @@ void TemplateDigitiser::PickFunc(vtkObject* caller, long unsigned int eventId,
                     m_surfaceChanged = 1;
                 }
                 m_renderer->GetRenderWindow()->Render();
-
             }
         }
         if (m_iren->GetShiftKey() && m_editableSurface == 1 &&
@@ -3906,7 +3905,7 @@ void TemplateDigitiser::SelectAll() {
 }
 
 void TemplateDigitiser::PaintFunc(vtkObject* caller, long unsigned int eventId,
-                             void* callData) {
+                                  void* callData) {
     if (m_iren->GetControlKey() && m_mouseIsClicked) {
         if (surfacePaintButton->isChecked()) {
             m_iren->SetInteractorStyle(m_2Dstyle);
@@ -3992,7 +3991,7 @@ void TemplateDigitiser::BrushTool() {
 }
 
 void TemplateDigitiser::NeighborFinder(int initId, int brushSize,
-                                  std::vector<int>& outList) {
+                                       std::vector<int>& outList) {
     outList.clear();
     vtkNew<vtkIdList> list;
     vtkNew<vtkIdList> tempList;
@@ -4029,14 +4028,15 @@ void TemplateDigitiser::NeighborFinder(int initId, int brushSize,
     }
 }
 
-void TemplateDigitiser::resetLeftClck(vtkObject* caller, long unsigned int eventId,
-                                 void* callData) {
+void TemplateDigitiser::resetLeftClck(vtkObject* caller,
+                                      long unsigned int eventId,
+                                      void* callData) {
     m_PointPickerStyle->OnLeftButtonUp();
     // m_PointPainterStyle->OnLeftButtonUp();
 }
 
 void TemplateDigitiser::MoveFunc(vtkObject* caller, long unsigned int eventId,
-                            void* callData) {
+                                 void* callData) {
     if (m_iren->GetControlKey()) {
         m_meshActor->SetPickable(0);
         m_meshActor->Modified();
@@ -4083,14 +4083,16 @@ void TemplateDigitiser::MoveFunc(vtkObject* caller, long unsigned int eventId,
     }
 }
 
-void TemplateDigitiser::resetMouseMove(vtkObject* caller, long unsigned int eventId,
-                                  void* callData) {
+void TemplateDigitiser::resetMouseMove(vtkObject* caller,
+                                       long unsigned int eventId,
+                                       void* callData) {
     m_PointMoverStyle->OnMiddleButtonUp();
     m_iren->SetInteractorStyle(m_PointPickerStyle);
 }
 
-void TemplateDigitiser::CoordinateFunc(vtkObject* caller, long unsigned int eventId,
-                                  void* callData) {
+void TemplateDigitiser::CoordinateFunc(vtkObject* caller,
+                                       long unsigned int eventId,
+                                       void* callData) {
     m_meshActor->SetPickable(1);
     m_meshActor->Modified();
     auto clickPos = m_iren->GetEventPosition();
@@ -4280,7 +4282,8 @@ void TemplateDigitiser::CoordinateFunc(vtkObject* caller, long unsigned int even
     }
 }
 
-void TemplateDigitiser::OutlineIdFinder(int u, int v, std::vector<int>* output) {
+void TemplateDigitiser::OutlineIdFinder(int u, int v,
+                                        std::vector<int>* output) {
     int uRes = u + 2;
     int vRes = v + 2;
 
@@ -4359,8 +4362,7 @@ void TemplateDigitiser::closeEvent(QCloseEvent* event) {
         } else {
             PrepareClosing(event);
         }
-    }
-    else{
+    } else {
         PrepareClosing(event);
     }
 }

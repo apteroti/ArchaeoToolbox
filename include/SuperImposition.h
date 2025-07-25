@@ -178,8 +178,8 @@
 
 #include "DataBase.h"
 #include "MainWindow.fwd.h"
-#include "SuperImpositionThread.h"
 #include "StatusReporterThread.h"
+#include "SuperImpositionThread.h"
 
 enum class Progress { neutral = 0, imposed = 1 };
 enum class Method { full = 0, partial = 1 };
@@ -193,17 +193,18 @@ class SuperImposition : public QMainWindow {
     std::vector<std::string> m_nameList;
     std::vector<int>* m_lmIdList;
     vtkSmartPointer<vtkPolyData> m_meshData;
-    vtkSmartPointer<vtkPoints> m_anchorData; //this one is only for plotting
-    vtkSmartPointer<vtkPolyData> m_lmData;
-    
+    vtkSmartPointer<vtkPolyData> m_totalLmData;
+    vtkSmartPointer<vtkPoints> m_fixLmData;
+    vtkSmartPointer<vtkPoints> m_curveLmData;
+    vtkSmartPointer<vtkPoints> m_surfaceLmData;
+
     Method m_method = Method::full;
     QListWidget* lmList;
     QListWidget* lmAnchorList;
     QListWidget* nameQList;
-    
 
     SuperImpositionThread* m_impositionThread = nullptr;
-    StatusReporterThread *m_impositionStatThread = nullptr;
+    StatusReporterThread* m_impositionStatThread = nullptr;
     // buttons and etc
     QToolButton* btnAllToSelected;
     QToolButton* btnAllToAvailable;
@@ -224,10 +225,7 @@ class SuperImposition : public QMainWindow {
     vtkSmartPointer<vtkGenericRenderWindowInteractor> m_iren;
     vtkSmartPointer<vtkInteractorStyleTrackballCamera> m_style;
     vtkSmartPointer<vtkActor> m_meshActor;
-    vtkSmartPointer<vtkActor> m_lmPointActor;
-    vtkSmartPointer<vtkActor> m_anchorActor;
     vtkSmartPointer<vtkActor2D> m_labelActor;
-    
 
    public:
     SuperImposition(DataBase* dataBase, MainWindow* parent, QMutex* mutex);
@@ -246,9 +244,10 @@ class SuperImposition : public QMainWindow {
    public Q_SLOTS:
     void OnCoordinateChanged(std::string name);
     void OnCoordinateNotChanged(std::string name);
-    //void OnProcessIsDone();
+    // void OnProcessIsDone();
     void OnStatusChanged(int status);
     void ChangeImposeMethod(int index);
+
    protected:
     void closeEvent(QCloseEvent* event) override;
 };

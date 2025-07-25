@@ -85,7 +85,7 @@ MainWindow::MainWindow() {
     mainRenderWindowWidget = new QVTKOpenGLWidget();
 
     helpEngine = new QHelpEngine(QApplication::applicationDirPath() +
-        "/documents/helpdocuments.qhc");
+                                 "/documents/helpdocuments.qhc");
     helpEngine->setupData();
 
     helpTab = new QTabWidget();
@@ -97,13 +97,11 @@ MainWindow::MainWindow() {
     textViewer->setSource(
         QUrl("qthelp://archaeotoolbox.helpdocument/doc/index.html"));
 
-    connect(helpEngine->contentWidget(),
-        SIGNAL(linkActivated(QUrl)),
-        textViewer, SLOT(setSource(QUrl)));
+    connect(helpEngine->contentWidget(), SIGNAL(linkActivated(QUrl)),
+            textViewer, SLOT(setSource(QUrl)));
 
-    connect(helpEngine->indexWidget(),
-        SIGNAL(linkActivated(QUrl, QString)),
-        textViewer, SLOT(setSource(QUrl)));
+    connect(helpEngine->indexWidget(), SIGNAL(linkActivated(QUrl, QString)),
+            textViewer, SLOT(setSource(QUrl)));
     horizSplitter = new QSplitter(Qt::Horizontal);
     horizSplitter->insertWidget(0, helpTab);
     horizSplitter->insertWidget(1, textViewer);
@@ -111,7 +109,6 @@ MainWindow::MainWindow() {
     helpWindow = new QMainWindow(this);
     helpWindow->setCentralWidget(horizSplitter);
     helpWindow->hide();
-
 
     mainTable = new QTableWidget();
     supImposedTable = new QTableWidget();
@@ -257,7 +254,6 @@ MainWindow::MainWindow() {
     mainTable->setRowCount(TableRowNum);
     mainTable->setColumnCount(TableColNum);
     SetLandmarkHeaders(mainTable);
-    
 
     mainTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     mainTable->setFocusPolicy(Qt::NoFocus);
@@ -281,13 +277,13 @@ MainWindow::MainWindow() {
     mainTabWidget->addTab(mainTable, tr("Digitised"));
     mainTabWidget->addTab(supImposedTable, tr("SuperImposed"));
     mainTabWidget->addTab(procResTable, tr("Procrustes Residual"));
-    
+
     setCentralWidget(mainTabWidget);
     // Setting up File menu
     fileMenu = menuBar()->addMenu("&File");
-    importMeshAction = new QAction("Import Geometry (OBJ)", this);
+    importMeshAction = new QAction("Import Geometry (OBJ/PLY)", this);
     importMeshAction->setShortcut(QKeySequence("Ctrl+I"));
-    importMeshAction->setStatusTip("Import .OBJ mesh");
+    importMeshAction->setStatusTip("Import .OBJ/PLY mesh");
 
     exportCSVAction = new QAction("Export Data", this);
     exportCSVAction->setStatusTip("Export Data as .CSV");
@@ -334,7 +330,7 @@ MainWindow::MainWindow() {
     // Setting up Toolbar for content tree
     dockedToolbar = new QDockWidget;
     dockedToolbar->setFeatures(QDockWidget::DockWidgetFloatable |
-        QDockWidget::DockWidgetMovable);
+                               QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::LeftDockWidgetArea, dockedToolbar);
     //---------------------------------------
     toolbar = addToolBar("Main Toolbar");
@@ -350,19 +346,18 @@ MainWindow::MainWindow() {
     meshPlotToolbarAction->setEnabled(0);
     superImpositionToolbarAction =
         toolbar->addAction(QIcon(":/icons/graphics/icons/superimposition.svg"),
-            "Super Imposition");
+                           "Super Imposition");
     superImpositionToolbarAction->setEnabled(0);
     pcaToolbarAction =
         toolbar->addAction(QIcon(":/icons/graphics/icons/PCAicon.svg"),
-            "Principal Component Analysis");
+                           "Principal Component Analysis");
     pcaToolbarAction->setEnabled(0);
     templatePlotToolbarAction = toolbar->addAction(
         QIcon(":/icons/graphics/icons/template.svg"), "Plot Template");
     templatePlotToolbarAction->setEnabled(0);
 
-    helpToolbarAction = toolbar->addAction(
-        QIcon(":/icons/graphics/icons/Help.svg"), "Help");
-
+    helpToolbarAction =
+        toolbar->addAction(QIcon(":/icons/graphics/icons/Help.svg"), "Help");
 
     m_templateView = new TemplateViewer(this);
     m_templateView->hide();
@@ -383,31 +378,32 @@ MainWindow::MainWindow() {
     connect(importMeshAction, &QAction::triggered, this, &MainWindow::LoadOBJ);
     connect(exportCSVAction, &QAction::triggered, this, &MainWindow::ExportCSV);
     connect(exportVTKAction, &QAction::triggered, this,
-        &MainWindow::ExportGeometry);
+            &MainWindow::ExportGeometry);
     connect(saveProjectAction, &QAction::triggered, this,
-        &MainWindow::SaveProject);
+            &MainWindow::SaveProject);
     connect(recoverActionLegacy, &QAction::triggered, this,
-        &MainWindow::RecoverDigitisedLM);
+            &MainWindow::RecoverDigitisedLM);
     connect(openProjectAction, &QAction::triggered, this,
-        &MainWindow::RecoverProject);
+            &MainWindow::RecoverProject);
     // connect(quitAction, &QAction::triggered, this, &QApplication::quit);
     connect(quitAction, &QAction::triggered, this, &MainWindow::customQuit);
     connect(plotToolbarAction, &QAction::triggered, this,
-        &MainWindow::DICOMPlot);
+            &MainWindow::DICOMPlot);
     connect(superImpositionToolbarAction, &QAction::triggered, this,
-        &MainWindow::SuperImpose);
+            &MainWindow::SuperImpose);
     connect(templatePlotToolbarAction, &QAction::triggered, this,
-        &MainWindow::TemplatePlot);
+            &MainWindow::TemplatePlot);
     connect(meshPlotToolbarAction, &QAction::triggered, this,
-        &MainWindow::meshPlot);
+            &MainWindow::meshPlot);
     connect(projectSettingAction, &QAction::triggered, this,
-        &MainWindow::SettingMenu);
+            &MainWindow::SettingMenu);
     connect(m_treeWidget, &QTreeWidget::itemSelectionChanged, this,
-        &MainWindow::UpdateActiveData);
+            &MainWindow::UpdateActiveData);
     connect(m_treeWidget, &QTreeWidget::customContextMenuRequested, this,
-        &MainWindow::ShowContextMenu);
+            &MainWindow::ShowContextMenu);
     connect(pcaToolbarAction, &QAction::triggered, this, &MainWindow::PCA);
-    connect(helpToolbarAction, &QAction::triggered, this, &MainWindow::PrintHelp);
+    connect(helpToolbarAction, &QAction::triggered, this,
+            &MainWindow::PrintHelp);
     //-----------------------------------------------------------
     ContentTree(dockedToolbar);
 }
@@ -415,8 +411,8 @@ MainWindow::MainWindow() {
 void MainWindow::customQuit() {
     if (QMessageBox::Yes ==
         QMessageBox::question(this, "Close Confirmation",
-            "Do you Want to quit?",
-            QMessageBox::Yes | QMessageBox::No)) {
+                              "Do you Want to quit?",
+                              QMessageBox::Yes | QMessageBox::No)) {
         QApplication::quit();
     }
 }
@@ -425,8 +421,8 @@ void MainWindow::closeEvent(QCloseEvent* event) {
     event->ignore();
     if (QMessageBox::Yes ==
         QMessageBox::question(this, "Close Confirmation",
-            "Do you Want to quit?",
-            QMessageBox::Yes | QMessageBox::No)) {
+                              "Do you Want to quit?",
+                              QMessageBox::Yes | QMessageBox::No)) {
         delete m_meshPlot;
         m_meshPlot = nullptr;
         delete m_SIMP;
@@ -448,26 +444,26 @@ void MainWindow::closeEvent(QCloseEvent* event) {
 }
 
 void MainWindow::ContentTree(QDockWidget* parent) {
-    m_treeWidget->setHeaderLabels(QStringList{ "Name", "Type" });
+    m_treeWidget->setHeaderLabels(QStringList{"Name", "Type"});
     parent->setWidget(m_treeWidget);
     m_treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     m_treeWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     renameNodeAction = nodePopUpMenu.addAction("Rename");
     connect(renameNodeAction, &QAction::triggered, this,
-        &MainWindow::RenameDataNode);
+            &MainWindow::RenameDataNode);
     connect(m_treeWidget, &QTreeWidget::itemChanged, this,
-        &MainWindow::UpdateNodeName);
+            &MainWindow::UpdateNodeName);
     nodePopUpMenu.addSeparator();
     deleteNodeAction = nodePopUpMenu.addAction("Delete");
     connect(deleteNodeAction, &QAction::triggered, this,
-        &MainWindow::DeleteDataNode);
+            &MainWindow::DeleteDataNode);
     deleteBranchAction = branchPopUpMenu.addAction("Delete Landmarks");
     connect(deleteBranchAction, &QAction::triggered, this,
-        &MainWindow::DeleteDataBranch);
+            &MainWindow::DeleteDataBranch);
     nodePopUpMenu.addSeparator();
     exportGeometryAction = nodePopUpMenu.addAction("Export Geometry");
     connect(exportGeometryAction, &QAction::triggered, this,
-        &MainWindow::ExportGeometry);
+            &MainWindow::ExportGeometry);
 }
 
 void MainWindow::SettingMenu() { projectSettings->show(); }
@@ -476,26 +472,42 @@ void MainWindow::about() {
     QMessageBox::about(
         this, tr("About ArchaeoToolbox"),
         tr("<p align='center'> <b>ArchaeoToolbox</b> <br> 2.2"
-            "<br> <b>Reference:</b> <br> Kaveh Yousef Pouran, Maria Saña, Juan "
-            "Anton Barceló, 2023. Biomechanics, behaviour dynamics and "
-            "archaeology: Integrative attempts to study animal domestication "
-            "and husbandry. Universitat Autònoma de Barcelona. <br> "
-            "Copyright (c) Kaveh Yousef Poran <br> 2023"));
+           "<br> <b>Reference:</b> <br> Kaveh Yousef Pouran, Maria Saña, Juan "
+           "Anton Barceló, 2023. Biomechanics, behaviour dynamics and "
+           "archaeology: Integrative attempts to study animal domestication "
+           "and husbandry. Universitat Autònoma de Barcelona. <br> "
+           "Copyright (c) Kaveh Yousef Poran <br> 2023"));
 }
 
 void MainWindow::LoadOBJ() {
     // we could add this option {QFileDialog::DontUseNativeDialog}
-    QString fileName =
-        QFileDialog::getOpenFileName(this, "OBJ Files", QDir::homePath(),
-            "OBJ Files (*.obj);;All Files (*)");
+    QString fileName = QFileDialog::getOpenFileName(
+        this, "Mesh Files", QDir::homePath(),
+        "OBJ Files (*.obj);;PLY Files (*.ply);;All Files (*)", nullptr,
+        QFileDialog::DontUseNativeDialog);
     if (fileName.isEmpty()) {
-    }
-    else {
-        if (fileName.endsWith(".obj")) {
-            vtkSmartPointer<vtkOBJReader> objReader =
-                vtkSmartPointer<vtkOBJReader>::New();
-            objReader->SetFileName(fileName.toLocal8Bit().data());
-            objReader->Update();
+    } else {
+        if (fileName.endsWith(".obj") || fileName.endsWith(".ply")) {
+            vtkSmartPointer<vtkCleanPolyData> cleanFilter =
+                vtkSmartPointer<vtkCleanPolyData>::New();
+            if (fileName.endsWith(".obj")) {
+                vtkSmartPointer<vtkOBJReader> objReader =
+                    vtkSmartPointer<vtkOBJReader>::New();
+                objReader->SetFileName(fileName.toLocal8Bit().data());
+                objReader->Update();
+                cleanFilter->SetInputData(objReader->GetOutput());
+                // cleanFilter->SetTolerance(0.001);
+                cleanFilter->Update();
+            } else if (fileName.endsWith(".ply")) {
+                vtkSmartPointer<vtkPLYReader> plyReader =
+                    vtkSmartPointer<vtkPLYReader>::New();
+                plyReader->SetFileName(fileName.toLocal8Bit().data());
+                plyReader->Update();
+                cleanFilter->SetInputData(plyReader->GetOutput());
+                // cleanFilter->SetTolerance(0.001);
+                cleanFilter->Update();
+            }
+
             string realName = QFileInfo(fileName).baseName().toStdString();
             // name template is reserved
             if (realName == "Template") {
@@ -504,16 +516,11 @@ void MainWindow::LoadOBJ() {
             while (m_dataBase->CheckMembership(realName)) {
                 realName += "_Duplicate";
             }
-            vtkSmartPointer<vtkCleanPolyData> cleanFilter =
-                vtkSmartPointer<vtkCleanPolyData>::New();
-            cleanFilter->SetInputData(objReader->GetOutput());
-            // cleanFilter->SetTolerance(0.001);
-            cleanFilter->Update();
 
-            m_dataBase->AddNode(realName, cleanFilter->GetOutput(), "OBJ");
+            m_dataBase->AddNode(realName, cleanFilter->GetOutput(), "Mesh");
             m_treeItem = new QTreeWidgetItem();
             m_treeItem->setText(0, QString::fromStdString(realName));
-            m_treeItem->setText(1, "OBJ");
+            m_treeItem->setText(1, "Mesh");
             m_treeWidget->addTopLevelItem(m_treeItem);
             if (m_treeWidget->selectedItems().size() == 0 &&
                 m_treeWidget->topLevelItemCount()) {
@@ -532,11 +539,11 @@ void MainWindow::LoadOBJ() {
                 pcaToolbarAction->setEnabled(1);
             }
         }
-        if (fileName.endsWith(".obj") == 0) {
+        if (!fileName.endsWith(".obj") && !fileName.endsWith(".ply")) {
             auto errorDialogue = QMessageBox();
             errorDialogue.setIcon(QMessageBox::Critical);
             errorDialogue.setWindowTitle("Error");
-            errorDialogue.setText("No OBJ file was Selected");
+            errorDialogue.setText("No Suitable file was Selected");
             errorDialogue.exec();
         }
     }
@@ -547,8 +554,7 @@ void MainWindow::ExportCSV() {
         delete m_exportDial;
         m_exportDial = new ExportDialogue(this);
         m_exportDial->show();
-    }
-    else {
+    } else {
         auto errorDialogue = QMessageBox();
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
@@ -561,7 +567,8 @@ void MainWindow::DoExport() {
     if (m_lm) {
         auto filter = "csv(*.csv)";
         QString filename = QFileDialog::getSaveFileName(
-            this, "Save Raw Landmarks", "", filter);
+            this, "Save Raw Landmarks", "", filter, nullptr,
+            QFileDialog::DontUseNativeDialog);
         QFileInfo fi(filename);
         QString ext = fi.completeSuffix();
         if (filename.isEmpty()) {
@@ -570,7 +577,8 @@ void MainWindow::DoExport() {
         if (ext != "csv") {
             filename += ".csv";
         }
-        int numLM = m_dataBase->GetTotalLandmarks("Template")->GetNumberOfPoints();
+        int numLM =
+            m_dataBase->GetTotalLandmarks("Template")->GetNumberOfPoints();
         int numCols = (numLM * 3) + 1;
         QFile f(filename);
         if (f.open(QFile::WriteOnly | QFile::Truncate)) {
@@ -582,8 +590,7 @@ void MainWindow::DoExport() {
                     textItem += "LM" + QString::number(i) + "X" + ",";
                     textItem += "LM" + QString::number(i) + "Y" + ",";
                     textItem += "LM" + QString::number(i) + "Z";
-                }
-                else {
+                } else {
                     textItem += "LM" + QString::number(i) + "X" + ",";
                     textItem += "LM" + QString::number(i) + "Y" + ",";
                     textItem += "LM" + QString::number(i) + "Z" + ",";
@@ -597,8 +604,7 @@ void MainWindow::DoExport() {
                     if (item && !item->text().isEmpty()) {
                         if (j == numCols - 1) {
                             textItem += item->text();
-                        }
-                        else {
+                        } else {
                             textItem += item->text() + ",";
                         }
                     }
@@ -608,11 +614,11 @@ void MainWindow::DoExport() {
             }
             f.close();
         }
-    }
-    else if (m_si) {
+    } else if (m_si) {
         auto filter = "csv(*.csv)";
         QString filename = QFileDialog::getSaveFileName(
-            this, "Save SuperImposed Landmarks", "", filter);
+            this, "Save SuperImposed Landmarks", "", filter, nullptr,
+            QFileDialog::DontUseNativeDialog);
         QFileInfo fi(filename);
         QString ext = fi.completeSuffix();
         if (filename.isEmpty()) {
@@ -621,7 +627,8 @@ void MainWindow::DoExport() {
         if (ext != "csv") {
             filename += ".csv";
         }
-        int numLM = m_dataBase->GetTotalLandmarks("Template")->GetNumberOfPoints();
+        int numLM =
+            m_dataBase->GetTotalLandmarks("Template")->GetNumberOfPoints();
         int numCols = (numLM * 3) + 1;
         QFile f(filename);
         if (f.open(QFile::WriteOnly | QFile::Truncate)) {
@@ -634,8 +641,7 @@ void MainWindow::DoExport() {
                     textItem += "LM" + QString::number(i) + "X" + ",";
                     textItem += "LM" + QString::number(i) + "Y" + ",";
                     textItem += "LM" + QString::number(i) + "Z";
-                }
-                else {
+                } else {
                     textItem += "LM" + QString::number(i) + "X" + ",";
                     textItem += "LM" + QString::number(i) + "Y" + ",";
                     textItem += "LM" + QString::number(i) + "Z" + ",";
@@ -650,8 +656,7 @@ void MainWindow::DoExport() {
                     if (item && !item->text().isEmpty()) {
                         if (j == numCols - 1) {
                             textItem += item->text();
-                        }
-                        else {
+                        } else {
                             textItem += item->text() + ",";
                         }
                     }
@@ -661,11 +666,11 @@ void MainWindow::DoExport() {
             }
             f.close();
         }
-    }
-    else if (m_pv) {
+    } else if (m_pv) {
         auto filter = "csv(*.csv)";
         QString filename = QFileDialog::getSaveFileName(
-            this, "Save Procrustes Residual Vectors", "", filter);
+            this, "Save Procrustes Residual Vectors", "", filter, nullptr,
+            QFileDialog::DontUseNativeDialog);
         QFileInfo fi(filename);
         QString ext = fi.completeSuffix();
         if (filename.isEmpty()) {
@@ -675,7 +680,8 @@ void MainWindow::DoExport() {
             filename += ".csv";
         }
         QFile f(filename);
-        int numLM = m_dataBase->GetTotalLandmarks("Template")->GetNumberOfPoints();
+        int numLM =
+            m_dataBase->GetTotalLandmarks("Template")->GetNumberOfPoints();
         int numCols = (numLM * 3) + 1;
         if (f.open(QFile::WriteOnly | QFile::Truncate)) {
             QStringList textItem;
@@ -686,8 +692,7 @@ void MainWindow::DoExport() {
                     textItem += "PV" + QString::number(i) + "X" + ",";
                     textItem += "PV" + QString::number(i) + "Y" + ",";
                     textItem += "PV" + QString::number(i) + "Z";
-                }
-                else {
+                } else {
                     textItem += "PV" + QString::number(i) + "X" + ",";
                     textItem += "PV" + QString::number(i) + "Y" + ",";
                     textItem += "PV" + QString::number(i) + "Z" + ",";
@@ -701,8 +706,7 @@ void MainWindow::DoExport() {
                     if (item && !item->text().isEmpty()) {
                         if (j == numCols - 1) {
                             textItem += item->text();
-                        }
-                        else {
+                        } else {
                             textItem += item->text() + ",";
                         }
                     }
@@ -712,11 +716,11 @@ void MainWindow::DoExport() {
             }
             f.close();
         }
-    }
-    else if (m_pm) {
+    } else if (m_pm) {
         auto filter = "csv(*.csv)";
         QString filename = QFileDialog::getSaveFileName(
-            this, "Save Procrustes Residual Magnitudes", "", filter);
+            this, "Save Procrustes Residual Magnitudes", "", filter, nullptr,
+            QFileDialog::DontUseNativeDialog);
         QFileInfo fi(filename);
         QString ext = fi.completeSuffix();
         if (filename.isEmpty()) {
@@ -726,7 +730,8 @@ void MainWindow::DoExport() {
             filename += ".csv";
         }
         QFile f(filename);
-        int numLM = m_dataBase->GetTotalLandmarks("Template")->GetNumberOfPoints();
+        int numLM =
+            m_dataBase->GetTotalLandmarks("Template")->GetNumberOfPoints();
         int numCols = (numLM * 3) + 1;
         if (f.open(QFile::WriteOnly | QFile::Truncate)) {
             QStringList textItem;
@@ -735,8 +740,7 @@ void MainWindow::DoExport() {
             for (int i = 0; i < numLM; i++) {
                 if (i == numLM - 1) {
                     textItem += "PR" + QString::number(i);
-                }
-                else {
+                } else {
                     textItem += "PR" + QString::number(i) + ",";
                 }
             }
@@ -749,15 +753,13 @@ void MainWindow::DoExport() {
                     if (item && !item->text().isEmpty()) {
                         if (j == 0) {
                             textItem += item->text() + ",";
-                        }
-                        else {
+                        } else {
                             std::string textNum = item->text().toStdString();
                             double num = 0;
                             bool convertable = 1;
                             try {
                                 num = stod(textNum);
-                            }
-                            catch (const std::exception& e) {
+                            } catch (const std::exception& e) {
                                 convertable = 0;
                             }
                             if (convertable) {
@@ -775,16 +777,14 @@ void MainWindow::DoExport() {
                         QString item = QString::number(mag);
                         if (j == doubleList->size() - 1) {
                             textItem += item;
-                        }
-                        else {
+                        } else {
                             textItem += item + ",";
                         }
                     }
-                }
-                else {
+                } else {
                     std::cout << "Number of coordinates are not devisible by "
-                        "3; Debug!"
-                        << std::endl;
+                                 "3; Debug!"
+                              << std::endl;
                     std::cout << doubleList->size() << std::endl;
                 }
 
@@ -811,7 +811,9 @@ void MainWindow::ExportGeometry() {
 
     // Ask user for filename
     QString filter = "VTK PolyData (*.vtp)";
-    QString filename = QFileDialog::getSaveFileName(this, "Save file", "", filter);
+    QString filename =
+        QFileDialog::getSaveFileName(this, "Save file", "", filter, nullptr,
+                                     QFileDialog::DontUseNativeDialog);
 
     // If user cancels, filename is empty
     if (filename.isEmpty()) {
@@ -836,20 +838,23 @@ void MainWindow::ExportGeometry() {
     std::string name = itemName.toStdString();
     std::string dType = m_dataBase->GetGeometryType(name);
 
-    if (dType == "OBJ") {
+    if (dType == "Mesh") {
         vtkPolyData* tempPoly = m_dataBase->GetPolyNode(name);
         if (!tempPoly) {
-            QMessageBox::warning(this, "Export Failed", "Failed to access geometry.");
+            QMessageBox::warning(this, "Export Failed",
+                                 "Failed to access geometry.");
             return;
         }
 
         vtkNew<vtkXMLPolyDataWriter> writer;
         writer->SetInputData(tempPoly);
         writer->SetFileName(filename.toStdString().c_str());
-        writer->SetDataModeToBinary(); // optional: smaller file
+        writer->SetDataModeToBinary();  // optional: smaller file
         writer->Write();
     } else {
-        QMessageBox::warning(this, "Unsupported Format", "Only OBJ-based geometries are supported for export.");
+        QMessageBox::warning(
+            this, "Unsupported Format",
+            "Only OBJ/PLY-based geometries are supported for export.");
     }
 }
 
@@ -864,8 +869,7 @@ void MainWindow::SuperImpose() {
                 QPixmap(":/icons/graphics/icons/vBusy.svg"));
             delete m_SIMP;
             m_SIMP = new SuperImposition(m_dataBase, this, m_mutex);
-        }
-        else {
+        } else {
             auto errorDialogue = QMessageBox();
             errorDialogue.setIcon(QMessageBox::Critical);
             errorDialogue.setWindowTitle("Error");
@@ -873,12 +877,11 @@ void MainWindow::SuperImpose() {
             errorDialogue.exec();
             superImpositionToolbarAction->setEnabled(0);
         }
-    }
-    else {
+    } else {
         auto errorDialogue = QMessageBox();
-        //QPixmap Quim(":/icons/graphics/icons/Quim.png");
+        // QPixmap Quim(":/icons/graphics/icons/Quim.png");
         errorDialogue.setIcon(QMessageBox::Critical);
-        //errorDialogue.setIconPixmap(Quim);
+        // errorDialogue.setIconPixmap(Quim);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
             "Project setting was not found! \n If the setting is already "
@@ -940,16 +943,15 @@ void MainWindow::OnSuperImposed(std::string name) {
     }
 
     procResTable->setItem(freeRow, 0,
-        new QTableWidgetItem(QString::fromStdString(name)));
+                          new QTableWidgetItem(QString::fromStdString(name)));
     for (int j = 0; j < coordsPoly->GetNumberOfPoints(); j++) {
         for (int k = 0; k < 3; k++) {
             double item = 0;
             if (name != "Template") {
                 item = coordsPoly->GetPointData()
-                    ->GetArray("ProcrustesVector")
-                    ->GetTuple3(j)[k];
-            }
-            else if (name == "Template") {
+                           ->GetArray("ProcrustesVector")
+                           ->GetTuple3(j)[k];
+            } else if (name == "Template") {
                 item = 0;
             }
             int index = (3 * j) + k + 1;
@@ -966,8 +968,7 @@ void MainWindow::OnSuperImposed(std::string name) {
     if (m_treeWidget->selectedItems()[0]->parent()) {
         dataName =
             m_treeWidget->selectedItems()[0]->parent()->text(0).toStdString();
-    }
-    else {
+    } else {
         dataName = m_treeWidget->selectedItems()[0]->text(0).toStdString();
     }
 }
@@ -978,8 +979,8 @@ void MainWindow::PDist(vtkPoints* points, Eigen::MatrixXd& output) {
         for (int j = i + 1; j < dim; j++) {
             double dist =
                 EucDist(points->GetPoint(i)[0], points->GetPoint(i)[1],
-                    points->GetPoint(i)[2], points->GetPoint(j)[0],
-                    points->GetPoint(j)[1], points->GetPoint(j)[2]);
+                        points->GetPoint(i)[2], points->GetPoint(j)[0],
+                        points->GetPoint(j)[1], points->GetPoint(j)[2]);
             output.operator()(i, j) = dist;
         }
     }
@@ -987,7 +988,7 @@ void MainWindow::PDist(vtkPoints* points, Eigen::MatrixXd& output) {
 }
 
 double MainWindow::EucDist(double Ax, double Ay, double Az, double Bx,
-    double By, double Bz) {
+                           double By, double Bz) {
     double dx = Ax - Bx;
     double dy = Ay - By;
     double dz = Az - Bz;
@@ -1012,28 +1013,26 @@ void MainWindow::meshPlot() {
             "Project setting was not found! \n If the setting is already "
             "configured,\n the REGISTER button has not been pushed!");
         errorDialogue.exec();
-    }
-    else {
+    } else {
         if (!m_treeWidget->selectedItems().isEmpty()) {
             auto name = m_treeWidget->selectedItems()[0]->text(0).toStdString();
             if (m_treeWidget->selectedItems()[0]->parent()) {
                 name = m_treeWidget->selectedItems()[0]
-                    ->parent()
-                    ->text(0)
-                    .toStdString();
+                           ->parent()
+                           ->text(0)
+                           .toStdString();
             }
             std::string dType = m_dataBase->GetGeometryType(name);
             m_currentMesh = m_dataBase->GetPolyNode(name);
 
-            if (dType == "OBJ" && m_currentMesh != nullptr) {
+            if (dType == "Mesh" && m_currentMesh != nullptr) {
                 m_treeWidget->setSelectionMode(QAbstractItemView::NoSelection);
                 if (m_treeWidget->selectedItems()[0]->parent()) {
                     m_treeWidget->blockSignals(true);
                     m_treeWidget->selectedItems()[0]->parent()->setIcon(
                         0, QIcon(":/icons/graphics/icons/hourglass.png"));
                     m_treeWidget->blockSignals(false);
-                }
-                else {
+                } else {
                     m_treeWidget->blockSignals(true);
                     m_treeWidget->selectedItems()[0]->setIcon(
                         0, QIcon(":/icons/graphics/icons/hourglass.png"));
@@ -1046,16 +1045,14 @@ void MainWindow::meshPlot() {
                 delete m_meshPlot;
                 m_meshPlot = new SpecimenDigitiser(m_currentMesh, this);
             }
-        }
-        else {
+        } else {
             if (m_treeWidget->topLevelItemCount() > 0) {
                 auto errorDialogue = QMessageBox();
                 errorDialogue.setIcon(QMessageBox::Critical);
                 errorDialogue.setWindowTitle("Error");
                 errorDialogue.setText("Select a geometry to proceed!");
                 errorDialogue.exec();
-            }
-            else {
+            } else {
                 auto errorDialogue = QMessageBox();
                 errorDialogue.setIcon(QMessageBox::Critical);
                 errorDialogue.setWindowTitle("Error");
@@ -1071,12 +1068,11 @@ void MainWindow::UpdateActiveData() {
     if (m_treeWidget->selectedItems().empty()) {
         m_currentMesh->Initialize();
         m_currentGrid->Initialize();
-    }
-    else {
+    } else {
         if (!m_treeWidget->selectedItems()[0]->parent()) {
             auto name = m_treeWidget->selectedItems()[0]->text(0).toStdString();
             std::string dType = m_dataBase->GetGeometryType(name);
-            if (dType == "OBJ") {
+            if (dType == "Mesh") {
                 m_currentMesh = m_dataBase->GetPolyNode(name);
                 PaintMesh(name);
                 m_mainMeshActor->SetMapper(m_mainMeshMapper);
@@ -1094,14 +1090,13 @@ void MainWindow::UpdateActiveData() {
             if (dType == "DICOM") {
                 m_currentGrid = m_dataBase->GetGridNode(name);
             }
-        }
-        else {
+        } else {
             auto name = m_treeWidget->selectedItems()[0]
-                ->parent()
-                ->text(0)
-                .toStdString();
+                            ->parent()
+                            ->text(0)
+                            .toStdString();
             std::string dType = m_dataBase->GetGeometryType(name);
-            if (dType == "OBJ") {
+            if (dType == "Mesh") {
                 m_currentMesh = m_dataBase->GetPolyNode(name);
                 PaintMesh(name);
                 m_mainMeshActor->SetMapper(m_mainMeshMapper);
@@ -1126,8 +1121,7 @@ void MainWindow::ShowContextMenu(const QPoint& pos) {
     if (index.count() > 0) {
         if (m_treeWidget->selectedItems()[0]->parent()) {
             branchPopUpMenu.exec(m_treeWidget->mapToGlobal(pos));
-        }
-        else {
+        } else {
             nodePopUpMenu.exec(m_treeWidget->mapToGlobal(pos));
         }
     }
@@ -1135,8 +1129,7 @@ void MainWindow::ShowContextMenu(const QPoint& pos) {
 
 void MainWindow::RenameDataNode() {
     if (m_treeWidget->selectedItems()[0]->parent()) {
-    }
-    else {
+    } else {
         m_oldName = m_treeWidget->selectedItems()[0]->text(0).toStdString();
         m_treeWidget->blockSignals(1);
         m_treeWidget->selectedItems()[0]->setFlags(
@@ -1150,8 +1143,8 @@ void MainWindow::RenameDataNode() {
 
 void MainWindow::DeleteDataNode() {
     auto choice = QMessageBox::question(this, "Warning",
-        "Do you want to DELETE this object?",
-        QMessageBox::Yes | QMessageBox::No);
+                                        "Do you want to DELETE this object?",
+                                        QMessageBox::Yes | QMessageBox::No);
 
     if (choice == QMessageBox::Yes) {
         QTreeWidgetItem* root = m_treeWidget->invisibleRootItem();
@@ -1168,19 +1161,19 @@ void MainWindow::DeleteDataNode() {
         }
         //-----------------------------------
         QList oldItem = mainTable->findItems(QString::fromStdString(name),
-            Qt::MatchExactly);
+                                             Qt::MatchExactly);
         if (oldItem.count() > 0) {
             int row = oldItem.at(0)->row();
             mainTable->removeRow(row);
         }
         oldItem = supImposedTable->findItems(QString::fromStdString(name),
-            Qt::MatchExactly);
+                                             Qt::MatchExactly);
         if (oldItem.count() > 0) {
             int row = oldItem.at(0)->row();
             supImposedTable->removeRow(row);
         }
         oldItem = procResTable->findItems(QString::fromStdString(name),
-            Qt::MatchExactly);
+                                          Qt::MatchExactly);
         if (oldItem.count() > 0) {
             int row = oldItem.at(0)->row();
             procResTable->removeRow(row);
@@ -1245,15 +1238,14 @@ void MainWindow::DeleteDataBranch() {
                 supImposedTable->removeRow(row);
             }
             oldItem = procResTable->findItems(QString::fromStdString(nodeName),
-                Qt::MatchExactly);
+                                              Qt::MatchExactly);
             if (oldItem.count() > 0) {
                 int row = oldItem.at(0)->row();
                 procResTable->removeRow(row);
             }
             // Update rendering stuff
             ResetLMData(nodeName);
-        }
-        else {
+        } else {
             std::cout << "This shouldn't happen" << std::endl;
         }
     }
@@ -1286,21 +1278,21 @@ void MainWindow::UpdateNodeName() {
     }
     m_dataBase->RenameNode(m_oldName, m_newName);
     QList oldItem = mainTable->findItems(QString::fromStdString(m_oldName),
-        Qt::MatchExactly);
+                                         Qt::MatchExactly);
     if (oldItem.count() > 0) {
         int row = oldItem.at(0)->row();
         mainTable->setItem(
             row, 0, new QTableWidgetItem(QString::fromStdString(m_newName)));
     }
     oldItem = supImposedTable->findItems(QString::fromStdString(m_oldName),
-        Qt::MatchExactly);
+                                         Qt::MatchExactly);
     if (oldItem.count() > 0) {
         int row = oldItem.at(0)->row();
         supImposedTable->setItem(
             row, 0, new QTableWidgetItem(QString::fromStdString(m_newName)));
     }
     oldItem = procResTable->findItems(QString::fromStdString(m_oldName),
-        Qt::MatchExactly);
+                                      Qt::MatchExactly);
     if (oldItem.count() > 0) {
         int row = oldItem.at(0)->row();
         procResTable->setItem(
@@ -1314,8 +1306,7 @@ void MainWindow::UpdateDataBase() {
             m_treeWidget->blockSignals(true);
             m_treeWidget->selectedItems()[0]->parent()->setIcon(0, QIcon());
             m_treeWidget->blockSignals(false);
-        }
-        else {
+        } else {
             m_treeWidget->blockSignals(true);
             m_treeWidget->selectedItems()[0]->setIcon(0, QIcon());
             m_treeWidget->blockSignals(false);
@@ -1328,9 +1319,9 @@ void MainWindow::UpdateDataBase() {
             m_treeWidget->selectedItems()[0]->text(0).toStdString();
         if (m_treeWidget->selectedItems()[0]->parent()) {
             dataName = m_treeWidget->selectedItems()[0]
-                ->parent()
-                ->text(0)
-                .toStdString();
+                           ->parent()
+                           ->text(0)
+                           .toStdString();
         }
         vtkPoints* fixedLM = m_dataBase->GetTypeI(dataName);
         vtkPoints* curveLM = m_dataBase->GetCurveSliders(dataName);
@@ -1349,8 +1340,7 @@ void MainWindow::UpdateDataBase() {
             m_treeWidget->blockSignals(true);
             m_treeWidget->selectedItems()[0]->parent()->setIcon(0, QIcon());
             m_treeWidget->blockSignals(false);
-        }
-        else {
+        } else {
             m_treeWidget->blockSignals(true);
             m_treeWidget->selectedItems()[0]->setIcon(0, QIcon());
             m_treeWidget->blockSignals(false);
@@ -1362,9 +1352,9 @@ void MainWindow::UpdateDataBase() {
             m_treeWidget->selectedItems()[0]->text(0).toStdString();
         if (m_treeWidget->selectedItems()[0]->parent()) {
             dataName = m_treeWidget->selectedItems()[0]
-                ->parent()
-                ->text(0)
-                .toStdString();
+                           ->parent()
+                           ->text(0)
+                           .toStdString();
         }
         vtkPoints* fixedLM = m_dataBase->GetTypeI(dataName);
         vtkPoints* curveLM = m_dataBase->GetCurveSliders(dataName);
@@ -1383,14 +1373,13 @@ void MainWindow::UpdateDataBase() {
                 m_treeWidget->selectedItems()[0]->text(0).toStdString();
             if (m_treeWidget->selectedItems()[0]->parent()) {
                 dataName = m_treeWidget->selectedItems()[0]
-                    ->parent()
-                    ->text(0)
-                    .toStdString();
+                               ->parent()
+                               ->text(0)
+                               .toStdString();
                 m_treeWidget->blockSignals(true);
                 m_treeWidget->selectedItems()[0]->parent()->setIcon(0, QIcon());
                 m_treeWidget->blockSignals(false);
-            }
-            else {
+            } else {
                 m_treeWidget->blockSignals(true);
                 m_treeWidget->selectedItems()[0]->setIcon(0, QIcon());
                 m_treeWidget->blockSignals(false);
@@ -1454,7 +1443,7 @@ void MainWindow::SetTypeI(vtkPoints* fixedPts) {
         }
     }
     mainTable->setItem(freeRow, 0,
-        new QTableWidgetItem(QString::fromStdString(name)));
+                       new QTableWidgetItem(QString::fromStdString(name)));
     for (int i = 0; i < fixedPts->GetNumberOfPoints(); i++) {
         for (int j = 0; j < 3; j++) {
             double item = fixedPts->GetPoint(i)[j];
@@ -1470,7 +1459,7 @@ void MainWindow::SetTypeI(vtkPoints* fixedPts) {
 }
 
 void MainWindow::SetSliders(vtkPoints* fixedPts, vtkPoints* curveSliderPts,
-    vtkPoints* surfaceSliderPts) {
+                            vtkPoints* surfaceSliderPts) {
     auto name = m_treeWidget->selectedItems()[0]->text(0).toStdString();
     if (m_treeWidget->selectedItems()[0]->parent()) {
         name =
@@ -1549,7 +1538,7 @@ void MainWindow::SetSliders(vtkPoints* fixedPts, vtkPoints* curveSliderPts,
     }
 
     mainTable->setItem(freeRow, 0,
-        new QTableWidgetItem(QString::fromStdString(name)));
+                       new QTableWidgetItem(QString::fromStdString(name)));
     for (int i = 0; i < totalPts->GetNumberOfPoints(); i++) {
         for (int j = 0; j < 3; j++) {
             double item = totalPts->GetPoint(i)[j];
@@ -1565,7 +1554,7 @@ void MainWindow::SetSliders(vtkPoints* fixedPts, vtkPoints* curveSliderPts,
 }
 
 void MainWindow::SetSliders(vtkPoints* fixedPts, vtkPoints* curveSliderPts,
-    vtkPoints* surfaceSliderPts, std::string name) {
+                            vtkPoints* surfaceSliderPts, std::string name) {
     vtkNew<vtkPoints> totalPts;
     int itemNum = m_treeWidget->topLevelItemCount();
     if (m_dataBase->GetTotalLandmarks(name)->GetNumberOfPoints() > 0) {
@@ -1630,7 +1619,7 @@ void MainWindow::SetSliders(vtkPoints* fixedPts, vtkPoints* curveSliderPts,
         }
     }
     mainTable->setItem(freeRow, 0,
-        new QTableWidgetItem(QString::fromStdString(name)));
+                       new QTableWidgetItem(QString::fromStdString(name)));
     for (int i = 0; i < totalPts->GetNumberOfPoints(); i++) {
         for (int j = 0; j < 3; j++) {
             double item = totalPts->GetPoint(i)[j];
@@ -1652,15 +1641,15 @@ void MainWindow::TemplateStatus(bool status) {
     if (status == 1) {
         templatePlotToolbarAction->setEnabled(1);
         auto name = "Template";
-        m_dataBase->AddNode(name, m_templateMesh, "OBJ");
+        m_dataBase->AddNode(name, m_templateMesh, "Mesh");
         vtkNew<vtkDataObjectTreeIterator> iterCurveSlider;
         vtkNew<vtkPoints> curveSliderPts;
         iterCurveSlider->SetDataSet(m_templateCurveSliders);
         iterCurveSlider->SkipEmptyNodesOn();
         iterCurveSlider->VisitOnlyLeavesOn();
         for (iterCurveSlider->InitTraversal();
-            !iterCurveSlider->IsDoneWithTraversal();
-            iterCurveSlider->GoToNextItem()) {
+             !iterCurveSlider->IsDoneWithTraversal();
+             iterCurveSlider->GoToNextItem()) {
             vtkDataObject* dso = iterCurveSlider->GetCurrentDataObject();
             vtkPolyData* pd = dynamic_cast<vtkPolyData*>(dso);
             for (int i = 0; i < pd->GetNumberOfPoints(); i++) {
@@ -1674,8 +1663,8 @@ void MainWindow::TemplateStatus(bool status) {
         iterSurfacePatchSlider->SkipEmptyNodesOn();
         iterSurfacePatchSlider->VisitOnlyLeavesOn();
         for (iterSurfacePatchSlider->InitTraversal();
-            !iterSurfacePatchSlider->IsDoneWithTraversal();
-            iterSurfacePatchSlider->GoToNextItem()) {
+             !iterSurfacePatchSlider->IsDoneWithTraversal();
+             iterSurfacePatchSlider->GoToNextItem()) {
             vtkDataObject* dso = iterSurfacePatchSlider->GetCurrentDataObject();
             vtkPolyData* pd = dynamic_cast<vtkPolyData*>(dso);
             for (int i = 0; i < pd->GetNumberOfPoints(); i++) {
@@ -1688,7 +1677,7 @@ void MainWindow::TemplateStatus(bool status) {
             int targetRow;
             for (int i = 0; i < mainTable->rowCount(); i++) {
                 if (mainTable->item(i, 0) && mainTable->item(i, 0)->text() ==
-                    QString::fromStdString(name)) {
+                                                 QString::fromStdString(name)) {
                     targetRow = i;
                     break;
                 }
@@ -1711,7 +1700,7 @@ void MainWindow::TemplateStatus(bool status) {
             surfacePatchSliderPts->GetNumberOfPoints() == 0) {
             m_dataBase->InsertSurfaceSliders(name, m_templateSurfaceSliders);
             for (int i = 0; i < m_templateSurfaceSliders->GetNumberOfPoints();
-                i++) {
+                 i++) {
                 totalPts->InsertNextPoint(
                     m_templateSurfaceSliders->GetPoint(i));
             }
@@ -1720,7 +1709,7 @@ void MainWindow::TemplateStatus(bool status) {
             m_templateSurfaceSliders->GetNumberOfPoints() == 0) {
             m_dataBase->InsertSurfaceSliders(name, surfacePatchSliderPts);
             for (int i = 0; i < surfacePatchSliderPts->GetNumberOfPoints();
-                i++) {
+                 i++) {
                 totalPts->InsertNextPoint(surfacePatchSliderPts->GetPoint(i));
             }
         }
@@ -1739,7 +1728,7 @@ void MainWindow::TemplateStatus(bool status) {
             }
         }
         mainTable->setItem(freeRow, 0,
-            new QTableWidgetItem(QString::fromStdString(name)));
+                           new QTableWidgetItem(QString::fromStdString(name)));
         for (int i = 0; i < totalPts->GetNumberOfPoints(); i++) {
             for (int j = 0; j < 3; j++) {
                 double item = totalPts->GetPoint(i)[j];
@@ -1855,7 +1844,7 @@ void MainWindow::ResetLandmarks() {
     procResTable->clear();
     procResTable->setColumnCount(TableColNum);
     procResTable->setRowCount(TableRowNum);
-    
+
     SetLandmarkHeaders(mainTable);
     SetLandmarkHeaders(supImposedTable);
     SetLandmarkHeaders(procResTable);
@@ -1898,28 +1887,33 @@ vtkPolyData* MainWindow::GetTemplateTotalLandmarks() {
 }
 
 void MainWindow::PlotLandmarks(vtkPoints* fixedLandmarks,
-    vtkPoints* curveLandmarks,
-    vtkPoints* surfaceLandmarks, vtkPolyData* mesh) {
+                               vtkPoints* curveLandmarks,
+                               vtkPoints* surfaceLandmarks, vtkPolyData* mesh) {
     if (fixedLandmarks->GetNumberOfPoints() > 0 ||
         curveLandmarks->GetNumberOfPoints() > 0 ||
         surfaceLandmarks->GetNumberOfPoints() > 0) {
         vtkNew<vtkMassProperties> prop;
         prop->SetInputData(mesh);
         prop->Update();
-        double area = prop->GetSurfaceArea();
-        area = std::sqrt(area);
-        double sizeConstant =
-            (m_typeINOL + m_surfaceNOS +
-                (m_surfacePatchNOP * m_surfacePatchUNOS * m_surfacePatchVNOS) +
-                (m_curveNOS * m_curveNOC));
-        if (sizeConstant < 100) {
-            sizeConstant = 100;
-        }
-        if (sizeConstant > 300) {
-            sizeConstant = 300;
-        }
+        const double area = prop->GetSurfaceArea();
+        const double diagonal = std::sqrt(area); // Approximate characteristic length
+        // Compute size factor based on application-specific parameters
+        // Normalized between 0-1 range first, then scaled
+        double sizeFactor = (m_typeINOL * 0.03 + 
+                    m_surfaceNOS * 0.025 +
+                    m_surfacePatchNOP * m_surfacePatchUNOS * m_surfacePatchVNOS * 0.025 +
+                    m_curveNOS * m_curveNOC * 0.025);
+
+        // Apply sigmoid function for smooth clamping
+        sizeFactor = 1.0 / (1.0 + std::exp(-0.1*(sizeFactor - 50.0))); // Sigmoid normalization
+
+        // Map to reasonable visual range (1%-5% of characteristic length)
+        const double minSize = 0.01 * diagonal;
+        const double maxSize = 0.05 * diagonal;
+        double landmarkSize = minSize + sizeFactor * (maxSize - minSize);
+        // Apply to sphere source
         vtkNew<vtkSphereSource> sphereSource;
-        sphereSource->SetRadius((area / sizeConstant) * 1.5);
+        sphereSource->SetRadius(landmarkSize);
 
         if (fixedLandmarks->GetNumberOfPoints() > 0) {
             vtkNew<vtkPolyData> temp;
@@ -1973,8 +1967,7 @@ void MainWindow::PlotLandmarks(vtkPoints* fixedLandmarks,
             m_mainRenderer->AddActor(m_surfaceLmActor);
         }
 
-    }
-    else {
+    } else {
         m_mainRenderer->RemoveActor(m_fixedLmActor);
         m_mainRenderer->RemoveActor(m_curveLmActor);
         m_mainRenderer->RemoveActor(m_surfaceLmActor);
@@ -1988,8 +1981,7 @@ void MainWindow::PCA() {
         if (m_dataBase->GetNodeNames().size() >= 3) {
             delete m_pcaWindow;
             m_pcaWindow = new PCAWindow(m_dataBase);
-        }
-        else {
+        } else {
             auto errorDialogue = QMessageBox();
             errorDialogue.setIcon(QMessageBox::Critical);
             errorDialogue.setWindowTitle("Error");
@@ -1999,8 +1991,7 @@ void MainWindow::PCA() {
                 "try again!");
             errorDialogue.exec();
         }
-    }
-    else {
+    } else {
         auto errorDialogue = QMessageBox();
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
@@ -2018,8 +2009,9 @@ void MainWindow::PaintMesh(std::string name) {
     m_mainMeshMapper->SetInputData(tempMesh);
     m_mainRenderer->RemoveActor(m_scalarBar);
     if (tempDataArr->GetNumberOfTuples() > 0) {
-        auto scalarRange =
-            tempMesh->GetPointData()->GetArray("ProcrustesResidualMagnitude")->GetRange();
+        auto scalarRange = tempMesh->GetPointData()
+                               ->GetArray("ProcrustesResidualMagnitude")
+                               ->GetRange();
         vtkNew<vtkColorSeries> colorSeries;
         colorSeries->SetColorScheme(11);
         int numColors = colorSeries->GetNumberOfColors();
@@ -2036,7 +2028,7 @@ void MainWindow::PaintMesh(std::string name) {
         for (int i = 0; i < lut->GetNumberOfColors(); ++i) {
             std::array<double, 3> rgb;
             ctf->GetColor(double(i) / lut->GetNumberOfColors(), rgb.data());
-            std::array<double, 4> rgba{ 0.0, 0.0, 0.0, 1.0 };
+            std::array<double, 4> rgba{0.0, 0.0, 0.0, 1.0};
             std::copy(std::begin(rgb), std::end(rgb), std::begin(rgba));
             lut->SetTableValue(i, rgba.data());
         }
@@ -2051,8 +2043,7 @@ void MainWindow::PaintMesh(std::string name) {
         m_scalarBar->SetLookupTable(m_mainMeshMapper->GetLookupTable());
         m_scalarBar->Modified();
         m_mainRenderer->AddActor(m_scalarBar);
-    }
-    else {
+    } else {
         m_mainRenderer->RemoveActor(m_scalarBar);
     }
     m_mainMeshMapper->Update();
@@ -2063,12 +2054,11 @@ void MainWindow::ReadLMDataFromFile() {
     if (TemplateIsSet) {
         QString csvFileName =
             QFileDialog::getOpenFileName(this, "CSV Files", QDir::homePath(),
-                "CSV Files (*.csv);;All Files (*)");
+                                         "CSV Files (*.csv);;All Files (*)", nullptr, QFileDialog::DontUseNativeDialog);
         if (csvFileName.isEmpty()) {
             // do nothing
-            //return;
-        }
-        else {
+            // return;
+        } else {
             if (csvFileName.endsWith(".csv")) {
                 std::vector<std::vector<string>> content;
                 std::string fname = csvFileName.toStdString();
@@ -2084,37 +2074,36 @@ void MainWindow::ReadLMDataFromFile() {
                         }
                         content.push_back(row);
                     }
-                }
-                else {
+                } else {
                     std::cout << "Could not open the .csv file\n";
                 }
                 QString geomDir = QFileDialog::getExistingDirectory(
                     this, tr("Open Mesh Directory"), QDir::homePath(),
                     QFileDialog::ShowDirsOnly |
-                    QFileDialog::DontResolveSymlinks);
+                        QFileDialog::DontResolveSymlinks);
                 if (!geomDir.isEmpty()) {
                     LockTheWindow();
                     std::string path = geomDir.toStdString();
                     path = geomDir.toStdString() + "/";
                     qRegisterMetaType<std::string>("std::string");
                     delete m_recoveryThread;
-                    m_recoveryThread = new RecoverLMThread(this, content, path, m_mutex);
+                    m_recoveryThread =
+                        new RecoverLMThread(this, content, path, m_mutex);
                     m_recoveryThread->setParent(this);
                     connect(m_recoveryThread,
-                        &RecoverLMThread::TreeObjectChanged, this,
-                        &MainWindow::OnTreeObjectChanged);
+                            &RecoverLMThread::TreeObjectChanged, this,
+                            &MainWindow::OnTreeObjectChanged);
                     connect(m_recoveryThread, &RecoverLMThread::DataBaseChanged,
-                        this, &MainWindow::OnDataBaseChanged);
+                            this, &MainWindow::OnDataBaseChanged);
                     connect(m_recoveryThread, &RecoverLMThread::RecoveryIsDone,
-                        this, &MainWindow::OnRecoveryIsDone);
+                            this, &MainWindow::OnRecoveryIsDone);
 
                     RunStatThread(m_recoveryThread);
                     m_recoveryThread->start();
                 }
             }
         }
-    }
-    else {
+    } else {
         auto errorDialogue = QMessageBox();
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
@@ -2128,7 +2117,9 @@ void MainWindow::ReadLMDataFromFile() {
 void MainWindow::SaveProject() {
     auto nameList = m_dataBase->GetNodeNames();
     auto filter = "atp(*.atp)";
-    QString filename = QFileDialog::getSaveFileName(this, "Save file", "", filter);
+    QString filename =
+        QFileDialog::getSaveFileName(this, "Save file", "", filter, nullptr,
+                                     QFileDialog::DontUseNativeDialog);
     QFileInfo fi(filename);
     QString ext = fi.completeSuffix();
     if (filename.isEmpty()) {
@@ -2156,9 +2147,15 @@ void MainWindow::SaveProject() {
             vtkPoints* tempFixedLM = m_dataBase->GetTypeI(name);
             vtkPoints* tempCurveLM = m_dataBase->GetCurveSliders(name);
             vtkPoints* tempSurfaceLM = m_dataBase->GetSurfaceSliders(name);
+            std::string type = m_dataBase->GetGeometryType(name);
 
             textItem += QString("Specimen") + ",";
             textItem += QString::fromStdString(name);
+            data << textItem.join("") << ENDL;
+            textItem.clear();
+            
+            textItem += QString("Type") + ",";
+            textItem += QString::fromStdString(type);
             data << textItem.join("") << ENDL;
             textItem.clear();
 
@@ -2169,7 +2166,8 @@ void MainWindow::SaveProject() {
             for (int i = 0; i < tempFixedLM->GetNumberOfPoints(); i++) {
                 textItem += QString("Fixed Coords") + ",";
                 for (int j = 0; j < 3; j++) {
-                    textItem += QString::number(tempFixedLM->GetPoint(i)[j]) + ",";
+                    textItem +=
+                        QString::number(tempFixedLM->GetPoint(i)[j]) + ",";
                 }
                 data << textItem.join("") << ENDL;
                 textItem.clear();
@@ -2182,7 +2180,8 @@ void MainWindow::SaveProject() {
             for (int i = 0; i < tempCurveLM->GetNumberOfPoints(); i++) {
                 textItem += QString("Curve Coords") + ",";
                 for (int j = 0; j < 3; j++) {
-                    textItem += QString::number(tempCurveLM->GetPoint(i)[j]) + ",";
+                    textItem +=
+                        QString::number(tempCurveLM->GetPoint(i)[j]) + ",";
                 }
                 data << textItem.join("") << ENDL;
                 textItem.clear();
@@ -2195,7 +2194,8 @@ void MainWindow::SaveProject() {
             for (int i = 0; i < tempSurfaceLM->GetNumberOfPoints(); i++) {
                 textItem += QString("Surface Coords") + ",";
                 for (int j = 0; j < 3; j++) {
-                    textItem += QString::number(tempSurfaceLM->GetPoint(i)[j]) + ",";
+                    textItem +=
+                        QString::number(tempSurfaceLM->GetPoint(i)[j]) + ",";
                 }
                 data << textItem.join("") << ENDL;
                 textItem.clear();
@@ -2224,7 +2224,9 @@ void MainWindow::SaveProject() {
                 textItem += QString("Connectivity") + ",";
                 textItem += QString::number(numPts) + ",";
                 for (int j = 0; j < numPts; j++) {
-                    textItem += QString::number(tempPoly->GetCell(i)->GetPointId(j)) + ",";
+                    textItem +=
+                        QString::number(tempPoly->GetCell(i)->GetPointId(j)) +
+                        ",";
                 }
                 data << textItem.join("") << ENDL;
                 textItem.clear();
@@ -2242,12 +2244,11 @@ void MainWindow::ReadProjectFromFile() {
     if (TemplateIsSet) {
         QString atpFileName =
             QFileDialog::getOpenFileName(this, "atp Files", QDir::homePath(),
-                "atp Files (*.atp);;All Files (*)");
+                                         "atp Files (*.atp);;All Files (*)", nullptr, QFileDialog::DontUseNativeDialog);
         if (atpFileName.isEmpty()) {
             // do nothing
-            //return;
-        }
-        else {
+            // return;
+        } else {
             if (atpFileName.endsWith(".atp")) {
                 LockTheWindow();
                 if (m_treeWidget->topLevelItemCount() > 0) {
@@ -2257,13 +2258,12 @@ void MainWindow::ReadProjectFromFile() {
                 delete m_importThread;
                 m_importThread = new ImportThread(this, atpFileName, m_mutex);
 
-                connect(m_importThread,
-                    &ImportThread::TreeObjectChanged, this,
-                    &MainWindow::OnTreeObjectChanged);
-                connect(m_importThread, &ImportThread::DataBaseChanged,
-                    this, &MainWindow::OnDataBaseChanged);
-                connect(m_importThread, &ImportThread::ImportIsDone,
-                    this, &MainWindow::OnRecoveryIsDone);
+                connect(m_importThread, &ImportThread::TreeObjectChanged, this,
+                        &MainWindow::OnTreeObjectChanged);
+                connect(m_importThread, &ImportThread::DataBaseChanged, this,
+                        &MainWindow::OnDataBaseChanged);
+                connect(m_importThread, &ImportThread::ImportIsDone, this,
+                        &MainWindow::OnRecoveryIsDone);
 
                 RunStatThread(m_importThread);
 
@@ -2271,8 +2271,7 @@ void MainWindow::ReadProjectFromFile() {
             }
         }
 
-    }
-    else {
+    } else {
         auto errorDialogue = QMessageBox();
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
@@ -2299,9 +2298,9 @@ void MainWindow::OnSuperImpositionIsDone() {
             m_treeWidget->selectedItems()[0]->text(0).toStdString();
         if (m_treeWidget->selectedItems()[0]->parent()) {
             name = m_treeWidget->selectedItems()[0]
-                ->parent()
-                ->text(0)
-                .toStdString();
+                       ->parent()
+                       ->text(0)
+                       .toStdString();
         }
 
         vtkPoints* fixedLandmarks = m_dataBase->GetTypeI(name);
@@ -2311,7 +2310,7 @@ void MainWindow::OnSuperImpositionIsDone() {
 
         PaintMesh(name);
         PlotLandmarks(fixedLandmarks, curveLandmarks, surfaceLandmarks,
-            tempMesh);
+                      tempMesh);
         m_mainRenderer->ResetCamera();
         m_mainRenderer->GetRenderWindow()->Render();
     }
@@ -2320,7 +2319,8 @@ void MainWindow::OnSuperImpositionIsDone() {
 void MainWindow::OnTreeObjectChanged(std::string name) {
     m_treeItem = new QTreeWidgetItem();
     m_treeItem->setText(0, QString::fromStdString(name));
-    m_treeItem->setText(1, "OBJ");
+    std::string type = m_dataBase->GetGeometryType(name);
+    m_treeItem->setText(1, QString::fromStdString(type));
     m_treeWidget->addTopLevelItem(m_treeItem);
     m_treeWidget->setCurrentItem(m_treeItem);
 }
@@ -2380,31 +2380,25 @@ void MainWindow::OnStatusChanged(int status) {
         if (status % 2 == 0) {
             progressLabel->setPixmap(
                 QPixmap(":/icons/graphics/icons/vBusy.svg"));
-        }
-        else {
+        } else {
             progressLabel->setPixmap(
                 QPixmap(":/icons/graphics/icons/busy.svg"));
         }
-    }
-    else {
+    } else {
         statusLabel->setText("Status: Idle");
         progressLabel->setPixmap(QPixmap(":/icons/graphics/icons/idle.svg"));
     }
 }
 
-void MainWindow::RecoverDigitisedLM() {
-    ReadLMDataFromFile();
-}
+void MainWindow::RecoverDigitisedLM() { ReadLMDataFromFile(); }
 
-void MainWindow::RecoverProject() {
-    ReadProjectFromFile();
-}
+void MainWindow::RecoverProject() { ReadProjectFromFile(); }
 
 void MainWindow::RunStatThread(QThread* thread) {
     delete m_statThread;
     m_statThread = new StatusReporterThread(thread);
     connect(m_statThread, &StatusReporterThread::StatusChanged, this,
-        &MainWindow::OnStatusChanged);
+            &MainWindow::OnStatusChanged);
     m_statThread->setParent(this);
     m_statThread->start();
 }
@@ -2430,18 +2424,14 @@ bool MainWindow::GetIgnorSetting() {
     return projectSettings->GetIgnorInternals();
 }
 
-QMutex* MainWindow::GetMutex() {
-    return m_mutex;
-}
+QMutex* MainWindow::GetMutex() { return m_mutex; }
 
-void MainWindow::PrintHelp() {
-    helpWindow->show();
-}
+void MainWindow::PrintHelp() { helpWindow->show(); }
 
-void MainWindow::SetLandmarkHeaders(QTableWidget* table){
+void MainWindow::SetLandmarkHeaders(QTableWidget* table) {
     QStringList headers;
     headers << "Specimen";  // First column
-    for (int i = 1; i <= TableColNum-1; ++i) {
+    for (int i = 1; i <= TableColNum - 1; ++i) {
         headers << QString("LM%1X").arg(i);
         headers << QString("LM%1Y").arg(i);
         headers << QString("LM%1Z").arg(i);

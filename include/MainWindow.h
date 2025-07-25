@@ -128,6 +128,7 @@
 #include <vtkLookupTable.h>
 #include <vtkColorTransferFunction.h>
 #include <vtkColorSeries.h>
+#include <vtkPLYReader.h>
 
 //#include <boost/variant.hpp>
 #include <Eigen/Eigen>

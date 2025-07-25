@@ -223,6 +223,7 @@ private:
     bool m_editableSurface = 1;
     bool m_dataDigitized = 0;
     bool m_surfaceChanged = 0;
+    double m_sizeConstant = 0;
     Registration *m_regPlot = nullptr;
     SlidingThread *m_slidingThread = nullptr;
     StatusReporterThread *m_slidingStatThread = nullptr;

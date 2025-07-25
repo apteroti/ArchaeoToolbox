@@ -111,6 +111,7 @@ void ImportThread::run() {
         int tempNumSurf = 0;
         int numPoly = 0;
         int numVert = 0;
+        std::string type = "";
         if (file.is_open()) {
             while (getline(file, line)) {
                 row.clear();
@@ -126,6 +127,10 @@ void ImportThread::run() {
                     while (std::find(nameList.begin(), nameList.end(), name) !=
                            nameList.end()) {
                         name += "_Duplicate";
+                    }
+
+                    if (row[0] == "Type") {
+                        type = row[1];
                     }
 
                     if (row[0] == "Number of Fixed Landmarks") {
@@ -245,7 +250,10 @@ void ImportThread::run() {
                                 tempPoly->SetPolys(tempPolyCells);
                                 tempPoly->Modified();
                                 m_mutex->lock();
-                                m_parent->GetDataBase()->AddNode(name, tempPoly, "OBJ");
+                                if(type == ""){
+                                    type = "Mesh"; // for legacy project files
+                                }
+                                m_parent->GetDataBase()->AddNode(name, tempPoly, type);
                                 m_mutex->unlock();
                                 if (tempNumFixed == numFixedLM &&
                                     tempNumCurve == numCurveLM &&

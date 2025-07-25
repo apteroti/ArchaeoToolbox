@@ -67,11 +67,12 @@
 ***********************************************************************************************/
 
 #include "../include/TemplateViewer.h"
+
 #include "../include/MainWindow.h"
 
-TemplateViewer::TemplateViewer(MainWindow* parent):m_parent(parent){
+TemplateViewer::TemplateViewer(MainWindow* parent) : m_parent(parent) {
     this->setWindowTitle("Template Viewer");
-    this->resize(600,500);
+    this->resize(600, 500);
     m_meshData = vtkSmartPointer<vtkPolyData>::New();
     m_typeI = vtkSmartPointer<vtkPoints>::New();
     m_surfaceSliders = vtkSmartPointer<vtkPoints>::New();
@@ -94,11 +95,10 @@ TemplateViewer::TemplateViewer(MainWindow* parent):m_parent(parent){
     m_surfaceLabelActor = vtkSmartPointer<vtkActor2D>::New();
     m_curveArrowActor = vtkSmartPointer<vtkActor>::New();
     m_surfaceArrowActor = vtkSmartPointer<vtkActor>::New();
-    
 
     m_totalLandmarks = vtkSmartPointer<vtkPolyData>::New();
-    m_totalLabelActor =  vtkSmartPointer<vtkActor2D>::New();
-    //Setting up render scene
+    m_totalLabelActor = vtkSmartPointer<vtkActor2D>::New();
+    // Setting up render scene
     vtkNew<vtkNamedColors> colors;
     m_renWin = m_vtkRenderWidget->GetRenderWindow();
     m_renWin->AddRenderer(m_renderer);
@@ -106,18 +106,18 @@ TemplateViewer::TemplateViewer(MainWindow* parent):m_parent(parent){
     m_iren->SetInteractorStyle(m_style);
     m_iren->SetRenderWindow(m_renWin);
 
-    //Ambient properties
+    // Ambient properties
     m_renderer->SetBackground(colors->GetColor3d("SlateGray").GetData());
-    //m_renWin->SetAlphaBitPlanes(1);
+    // m_renWin->SetAlphaBitPlanes(1);
     m_renWin->Render();
     m_iren->Start();
 
     this->setCentralWidget(m_vtkRenderWidget);
-    QToolBar *mainToolbar = this->addToolBar("Main Toolbar");
+    QToolBar* mainToolbar = this->addToolBar("Main Toolbar");
     mainToolbar->setMovable(false);
     this->addToolBarBreak();
 
-    QLabel *showPtsIdsLabel = new QLabel();
+    QLabel* showPtsIdsLabel = new QLabel();
     showPtsIdsLabel->setText(tr("Show Landmark ids"));
     mainToolbar->addWidget(showPtsIdsLabel);
 
@@ -128,19 +128,20 @@ TemplateViewer::TemplateViewer(MainWindow* parent):m_parent(parent){
     screenCapAction = mainToolbar->addAction(
         QIcon(":/icons/graphics/icons/save.svg"), "Capture the Screen");
 
-    connect(showPtsIdsBox, &QCheckBox::stateChanged, this, &TemplateViewer::ShowIds);
-    connect(screenCapAction, &QAction::triggered, this, &TemplateViewer::CaptureScreen);
+    connect(showPtsIdsBox, &QCheckBox::stateChanged, this,
+            &TemplateViewer::ShowIds);
+    connect(screenCapAction, &QAction::triggered, this,
+            &TemplateViewer::CaptureScreen);
 }
 
-void TemplateViewer::ShowIds(){
-    if(showPtsIdsBox->isChecked()){
+void TemplateViewer::ShowIds() {
+    if (showPtsIdsBox->isChecked()) {
         m_renderer->RemoveActor2D(m_labelActor);
         m_renderer->RemoveActor2D(m_curveLabelActor);
         m_renderer->RemoveActor2D(m_surfaceLabelActor);
         m_renderer->AddActor(m_totalLabelActor);
         m_renderer->GetRenderWindow()->Render();
-    }
-    else{
+    } else {
         m_renderer->RemoveActor2D(m_totalLabelActor);
         m_renderer->AddActor(m_labelActor);
         m_renderer->AddActor(m_curveLabelActor);
@@ -149,19 +150,20 @@ void TemplateViewer::ShowIds(){
     }
 }
 
-void TemplateViewer::CaptureScreen(){
+void TemplateViewer::CaptureScreen() {
     auto filter = "png(*.png)";
     QString filename =
-        QFileDialog::getSaveFileName(this, "Save image", "", filter);
+        QFileDialog::getSaveFileName(this, "Save image", "", filter, nullptr,
+                                     QFileDialog::DontUseNativeDialog);
     QFileInfo fi(filename);
     QString ext = fi.completeSuffix();
     if (filename.isEmpty()) {
-            return;
-        }
+        return;
+    }
     if (ext != "png") {
         filename += ".png";
     }
-    if(!filename.isEmpty()){
+    if (!filename.isEmpty()) {
         vtkNew<vtkNamedColors> colors;
         auto oldSB = m_renWin->GetSwapBuffers();
         m_renWin->SwapBuffersOff();
@@ -169,19 +171,20 @@ void TemplateViewer::CaptureScreen(){
         m_renderer->SetBackground(colors->GetColor3d("White").GetData());
         m_renderer->Modified();
         m_renderer->GetRenderWindow()->Render();
-        auto windowToImageFilter = vtkSmartPointer<vtkWindowToImageFilter>::New();
+        auto windowToImageFilter =
+            vtkSmartPointer<vtkWindowToImageFilter>::New();
         windowToImageFilter->SetInput(m_renWin);
 
         windowToImageFilter->SetScale(3);
         windowToImageFilter->SetInputBufferTypeToRGBA();
 
         windowToImageFilter->ReadFrontBufferOff();
-        windowToImageFilter->Update(); // Issues a render on input
+        windowToImageFilter->Update();  // Issues a render on input
 
         m_renWin->SetSwapBuffers(oldSB);
         m_renWin->SwapBuffersOn();
 
-    // Show background again (set visibility to true or whatever)
+        // Show background again (set visibility to true or whatever)
         m_renderer->SetBackground(colors->GetColor3d("SlateGray").GetData());
         m_renderer->Modified();
         m_renderer->GetRenderWindow()->Render();
@@ -194,7 +197,7 @@ void TemplateViewer::CaptureScreen(){
     }
 }
 
-void TemplateViewer::SetPloyData(vtkPolyData* data){
+void TemplateViewer::SetPloyData(vtkPolyData* data) {
     m_meshData = data;
     m_typeI = m_parent->GetTemplateTypeI();
     m_surfaceSliders = m_parent->GetTemplateSurfaceSliders();
@@ -203,13 +206,13 @@ void TemplateViewer::SetPloyData(vtkPolyData* data){
     m_curveSliders = m_parent->GetTemplateCurveSliders();
     m_curvePtsPoly = m_parent->GetTemplateCurvePoly();
     m_totalLandmarks = m_parent->GetTemplateTotalLandmarks();
-    
+
     Plot();
 }
 
-void TemplateViewer::Plot(){
+void TemplateViewer::Plot() {
     vtkNew<vtkNamedColors> colors;
-    //Mesh properties and color etc
+    // Mesh properties and color etc
     vtkNew<vtkDataSetMapper> mapper;
     mapper->SetInputData(m_meshData);
     mapper->ScalarVisibilityOff();  // <- disables scalar-based coloring
@@ -217,26 +220,35 @@ void TemplateViewer::Plot(){
     m_meshActor->GetProperty()->SetColor(1, 0.992, 0.815);
     m_renderer->AddActor(m_meshActor);
 
-    //Point properties and color etc
     vtkNew<vtkMassProperties> prop;
     prop->SetInputData(m_meshData);
     prop->Update();
-    double area = prop->GetSurfaceArea();
-    area = std::sqrt(area);
-    
-    double sizeConstant = (m_typeI->GetNumberOfPoints() + m_surfaceSliders->GetNumberOfPoints() + 
-    m_surfacePatchSliders->GetNumberOfPoints() + m_curveSliders->GetNumberOfPoints());
-    if (sizeConstant < 100){
-        sizeConstant = 100;
-    }
-    if (sizeConstant > 300){
-        sizeConstant = 300;
-    }
+    const double area = prop->GetSurfaceArea();
+    const double diagonal =
+        std::sqrt(area);  // Approximate characteristic length
+    // Compute size factor based on application-specific parameters
+    // Normalized between 0-1 range first, then scaled
+    int fixNOL = m_typeI->GetNumberOfPoints();
+    int surfaceNOS = m_surfaceSliders->GetNumberOfPoints() +
+                     m_surfacePatchSliders->GetNumberOfPoints();
+    int curveNOS = m_curveSliders->GetNumberOfPoints();
+    double sizeFactor = (fixNOL * 0.03 + surfaceNOS * 0.025 + curveNOS * 0.025);
+    // Apply sigmoid function for smooth clamping
+    sizeFactor =
+        1.0 /
+        (1.0 + std::exp(-0.1 * (sizeFactor - 50.0)));  // Sigmoid normalization
+
+    // Map to reasonable visual range (1%-5% of characteristic length)
+    const double minSize = 0.01 * diagonal;
+    const double maxSize = 0.05 * diagonal;
+    double landmarkSize = minSize + sizeFactor * (maxSize - minSize);
+    // Apply to sphere source
     vtkNew<vtkSphereSource> sphereSource;
-    sphereSource->SetRadius(area/(sizeConstant));
+    sphereSource->SetRadius(landmarkSize);
+
     vtkNew<vtkSphereSource> sphereSource2;
-    sphereSource2->SetRadius((area/sizeConstant) * 1.5);
-   
+    sphereSource2->SetRadius(landmarkSize * 1.5);
+
     //--------------------------------------------
     vtkNew<vtkGlyph3DMapper> fixedPointMapper;
     vtkNew<vtkVertexGlyphFilter> fixedVertexFilter;
@@ -283,12 +295,13 @@ void TemplateViewer::Plot(){
     iterCurvePts->SetDataSet(m_curveSliders);
     iterCurvePts->SkipEmptyNodesOn();
     iterCurvePts->VisitOnlyLeavesOn();
-    for (iterCurvePts->InitTraversal(); !iterCurvePts->IsDoneWithTraversal(); iterCurvePts->GoToNextItem()){
+    for (iterCurvePts->InitTraversal(); !iterCurvePts->IsDoneWithTraversal();
+         iterCurvePts->GoToNextItem()) {
         vtkDataObject* dso = iterCurvePts->GetCurrentDataObject();
         vtkPolyData* pd = dynamic_cast<vtkPolyData*>(dso);
-        for(int i=0; i < pd->GetNumberOfPoints(); i++){
-                curvePts->InsertNextPoint(pd->GetPoint(i));
-            }
+        for (int i = 0; i < pd->GetNumberOfPoints(); i++) {
+            curvePts->InsertNextPoint(pd->GetPoint(i));
+        }
         curveLabels->InsertNextPoint(pd->GetPoint(0));
     }
     curveLabels->Modified();
@@ -315,7 +328,7 @@ void TemplateViewer::Plot(){
 
     vtkNew<vtkGlyph3D> glyphCurveArrow;
     vtkNew<vtkPolyData> curveArrowPoly;
-    MakeArrow(m_meshData, m_curvePtsPoly,3, curveArrowPoly);
+    MakeArrow(m_meshData, m_curvePtsPoly, 3, curveArrowPoly);
     glyphCurveArrow->SetInputData(curveArrowPoly);
     glyphCurveArrow->SetSourceData(curveArrow->GetOutput());
     glyphCurveArrow->SetVectorModeToUseVector();
@@ -341,12 +354,14 @@ void TemplateViewer::Plot(){
     iterSurfacePts->SetDataSet(m_surfacePatchSliders);
     iterSurfacePts->SkipEmptyNodesOn();
     iterSurfacePts->VisitOnlyLeavesOn();
-    for (iterSurfacePts->InitTraversal(); !iterSurfacePts->IsDoneWithTraversal(); iterSurfacePts->GoToNextItem()){
+    for (iterSurfacePts->InitTraversal();
+         !iterSurfacePts->IsDoneWithTraversal();
+         iterSurfacePts->GoToNextItem()) {
         vtkDataObject* dso = iterSurfacePts->GetCurrentDataObject();
         vtkPolyData* pd = dynamic_cast<vtkPolyData*>(dso);
-        for(int i=0; i < pd->GetNumberOfPoints(); i++){
-                surfacePatchPts->InsertNextPoint(pd->GetPoint(i));
-            }
+        for (int i = 0; i < pd->GetNumberOfPoints(); i++) {
+            surfacePatchPts->InsertNextPoint(pd->GetPoint(i));
+        }
         surfacePatchLabels->InsertNextPoint(pd->GetPoint(0));
     }
     surfacePatchLabels->Modified();
@@ -355,7 +370,8 @@ void TemplateViewer::Plot(){
     surfacePatchVertexFilter->SetInputData(surfacePatchPtsPoly);
     surfacePatchVertexFilter->Update();
 
-    surfacePatchPointMapper->SetInputData(surfacePatchVertexFilter->GetOutput());
+    surfacePatchPointMapper->SetInputData(
+        surfacePatchVertexFilter->GetOutput());
     surfacePatchPointMapper->SetSourceConnection(sphereSource->GetOutputPort());
     surfacePatchPointMapper->ScalingOff();
     surfacePatchPointMapper->ScalarVisibilityOff();
@@ -369,7 +385,7 @@ void TemplateViewer::Plot(){
 
     vtkNew<vtkGlyph3D> glyphSurfaceArrow;
     vtkNew<vtkPolyData> surfaceArrowPoly;
-    MakeArrow(m_meshData, m_surfacePatchCurve,4, surfaceArrowPoly);
+    MakeArrow(m_meshData, m_surfacePatchCurve, 4, surfaceArrowPoly);
     glyphSurfaceArrow->SetInputData(surfaceArrowPoly);
     glyphSurfaceArrow->SetSourceData(curveArrow->GetOutput());
     glyphSurfaceArrow->SetVectorModeToUseVector();
@@ -384,12 +400,13 @@ void TemplateViewer::Plot(){
     m_renderer->AddActor(m_surfaceArrowActor);
     //-----------------------------------------------
 
-    //Label properties
+    // Label properties
     vtkNew<vtkLabeledDataMapper> labelMapper;
     labelMapper->SetInputData(fixedVertexFilter->GetOutput());
     labelMapper->GetLabelTextProperty()->SetFontSize(15);
     m_labelActor->SetMapper(labelMapper);
-    m_labelActor->GetProperty()->SetColor(colors->GetColor3d("Orange").GetData());
+    m_labelActor->GetProperty()->SetColor(
+        colors->GetColor3d("Orange").GetData());
     m_labelActor->SetPickable(0);
     m_renderer->AddActor(m_labelActor);
     //-------
@@ -402,7 +419,8 @@ void TemplateViewer::Plot(){
     curveLabelMapper->SetInputData(curveLabelVertexFilter->GetOutput());
     curveLabelMapper->GetLabelTextProperty()->SetFontSize(15);
     m_curveLabelActor->SetMapper(curveLabelMapper);
-    m_curveLabelActor->GetProperty()->SetColor(colors->GetColor3d("palegreen").GetData());
+    m_curveLabelActor->GetProperty()->SetColor(
+        colors->GetColor3d("palegreen").GetData());
     m_curveLabelActor->SetPickable(0);
     m_renderer->AddActor(m_curveLabelActor);
     //-------
@@ -415,7 +433,8 @@ void TemplateViewer::Plot(){
     surfaceLabelMapper->SetInputData(surfaceLabelVertexFilter->GetOutput());
     surfaceLabelMapper->GetLabelTextProperty()->SetFontSize(15);
     m_surfaceLabelActor->SetMapper(surfaceLabelMapper);
-    m_surfaceLabelActor->GetProperty()->SetColor(colors->GetColor3d("cadetblue").GetData());
+    m_surfaceLabelActor->GetProperty()->SetColor(
+        colors->GetColor3d("cadetblue").GetData());
     m_surfaceLabelActor->SetPickable(0);
     m_renderer->AddActor(m_surfaceLabelActor);
     //--------
@@ -426,18 +445,18 @@ void TemplateViewer::Plot(){
     totalLabelMapper->SetInputData(totalLabelVertexFilter->GetOutput());
     totalLabelMapper->GetLabelTextProperty()->SetFontSize(15);
     m_totalLabelActor->SetMapper(totalLabelMapper);
-    m_totalLabelActor->GetProperty()->SetColor(colors->GetColor3d("black").GetData());
+    m_totalLabelActor->GetProperty()->SetColor(
+        colors->GetColor3d("black").GetData());
     m_totalLabelActor->SetPickable(0);
-    //m_renderer->AddActor(m_totalLabelActor);
+    // m_renderer->AddActor(m_totalLabelActor);
 
     //--------
 
     m_renderer->ResetCamera();
     m_renderer->GetRenderWindow()->Render();
-
 }
 
-void TemplateViewer::Initialize(){
+void TemplateViewer::Initialize() {
     m_meshData->Initialize();
     m_typeI->Initialize();
     m_surfaceSliders->Initialize();
@@ -455,11 +474,13 @@ void TemplateViewer::Initialize(){
     m_renderer->RemoveActor(m_curveArrowActor);
 }
 
-void TemplateViewer::MakeArrow(vtkPolyData* inputMesh, vtkMultiBlockDataSet* inputCurveBlock, int liftScale, vtkPolyData* output){
+void TemplateViewer::MakeArrow(vtkPolyData* inputMesh,
+                               vtkMultiBlockDataSet* inputCurveBlock,
+                               int liftScale, vtkPolyData* output) {
     vtkNew<vtkPointLocator> ptLocator;
     ptLocator->SetDataSet(inputMesh);
     ptLocator->BuildLocator();
-    vtkNew<vtkPolyDataNormals>normalFilter;
+    vtkNew<vtkPolyDataNormals> normalFilter;
     normalFilter->SetInputData(inputMesh);
     normalFilter->Update();
     vtkNew<vtkDoubleArray> u;
@@ -472,11 +493,12 @@ void TemplateViewer::MakeArrow(vtkPolyData* inputMesh, vtkMultiBlockDataSet* inp
     iterPts->SetDataSet(inputCurveBlock);
     iterPts->SkipEmptyNodesOn();
     iterPts->VisitOnlyLeavesOn();
-    int counter =0;
-    for (iterPts->InitTraversal(); !iterPts->IsDoneWithTraversal(); iterPts->GoToNextItem()){
+    int counter = 0;
+    for (iterPts->InitTraversal(); !iterPts->IsDoneWithTraversal();
+         iterPts->GoToNextItem()) {
         vtkDataObject* dso = iterPts->GetCurrentDataObject();
         vtkPolyData* pd = dynamic_cast<vtkPolyData*>(dso);
-        if(pd->GetNumberOfPoints() > 2){
+        if (pd->GetNumberOfPoints() > 2) {
             double x1 = pd->GetPoint(1)[0] - pd->GetPoint(0)[0];
             double y1 = pd->GetPoint(1)[1] - pd->GetPoint(0)[1];
             double z1 = pd->GetPoint(1)[2] - pd->GetPoint(0)[2];
@@ -489,14 +511,15 @@ void TemplateViewer::MakeArrow(vtkPolyData* inputMesh, vtkMultiBlockDataSet* inp
             vtkIdType id = ptLocator->FindClosestPoint(pd->GetPoint(0));
             double closestPoint[3];
             ptLocator->GetDataSet()->GetPoint(id, closestPoint);
-            vtkDataArray* normalArray =normalFilter->GetOutput()->GetPointData()->GetNormals();
+            vtkDataArray* normalArray =
+                normalFilter->GetOutput()->GetPointData()->GetNormals();
             double* normalVector = normalArray->GetTuple(id);
-            double finalX = pd->GetPoint(0)[0] + (normalVector[0]*liftScale);
-            double finalY = pd->GetPoint(0)[1] + (normalVector[1]*liftScale);
-            double finalZ = pd->GetPoint(0)[2] + (normalVector[2]*liftScale);
+            double finalX = pd->GetPoint(0)[0] + (normalVector[0] * liftScale);
+            double finalY = pd->GetPoint(0)[1] + (normalVector[1] * liftScale);
+            double finalZ = pd->GetPoint(0)[2] + (normalVector[2] * liftScale);
             curveArrowPts->SetPoint(counter, finalX, finalY, finalZ);
         }
-        counter +=1;
+        counter += 1;
     }
     output->Initialize();
     output->SetPoints(curveArrowPts);
@@ -504,6 +527,4 @@ void TemplateViewer::MakeArrow(vtkPolyData* inputMesh, vtkMultiBlockDataSet* inp
     output->Modified();
 }
 
-TemplateViewer::~TemplateViewer(){
-    delete m_vtkRenderWidget;
-}
+TemplateViewer::~TemplateViewer() { delete m_vtkRenderWidget; }

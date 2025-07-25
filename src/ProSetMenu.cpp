@@ -67,31 +67,35 @@
 ***********************************************************************************************/
 
 #include "../include/ProSetMenu.h"
+
 #include "../include/MainWindow.h"
 
-#if QT_VERSION >= QT_VERSION_CHECK(5,14,0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 #define ENDL Qt::endl
 #else
 #define ENDL endl
 #endif
 
-ProSetMenu::ProSetMenu(MainWindow* parent) :m_parent(parent) {
+ProSetMenu::ProSetMenu(MainWindow* parent) : m_parent(parent) {
     m_templateSurfaceSliders = vtkSmartPointer<vtkPoints>::New();
     m_templateTypeI = vtkSmartPointer<vtkPoints>::New();
     m_templatePoly = vtkSmartPointer<vtkPolyData>::New();
     m_templateCurveSliders = vtkSmartPointer<vtkMultiBlockDataSet>::New();
-    m_templatePatchSurfaceSliders = vtkSmartPointer<vtkMultiBlockDataSet>::New();
+    m_templatePatchSurfaceSliders =
+        vtkSmartPointer<vtkMultiBlockDataSet>::New();
     m_templatePatchSurfaceCurve = vtkSmartPointer<vtkMultiBlockDataSet>::New();
     m_templateCurvePtsPoly = vtkSmartPointer<vtkMultiBlockDataSet>::New();
     m_templatePlot = new TemplateDigitiser(this);
     m_templatePlot->hide();
     layout = new QGridLayout();
-    QString style = "QGroupBox {"
+    QString style =
+        "QGroupBox {"
         "font: bold;"
         "border: 1px solid silver;"
         "border-radius: 5px;"
         "margin-top: 1ex;"
-        "}" "QGroupBox::title {"
+        "}"
+        "QGroupBox::title {"
         "subcontrol-origin: margin;"
         "left: 7px;"
         "padding: 0px 5px 0px 5px;"
@@ -119,12 +123,16 @@ ProSetMenu::ProSetMenu(MainWindow* parent) :m_parent(parent) {
     surfaceLineEditPatchUNOS = new QLineEdit();
     surfaceLineEditPatchVNOS = new QLineEdit();
     std::string surfaceQuery("Number >=" + std::to_string(surfaceSliderLimit));
-    std::string surfacePatchQuery("Number >=" + std::to_string(surfaceResolutionLimit));
-    surfaceLineEditNOS->setPlaceholderText(QString::fromStdString(surfaceQuery));
+    std::string surfacePatchQuery("Number >=" +
+                                  std::to_string(surfaceResolutionLimit));
+    surfaceLineEditNOS->setPlaceholderText(
+        QString::fromStdString(surfaceQuery));
     surfaceLineEditNOS->setValidator(new QIntValidator(0, 10000, this));
-    surfaceLineEditPatchUNOS->setPlaceholderText(QString::fromStdString(surfacePatchQuery));
+    surfaceLineEditPatchUNOS->setPlaceholderText(
+        QString::fromStdString(surfacePatchQuery));
     surfaceLineEditPatchUNOS->setValidator(new QIntValidator(0, 10000, this));
-    surfaceLineEditPatchVNOS->setPlaceholderText(QString::fromStdString(surfacePatchQuery));
+    surfaceLineEditPatchVNOS->setPlaceholderText(
+        QString::fromStdString(surfacePatchQuery));
     surfaceLineEditPatchVNOS->setValidator(new QIntValidator(0, 10000, this));
     surfaceLineEditPatchNOP = new QLineEdit();
     surfaceLineEditPatchNOP->setPlaceholderText("1");
@@ -194,25 +202,33 @@ ProSetMenu::ProSetMenu(MainWindow* parent) :m_parent(parent) {
     registerLayout->addWidget(loadTemplateButton, 0, 0);
     registerLayout->addWidget(registerButton, 0, 1);
     registerLayout->addWidget(resetButton, 1, 0, 1, 2);
-    //registerLayout->addWidget(resetButton, 1, 0);
+    // registerLayout->addWidget(resetButton, 1, 0);
     registerLayout->addWidget(saveButton, 2, 0);
     registerLayout->addWidget(importButton, 2, 1);
     registerGroup->setLayout(registerLayout);
 
-
-    connect(typeILineEdit, &QLineEdit::textChanged, this, &ProSetMenu::SetTypeINOL);
-    connect(loadTemplateButton, &QPushButton::clicked, this, &ProSetMenu::LoadTemplate);
-    connect(surfaceLineEditNOS, &QLineEdit::textChanged, this, &ProSetMenu::SetSurfaceNOS);
-    connect(surfaceLineEditPatchUNOS, &QLineEdit::textChanged, this, &ProSetMenu::SetSurfacePatchUNOS);
-    connect(surfaceLineEditPatchVNOS, &QLineEdit::textChanged, this, &ProSetMenu::SetSurfacePatchVNOS);
-    connect(surfaceLineEditPatchNOP, &QLineEdit::textChanged, this, &ProSetMenu::SetSurfacePatchNOP);
-    connect(curveLineEditNOS, &QLineEdit::textChanged, this, &ProSetMenu::SetCurveNOS);
-    connect(curveLineEditNOC, &QLineEdit::textChanged, this, &ProSetMenu::SetCurveNOC);
+    connect(typeILineEdit, &QLineEdit::textChanged, this,
+            &ProSetMenu::SetTypeINOL);
+    connect(loadTemplateButton, &QPushButton::clicked, this,
+            &ProSetMenu::LoadTemplate);
+    connect(surfaceLineEditNOS, &QLineEdit::textChanged, this,
+            &ProSetMenu::SetSurfaceNOS);
+    connect(surfaceLineEditPatchUNOS, &QLineEdit::textChanged, this,
+            &ProSetMenu::SetSurfacePatchUNOS);
+    connect(surfaceLineEditPatchVNOS, &QLineEdit::textChanged, this,
+            &ProSetMenu::SetSurfacePatchVNOS);
+    connect(surfaceLineEditPatchNOP, &QLineEdit::textChanged, this,
+            &ProSetMenu::SetSurfacePatchNOP);
+    connect(curveLineEditNOS, &QLineEdit::textChanged, this,
+            &ProSetMenu::SetCurveNOS);
+    connect(curveLineEditNOC, &QLineEdit::textChanged, this,
+            &ProSetMenu::SetCurveNOC);
     connect(resetButton, &QPushButton::clicked, this, &ProSetMenu::Reset);
     connect(registerButton, &QPushButton::clicked, this, &ProSetMenu::Register);
     connect(saveButton, &QPushButton::clicked, this, &ProSetMenu::SaveTemplate);
-    connect(importButton, &QPushButton::clicked, this, &ProSetMenu::ImportTemplate);
-    void (QComboBox :: * fp) (int) = &QComboBox::currentIndexChanged;
+    connect(importButton, &QPushButton::clicked, this,
+            &ProSetMenu::ImportTemplate);
+    void (QComboBox ::*fp)(int) = &QComboBox::currentIndexChanged;
     connect(surfaceComboBox, fp, this, &ProSetMenu::ChangeSurfaceMode);
 
     layout->addWidget(curveGroup, 0, 0);
@@ -228,36 +244,32 @@ ProSetMenu::ProSetMenu(MainWindow* parent) :m_parent(parent) {
 void ProSetMenu::SetTypeINOL() {
     auto textNum = typeILineEdit->text().toStdString();
     int num = -1;
-    try
-    {
+    try {
         num = stoi(textNum);
-    }
-    catch (const std::exception& e)
-    {
+    } catch (const std::exception& e) {
         num = -1;
         typeINOL = 0;
     }
     if (num >= 0) {
         typeINOL = num;
-    }
-    else {
+    } else {
         typeILineEdit->clear();
         typeINOL = 0;
     }
 }
 
-int ProSetMenu::GetTypeINOL() {
-    return typeINOL;
-}
+int ProSetMenu::GetTypeINOL() { return typeINOL; }
 
 void ProSetMenu::SetTemplateTypeI(vtkPoints* fixedPts) {
     m_templateTypeI = fixedPts;
 }
 
 void ProSetMenu::Reset() {
-    if (QMessageBox::Yes == QMessageBox::question(this, "Reset Confirmation",
-        "This will erase all of the landmarks in your project! \n Do you want to continue?",
-        QMessageBox::Yes | QMessageBox::No)) {
+    if (QMessageBox::Yes ==
+        QMessageBox::question(this, "Reset Confirmation",
+                              "This will erase all of the landmarks in your "
+                              "project! \n Do you want to continue?",
+                              QMessageBox::Yes | QMessageBox::No)) {
         surfaceLineEditNOS->clear();
         surfaceLineEditNOS->setReadOnly(false);
         surfaceNOS = 0;
@@ -307,9 +319,12 @@ void ProSetMenu::Reset() {
 void ProSetMenu::Register() {
     m_parent->SetTemplateMesh(m_templatePoly);
     m_parent->SetTemplateTypeI(m_templateTypeI);
-    m_parent->SetTemplateCurveSliders(m_templateCurveSliders, m_templateCurvePtsPoly, curveNOS);
+    m_parent->SetTemplateCurveSliders(m_templateCurveSliders,
+                                      m_templateCurvePtsPoly, curveNOS);
     m_parent->SetTemplateSurfaceSliders(m_templateSurfaceSliders);
-    m_parent->SetTemplatePatchSurfaceSliders(m_templatePatchSurfaceSliders, m_templatePatchSurfaceCurve, surfacePatchUNOS, surfacePatchVNOS);
+    m_parent->SetTemplatePatchSurfaceSliders(
+        m_templatePatchSurfaceSliders, m_templatePatchSurfaceCurve,
+        surfacePatchUNOS, surfacePatchVNOS);
     m_parent->TemplateStatus(1);
     resetButton->setEnabled(true);
     registerButton->setEnabled(false);
@@ -326,7 +341,9 @@ void ProSetMenu::SaveTemplate() {
     itercurveSliders->SetDataSet(m_templateCurveSliders);
     itercurveSliders->SkipEmptyNodesOn();
     itercurveSliders->VisitOnlyLeavesOn();
-    for (itercurveSliders->InitTraversal(); !itercurveSliders->IsDoneWithTraversal(); itercurveSliders->GoToNextItem()) {
+    for (itercurveSliders->InitTraversal();
+         !itercurveSliders->IsDoneWithTraversal();
+         itercurveSliders->GoToNextItem()) {
         vtkDataObject* dso = itercurveSliders->GetCurrentDataObject();
         vtkPolyData* pd = dynamic_cast<vtkPolyData*>(dso);
         for (int i = 0; i < pd->GetNumberOfPoints(); i++) {
@@ -340,7 +357,9 @@ void ProSetMenu::SaveTemplate() {
     itersurfaceSliders->SetDataSet(m_templatePatchSurfaceSliders);
     itersurfaceSliders->SkipEmptyNodesOn();
     itersurfaceSliders->VisitOnlyLeavesOn();
-    for (itersurfaceSliders->InitTraversal(); !itersurfaceSliders->IsDoneWithTraversal(); itersurfaceSliders->GoToNextItem()) {
+    for (itersurfaceSliders->InitTraversal();
+         !itersurfaceSliders->IsDoneWithTraversal();
+         itersurfaceSliders->GoToNextItem()) {
         vtkDataObject* dso = itersurfaceSliders->GetCurrentDataObject();
         vtkPolyData* pd = dynamic_cast<vtkPolyData*>(dso);
         for (int i = 0; i < pd->GetNumberOfPoints(); i++) {
@@ -348,7 +367,8 @@ void ProSetMenu::SaveTemplate() {
         }
     }
     auto filter = "att(*.att)";
-    QString filename = QFileDialog::getSaveFileName(this, "Save file", "", filter);
+    QString filename =
+        QFileDialog::getSaveFileName(this, "Save file", "", filter, nullptr, QFileDialog::DontUseNativeDialog);
     QFileInfo fi(filename);
     QString ext = fi.completeSuffix();
     if (filename.isEmpty()) {
@@ -427,7 +447,9 @@ void ProSetMenu::SaveTemplate() {
         itercurvepts->SetDataSet(m_templateCurvePtsPoly);
         itercurvepts->SkipEmptyNodesOn();
         itercurvepts->VisitOnlyLeavesOn();
-        for (itercurvepts->InitTraversal(); !itercurvepts->IsDoneWithTraversal(); itercurvepts->GoToNextItem()) {
+        for (itercurvepts->InitTraversal();
+             !itercurvepts->IsDoneWithTraversal();
+             itercurvepts->GoToNextItem()) {
             vtkDataObject* dso = itercurvepts->GetCurrentDataObject();
             vtkPolyData* pd = dynamic_cast<vtkPolyData*>(dso);
             for (int i = 0; i < 3; i++) {
@@ -448,7 +470,9 @@ void ProSetMenu::SaveTemplate() {
         iterSurfaceCurvepts->SetDataSet(m_templatePatchSurfaceCurve);
         iterSurfaceCurvepts->SkipEmptyNodesOn();
         iterSurfaceCurvepts->VisitOnlyLeavesOn();
-        for (iterSurfaceCurvepts->InitTraversal(); !iterSurfaceCurvepts->IsDoneWithTraversal(); iterSurfaceCurvepts->GoToNextItem()) {
+        for (iterSurfaceCurvepts->InitTraversal();
+             !iterSurfaceCurvepts->IsDoneWithTraversal();
+             iterSurfaceCurvepts->GoToNextItem()) {
             vtkDataObject* dso = iterSurfaceCurvepts->GetCurrentDataObject();
             vtkPolyData* pd = dynamic_cast<vtkPolyData*>(dso);
             for (int i = 0; i < 3; i++) {
@@ -466,7 +490,8 @@ void ProSetMenu::SaveTemplate() {
         textItem.clear();
         for (int i = 0; i < m_templatePoly->GetNumberOfPoints(); i++) {
             for (int j = 0; j < 3; j++) {
-                textItem += QString::number(m_templatePoly->GetPoint(i)[j]) + ",";
+                textItem +=
+                    QString::number(m_templatePoly->GetPoint(i)[j]) + ",";
             }
             data << textItem.join("") << ENDL;
             textItem.clear();
@@ -478,7 +503,9 @@ void ProSetMenu::SaveTemplate() {
         for (int i = 0; i < m_templatePoly->GetNumberOfCells(); i++) {
             int numPts = m_templatePoly->GetCell(i)->GetNumberOfPoints();
             for (int j = 0; j < numPts; j++) {
-                textItem += QString::number(m_templatePoly->GetCell(i)->GetPointId(j)) + ",";
+                textItem +=
+                    QString::number(m_templatePoly->GetCell(i)->GetPointId(j)) +
+                    ",";
             }
             data << textItem.join("") << ENDL;
             textItem.clear();
@@ -491,7 +518,7 @@ void ProSetMenu::SaveTemplate() {
 
         // Get the Masked array
         vtkIntArray* maskArray = vtkIntArray::SafeDownCast(
-        m_templatePoly->GetCellData()->GetArray("Masked"));
+            m_templatePoly->GetCellData()->GetArray("Masked"));
         for (vtkIdType i = 0; i < m_templatePoly->GetNumberOfCells(); ++i) {
             int maskValue = maskArray->GetValue(i);
             textItem += QString::number(maskValue) + ",";
@@ -504,10 +531,11 @@ void ProSetMenu::SaveTemplate() {
 }
 
 void ProSetMenu::ImportTemplate() {
-    QString fileName = QFileDialog::getOpenFileName(this, "ToolBox Template Files", QDir::homePath()
-        , "ATT Files (*.att);;All Files (*)");
-    if (fileName.isEmpty()) {}
-    else {
+    QString fileName = QFileDialog::getOpenFileName(
+        this, "ToolBox Template Files", QDir::homePath(),
+        "ATT Files (*.att);;All Files (*)", nullptr, QFileDialog::DontUseNativeDialog);
+    if (fileName.isEmpty()) {
+    } else {
         if (fileName.endsWith(".att")) {
             loadTemplateButton->setEnabled(0);
             surfaceLineEditNOS->setReadOnly(true);
@@ -534,26 +562,29 @@ void ProSetMenu::ImportTemplate() {
                     }
                     content.push_back(row);
                 }
-            }
-            else {
+            } else {
                 std::cout << "Could not open the file\n";
             }
 
             for (int i = 0; i < content.size(); i++) {
                 if (content[i][0] == "Number of Fixed Landmarks") {
-                    typeILineEdit->setText(QString::fromUtf8(content[i][1].c_str()));
+                    typeILineEdit->setText(
+                        QString::fromUtf8(content[i][1].c_str()));
                     typeILineEdit->isModified();
                 }
                 if (content[i][0] == "Number of Curves") {
-                    curveLineEditNOC->setText(QString::fromUtf8(content[i][1].c_str()));
+                    curveLineEditNOC->setText(
+                        QString::fromUtf8(content[i][1].c_str()));
                     curveLineEditNOC->isModified();
                 }
                 if (content[i][0] == "Number of Curve Semi-Landmarks") {
-                    curveLineEditNOS->setText(QString::fromUtf8(content[i][1].c_str()));
+                    curveLineEditNOS->setText(
+                        QString::fromUtf8(content[i][1].c_str()));
                     curveLineEditNOS->isModified();
                 }
                 if (content[i][0] == "Number of Surface Sliders") {
-                    surfaceLineEditNOS->setText(QString::fromUtf8(content[i][1].c_str()));
+                    surfaceLineEditNOS->setText(
+                        QString::fromUtf8(content[i][1].c_str()));
                     surfaceLineEditNOS->isModified();
                 }
                 if (content[i][0] == "Ignore Islands") {
@@ -561,15 +592,18 @@ void ProSetMenu::ImportTemplate() {
                 }
                 if (surfaceNOS == 0) {
                     if (content[i][0] == "Number of Surface Patches") {
-                        surfaceLineEditPatchNOP->setText(QString::fromUtf8(content[i][1].c_str()));
+                        surfaceLineEditPatchNOP->setText(
+                            QString::fromUtf8(content[i][1].c_str()));
                         surfaceLineEditPatchNOP->isModified();
                     }
                     if (content[i][0] == "Surface Patch U") {
-                        surfaceLineEditPatchUNOS->setText(QString::fromUtf8(content[i][1].c_str()));
+                        surfaceLineEditPatchUNOS->setText(
+                            QString::fromUtf8(content[i][1].c_str()));
                         surfaceLineEditPatchUNOS->isModified();
                     }
                     if (content[i][0] == "Surface Patch V") {
-                        surfaceLineEditPatchVNOS->setText(QString::fromUtf8(content[i][1].c_str()));
+                        surfaceLineEditPatchVNOS->setText(
+                            QString::fromUtf8(content[i][1].c_str()));
                         surfaceLineEditPatchVNOS->isModified();
                     }
                     if (surfacePatchUNOS != 0 && surfacePatchVNOS != 0) {
@@ -580,10 +614,14 @@ void ProSetMenu::ImportTemplate() {
                     }
                 }
                 if (content[i][0] == "3D Mesh Points") {
-                    tempImportedPts->SetNumberOfPoints(std::stoi(content[i][1]));
+                    tempImportedPts->SetNumberOfPoints(
+                        std::stoi(content[i][1]));
                     int startPt = i + 1;
                     for (int j = 0; j < std::stoi(content[i][1]); j++) {
-                        tempImportedPts->SetPoint(j, std::stod(content[startPt + j][0]), std::stod(content[startPt + j][1]), std::stod(content[startPt + j][2]));
+                        tempImportedPts->SetPoint(
+                            j, std::stod(content[startPt + j][0]),
+                            std::stod(content[startPt + j][1]),
+                            std::stod(content[startPt + j][2]));
                     }
                 }
                 if (content[i][0] == "Mesh Connectivity") {
@@ -593,7 +631,8 @@ void ProSetMenu::ImportTemplate() {
                         vtkNew<vtkPolygon> tempCell;
                         tempCell->GetPointIds()->SetNumberOfIds(dim);
                         for (int k = 0; k < dim; k++) {
-                            tempCell->GetPointIds()->SetId(k, std::stoi(content[startCell + j][k]));
+                            tempCell->GetPointIds()->SetId(
+                                k, std::stoi(content[startCell + j][k]));
                         }
                         tempImportedPolyCells->InsertNextCell(tempCell);
                     }
@@ -603,7 +642,8 @@ void ProSetMenu::ImportTemplate() {
                 m_templatePoly->Modified();
 
                 if (content[i][0] == "Mask Array") {
-                    int numCells = std::stoi(content[i][1]);  // Number of cell values
+                    int numCells =
+                        std::stoi(content[i][1]);  // Number of cell values
                     int startIdx = i + 1;
 
                     vtkNew<vtkIntArray> maskArray;
@@ -629,8 +669,10 @@ void ProSetMenu::ImportTemplate() {
                             vtkNew<vtkPolyData> tempArrowPoly;
                             for (int k = 0; k < 3; k++) {
                                 int ptID = startCell + (j * 3) + k;
-                                tempArrowPts->InsertNextPoint(std::stod(content[ptID][0]),
-                                    std::stod(content[ptID][1]), std::stod(content[ptID][2]));
+                                tempArrowPts->InsertNextPoint(
+                                    std::stod(content[ptID][0]),
+                                    std::stod(content[ptID][1]),
+                                    std::stod(content[ptID][2]));
                             }
                             tempArrowPoly->SetPoints(tempArrowPts);
                             tempArrowPoly->Modified();
@@ -647,12 +689,15 @@ void ProSetMenu::ImportTemplate() {
                             vtkNew<vtkPolyData> tempArrowPoly;
                             for (int k = 0; k < 3; k++) {
                                 int ptID = startCell + (j * 3) + k;
-                                tempArrowPts->InsertNextPoint(std::stod(content[ptID][0]),
-                                    std::stod(content[ptID][1]), std::stod(content[ptID][2]));
+                                tempArrowPts->InsertNextPoint(
+                                    std::stod(content[ptID][0]),
+                                    std::stod(content[ptID][1]),
+                                    std::stod(content[ptID][2]));
                             }
                             tempArrowPoly->SetPoints(tempArrowPts);
                             tempArrowPoly->Modified();
-                            m_templatePatchSurfaceCurve->SetBlock(j, tempArrowPoly);
+                            m_templatePatchSurfaceCurve->SetBlock(
+                                j, tempArrowPoly);
                             m_templatePatchSurfaceCurve->Modified();
                         }
                     }
@@ -664,8 +709,10 @@ void ProSetMenu::ImportTemplate() {
                     m_templateTypeI->Initialize();
                     m_templateSurfaceSliders->Initialize();
                     for (int j = 0; j < typeINOL; j++) {
-                        m_templateTypeI->InsertNextPoint(std::stod(content[startCell + j][0]),
-                            std::stod(content[startCell + j][1]), std::stod(content[startCell + j][2]));
+                        m_templateTypeI->InsertNextPoint(
+                            std::stod(content[startCell + j][0]),
+                            std::stod(content[startCell + j][1]),
+                            std::stod(content[startCell + j][2]));
                     }
                     m_templateTypeI->Modified();
                     if (curveNOS != 0) {
@@ -676,33 +723,47 @@ void ProSetMenu::ImportTemplate() {
                             vtkNew<vtkPolyData> sliderPtsPoly;
                             for (int k = 0; k < curveNOS; k++) {
                                 int curvePtID = start + (j * curveNOS) + k;
-                                sliderPts->InsertNextPoint(std::stod(content[curvePtID][0]),
-                                    std::stod(content[curvePtID][1]), std::stod(content[curvePtID][2]));
+                                sliderPts->InsertNextPoint(
+                                    std::stod(content[curvePtID][0]),
+                                    std::stod(content[curvePtID][1]),
+                                    std::stod(content[curvePtID][2]));
                             }
                             sliderPtsPoly->SetPoints(sliderPts);
                             m_templateCurveSliders->SetBlock(j, sliderPtsPoly);
                             m_templateCurveSliders->Modified();
                         }
                     }
-                    if (surfacePatchUNOS == 0 && surfacePatchVNOS == 0 && surfaceNOS != 0) {
+                    if (surfacePatchUNOS == 0 && surfacePatchVNOS == 0 &&
+                        surfaceNOS != 0) {
                         int start = startCell + typeINOL + numCurveSliders;
                         for (int j = 0; j < surfaceNOS; j++) {
-                            m_templateSurfaceSliders->InsertNextPoint(std::stod(content[start + j][0]),
-                                std::stod(content[start + j][1]), std::stod(content[start + j][2]));
+                            m_templateSurfaceSliders->InsertNextPoint(
+                                std::stod(content[start + j][0]),
+                                std::stod(content[start + j][1]),
+                                std::stod(content[start + j][2]));
                         }
                     }
-                    if (surfacePatchUNOS != 0 && surfacePatchVNOS != 0 && surfaceNOS == 0) {
+                    if (surfacePatchUNOS != 0 && surfacePatchVNOS != 0 &&
+                        surfaceNOS == 0) {
                         int start = startCell + typeINOL + numCurveSliders;
                         for (int j = 0; j < surfacePatchNOP; j++) {
                             vtkNew<vtkPoints> sliderPts;
                             vtkNew<vtkPolyData> sliderPtsPoly;
-                            for (int k = 0; k < (surfacePatchUNOS * surfacePatchVNOS); k++) {
-                                int surfacePtID = start + (j * (surfacePatchUNOS * surfacePatchVNOS)) + k;
-                                sliderPts->InsertNextPoint(std::stod(content[surfacePtID][0]),
-                                    std::stod(content[surfacePtID][1]), std::stod(content[surfacePtID][2]));
+                            for (int k = 0;
+                                 k < (surfacePatchUNOS * surfacePatchVNOS);
+                                 k++) {
+                                int surfacePtID = start +
+                                                  (j * (surfacePatchUNOS *
+                                                        surfacePatchVNOS)) +
+                                                  k;
+                                sliderPts->InsertNextPoint(
+                                    std::stod(content[surfacePtID][0]),
+                                    std::stod(content[surfacePtID][1]),
+                                    std::stod(content[surfacePtID][2]));
                             }
                             sliderPtsPoly->SetPoints(sliderPts);
-                            m_templatePatchSurfaceSliders->SetBlock(j, sliderPtsPoly);
+                            m_templatePatchSurfaceSliders->SetBlock(
+                                j, sliderPtsPoly);
                             m_templatePatchSurfaceSliders->Modified();
                         }
                     }
@@ -721,109 +782,121 @@ void ProSetMenu::ImportTemplate() {
 }
 
 void ProSetMenu::ChangeSurfaceMode(int index) {
-    switch (index)
-    {
-    case 0:
-        surfaceLayout->removeWidget(surfacePatchLabel);
-        surfaceLayout->removeWidget(surfaceLineEditPatchNOP);
-        surfaceLayout->removeWidget(resolutionGroup);
-        surfaceLayout->removeWidget(surfaceResolutionLabel);
-        surfaceResolutionLabel->setVisible(false);
-        surfacePatchLabel->setVisible(false);
-        surfaceLineEditPatchNOP->setVisible(false);
-        resolutionGroup->setVisible(false);
-        surfaceNOSLabel->setVisible(true);
-        surfaceLineEditNOS->setVisible(true);
-        surfaceLayout->addWidget(surfaceNOSLabel, 1, 0);
-        surfaceLayout->addWidget(surfaceLineEditNOS, 1, 1);
-        surfaceLineEditNOS->setVisible(true);
-        surfaceLineEditPatchNOP->clear();
-        surfaceLineEditPatchUNOS->clear();
-        surfaceLineEditPatchVNOS->clear();
-        surfacePatchNOP = 1;
-        surfacePatchUNOS = 0;
-        surfacePatchVNOS = 0;
-        break;
-    case 1:
-        surfaceLayout->removeWidget(surfaceLineEditNOS);
-        surfaceLayout->removeWidget(surfaceNOSLabel);
-        surfaceNOSLabel->setVisible(false);
-        surfaceLineEditNOS->setVisible(false);
-        surfaceResolutionLabel->setVisible(true);
-        surfacePatchLabel->setVisible(true);
-        surfaceLineEditPatchNOP->setVisible(true);
-        resolutionGroup->setVisible(true);
-        surfaceLayout->addWidget(surfacePatchLabel, 2, 0);
-        surfaceLayout->addWidget(surfaceLineEditPatchNOP, 2, 1);
-        surfaceLayout->addWidget(surfaceResolutionLabel, 1, 0);
-        surfaceLayout->addWidget(resolutionGroup, 1, 1);
-        surfaceLineEditNOS->clear();
-        surfaceNOS = 0;
-        break;
+    switch (index) {
+        case 0:
+            surfaceLayout->removeWidget(surfacePatchLabel);
+            surfaceLayout->removeWidget(surfaceLineEditPatchNOP);
+            surfaceLayout->removeWidget(resolutionGroup);
+            surfaceLayout->removeWidget(surfaceResolutionLabel);
+            surfaceResolutionLabel->setVisible(false);
+            surfacePatchLabel->setVisible(false);
+            surfaceLineEditPatchNOP->setVisible(false);
+            resolutionGroup->setVisible(false);
+            surfaceNOSLabel->setVisible(true);
+            surfaceLineEditNOS->setVisible(true);
+            surfaceLayout->addWidget(surfaceNOSLabel, 1, 0);
+            surfaceLayout->addWidget(surfaceLineEditNOS, 1, 1);
+            surfaceLineEditNOS->setVisible(true);
+            surfaceLineEditPatchNOP->clear();
+            surfaceLineEditPatchUNOS->clear();
+            surfaceLineEditPatchVNOS->clear();
+            surfacePatchNOP = 1;
+            surfacePatchUNOS = 0;
+            surfacePatchVNOS = 0;
+            break;
+        case 1:
+            surfaceLayout->removeWidget(surfaceLineEditNOS);
+            surfaceLayout->removeWidget(surfaceNOSLabel);
+            surfaceNOSLabel->setVisible(false);
+            surfaceLineEditNOS->setVisible(false);
+            surfaceResolutionLabel->setVisible(true);
+            surfacePatchLabel->setVisible(true);
+            surfaceLineEditPatchNOP->setVisible(true);
+            resolutionGroup->setVisible(true);
+            surfaceLayout->addWidget(surfacePatchLabel, 2, 0);
+            surfaceLayout->addWidget(surfaceLineEditPatchNOP, 2, 1);
+            surfaceLayout->addWidget(surfaceResolutionLabel, 1, 0);
+            surfaceLayout->addWidget(resolutionGroup, 1, 1);
+            surfaceLineEditNOS->clear();
+            surfaceNOS = 0;
+            break;
     }
 }
 
 void ProSetMenu::LoadTemplate() {
-    if (surfaceNOS == 0 && typeINOL == 0 && curveNOS == 0 && surfacePatchUNOS == 0 && surfacePatchVNOS == 0) {
+    if (surfaceNOS == 0 && typeINOL == 0 && curveNOS == 0 &&
+        surfacePatchUNOS == 0 && surfacePatchVNOS == 0) {
         auto errorDialogue = QMessageBox();
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText("The project setting is empty");
         errorDialogue.exec();
-    }
-    else if (surfaceNOS != 0 && surfaceNOS < surfaceSliderLimit) {
-        //surfaceLineEditNOS->clear();
+    } else if (surfaceNOS != 0 && surfaceNOS < surfaceSliderLimit) {
+        // surfaceLineEditNOS->clear();
         auto errorDialogue = QMessageBox();
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
-        errorDialogue.setText("Number of the surface sliders is less than the limit. Try again");
+        errorDialogue.setText(
+            "Number of the surface sliders is less than the limit. Try again");
         errorDialogue.exec();
-    }
-    else if (surfacePatchUNOS != 0 && (surfacePatchUNOS < surfaceResolutionLimit || surfacePatchVNOS < surfaceResolutionLimit)) {
+    } else if (surfacePatchUNOS != 0 &&
+               (surfacePatchUNOS < surfaceResolutionLimit ||
+                surfacePatchVNOS < surfaceResolutionLimit)) {
         auto errorDialogue = QMessageBox();
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
-        errorDialogue.setText("The resolution is less than the limit. Try again");
+        errorDialogue.setText(
+            "The resolution is less than the limit. Try again");
         errorDialogue.exec();
-    }
-    else if (surfacePatchVNOS != 0 && surfacePatchVNOS < surfaceResolutionLimit) {
+    } else if (surfacePatchVNOS != 0 &&
+               surfacePatchVNOS < surfaceResolutionLimit) {
         auto errorDialogue = QMessageBox();
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
-        errorDialogue.setText("The resolution is less than the limit. Try again");
+        errorDialogue.setText(
+            "The resolution is less than the limit. Try again");
         errorDialogue.exec();
-    }
-    else if (typeINOL != 0 && typeINOL < fixedLandmarkLimit) {
-        //typeILineEdit->clear();
+    } else if (typeINOL != 0 && typeINOL < fixedLandmarkLimit) {
+        // typeILineEdit->clear();
         auto errorDialogue = QMessageBox();
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
-        errorDialogue.setText("Number of the fixed landmarks is less than the limit. Try again");
+        errorDialogue.setText(
+            "Number of the fixed landmarks is less than the limit. Try again");
         errorDialogue.exec();
-    }
-    else if (curveNOS != 0 && curveNOS < curveSliderLimit) {
-        //curveLineEditNOS->clear();
+    } else if (curveNOS != 0 && curveNOS < curveSliderLimit) {
+        // curveLineEditNOS->clear();
         auto errorDialogue = QMessageBox();
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
-        errorDialogue.setText("Number of the curve sliders is less than the limit. Try again");
+        errorDialogue.setText(
+            "Number of the curve sliders is less than the limit. Try again");
         errorDialogue.exec();
-    }
-    else {
-        QString fileName = QFileDialog::getOpenFileName(this, "OBJ Files", QDir::homePath()
-            , "OBJ Files (*.obj);;All Files (*)");
-        if (fileName.isEmpty()) {}
-        else {
-            if (fileName.endsWith(".obj")) {
-                vtkSmartPointer<vtkOBJReader> objReader
-                    = vtkSmartPointer<vtkOBJReader>::New();
-                objReader->SetFileName(fileName.toLocal8Bit().data());
-
-                objReader->Update();
+    } else {
+        QString fileName = QFileDialog::getOpenFileName(
+            this, "Mesh Files", QDir::homePath(),
+            "OBJ Files (*.obj);;PLY Files (*.ply);;All Files (*)", nullptr,
+            QFileDialog::DontUseNativeDialog);
+        if (fileName.isEmpty()) {
+        } else {
+            if (fileName.endsWith(".obj") || fileName.endsWith(".ply")) {
                 vtkSmartPointer<vtkCleanPolyData> cleanFilter =
                     vtkSmartPointer<vtkCleanPolyData>::New();
-                cleanFilter->SetInputData(objReader->GetOutput());
-                cleanFilter->Update();
+                if (fileName.endsWith(".obj")) {
+                    vtkSmartPointer<vtkOBJReader> objReader =
+                        vtkSmartPointer<vtkOBJReader>::New();
+                    objReader->SetFileName(fileName.toLocal8Bit().data());
+                    objReader->Update();
+                    cleanFilter->SetInputData(objReader->GetOutput());
+                    cleanFilter->Update();
+                } else if (fileName.endsWith(".ply")) {
+                    vtkSmartPointer<vtkPLYReader> plyReader =
+                        vtkSmartPointer<vtkPLYReader>::New();
+                    plyReader->SetFileName(fileName.toLocal8Bit().data());
+                    plyReader->Update();
+                    cleanFilter->SetInputData(plyReader->GetOutput());
+                    cleanFilter->Update();
+                }
                 m_templatePoly = cleanFilter->GetOutput();
                 loadTemplateButton->setEnabled(false);
                 importButton->setEnabled(false);
@@ -841,7 +914,7 @@ void ProSetMenu::LoadTemplate() {
                 m_templatePlot->SetPoly(m_templatePoly);
                 m_templatePlot->show();
             }
-            if (fileName.endsWith(".obj") == 0) {
+            if (!fileName.endsWith(".obj") && !fileName.endsWith(".ply")) {
                 auto errorDialogue = QMessageBox();
                 errorDialogue.setIcon(QMessageBox::Critical);
                 errorDialogue.setWindowTitle("Error");
@@ -855,12 +928,9 @@ void ProSetMenu::LoadTemplate() {
 void ProSetMenu::SetSurfaceNOS() {
     auto textNum = surfaceLineEditNOS->text().toStdString();
     int num = -1;
-    try
-    {
+    try {
         num = stoi(textNum);
-    }
-    catch (const std::exception& e)
-    {
+    } catch (const std::exception& e) {
         num = -1;
         surfaceNOS = 0;
         surfaceLineEditPatchUNOS->setReadOnly(false);
@@ -872,8 +942,7 @@ void ProSetMenu::SetSurfaceNOS() {
         surfaceLineEditPatchUNOS->setReadOnly(true);
         surfaceLineEditPatchVNOS->setReadOnly(true);
         surfaceLineEditPatchNOP->setReadOnly(true);
-    }
-    else {
+    } else {
         surfaceLineEditNOS->clear();
         surfaceNOS = 0;
         surfaceLineEditPatchUNOS->setReadOnly(false);
@@ -882,19 +951,14 @@ void ProSetMenu::SetSurfaceNOS() {
     }
 }
 
-int ProSetMenu::GetSurfaceNOS() {
-    return surfaceNOS;
-}
+int ProSetMenu::GetSurfaceNOS() { return surfaceNOS; }
 
 void ProSetMenu::SetSurfacePatchUNOS() {
     auto textNum = surfaceLineEditPatchUNOS->text().toStdString();
     int num = -1;
-    try
-    {
+    try {
         num = stoi(textNum);
-    }
-    catch (const std::exception& e)
-    {
+    } catch (const std::exception& e) {
         num = -1;
         surfacePatchUNOS = 0;
         surfaceLineEditNOS->setReadOnly(false);
@@ -902,8 +966,7 @@ void ProSetMenu::SetSurfacePatchUNOS() {
     if (num >= 0) {
         surfacePatchUNOS = num;
         surfaceLineEditNOS->setReadOnly(true);
-    }
-    else {
+    } else {
         surfaceLineEditPatchUNOS->clear();
         surfacePatchUNOS = 0;
         surfaceLineEditNOS->setReadOnly(false);
@@ -913,12 +976,9 @@ void ProSetMenu::SetSurfacePatchUNOS() {
 void ProSetMenu::SetSurfacePatchVNOS() {
     auto textNum = surfaceLineEditPatchVNOS->text().toStdString();
     int num = -1;
-    try
-    {
+    try {
         num = stoi(textNum);
-    }
-    catch (const std::exception& e)
-    {
+    } catch (const std::exception& e) {
         num = -1;
         surfacePatchVNOS = 0;
         surfaceLineEditNOS->setReadOnly(false);
@@ -926,8 +986,7 @@ void ProSetMenu::SetSurfacePatchVNOS() {
     if (num >= 0) {
         surfacePatchVNOS = num;
         surfaceLineEditNOS->setReadOnly(true);
-    }
-    else {
+    } else {
         surfaceLineEditPatchVNOS->clear();
         surfacePatchVNOS = 0;
         surfaceLineEditNOS->setReadOnly(false);
@@ -941,12 +1000,9 @@ std::tuple<int, int> ProSetMenu::GetSurfacePatchResolution() {
 void ProSetMenu::SetSurfacePatchNOP() {
     auto textNum = surfaceLineEditPatchNOP->text().toStdString();
     int num = -1;
-    try
-    {
+    try {
         num = stoi(textNum);
-    }
-    catch (const std::exception& e)
-    {
+    } catch (const std::exception& e) {
         num = -1;
         surfacePatchNOP = 1;
         surfaceLineEditNOS->setReadOnly(false);
@@ -954,34 +1010,27 @@ void ProSetMenu::SetSurfacePatchNOP() {
     if (num >= 0) {
         surfacePatchNOP = num;
         surfaceLineEditNOS->setReadOnly(true);
-    }
-    else {
+    } else {
         surfaceLineEditPatchNOP->clear();
         surfacePatchNOP = 1;
         surfaceLineEditNOS->setReadOnly(false);
     }
 }
 
-int ProSetMenu::GetSurfacePatchNOP() {
-    return surfacePatchNOP;
-}
+int ProSetMenu::GetSurfacePatchNOP() { return surfacePatchNOP; }
 
 void ProSetMenu::SetCurveNOS() {
     std::string textNum = curveLineEditNOS->text().toStdString();
     int num = -1;
-    try
-    {
+    try {
         num = stoi(textNum);
-    }
-    catch (const std::exception& e)
-    {
+    } catch (const std::exception& e) {
         num = -1;
         curveNOS = 0;
     }
     if (num >= 0) {
         curveNOS = num;
-    }
-    else {
+    } else {
         curveLineEditNOS->clear();
         curveNOS = 0;
     }
@@ -990,33 +1039,27 @@ void ProSetMenu::SetCurveNOS() {
 void ProSetMenu::SetCurveNOC() {
     std::string textNum = curveLineEditNOC->text().toStdString();
     int num = -1;
-    try
-    {
+    try {
         num = stoi(textNum);
-    }
-    catch (const std::exception& e)
-    {
+    } catch (const std::exception& e) {
         num = -1;
         curveNOC = 1;
     }
     if (num > 0) {
         curveNOC = num;
-    }
-    else {
+    } else {
         curveLineEditNOC->clear();
         curveNOC = 1;
     }
 }
 
-int ProSetMenu::GetCurveNOS() {
-    return curveNOS;
-}
+int ProSetMenu::GetCurveNOS() { return curveNOS; }
 
-int ProSetMenu::GetCurveNOC() {
-    return curveNOC;
-}
+int ProSetMenu::GetCurveNOC() { return curveNOC; }
 
-void ProSetMenu::SetTemplateCurveSliders(vtkMultiBlockDataSet* sliderPtsPolyBlock, vtkMultiBlockDataSet* curvePtsPolyBlock) {
+void ProSetMenu::SetTemplateCurveSliders(
+    vtkMultiBlockDataSet* sliderPtsPolyBlock,
+    vtkMultiBlockDataSet* curvePtsPolyBlock) {
     m_templateCurveSliders = sliderPtsPolyBlock;
     m_templateCurvePtsPoly = curvePtsPolyBlock;
 }
@@ -1025,7 +1068,9 @@ void ProSetMenu::SetTemplateSurfaceSliders(vtkPoints* points) {
     m_templateSurfaceSliders = points;
 }
 
-void ProSetMenu::SetTemplatePatchSurfaceSliders(vtkMultiBlockDataSet* surfaceptsPolyBlock, vtkMultiBlockDataSet* surfacePatchCurve) {
+void ProSetMenu::SetTemplatePatchSurfaceSliders(
+    vtkMultiBlockDataSet* surfaceptsPolyBlock,
+    vtkMultiBlockDataSet* surfacePatchCurve) {
     m_templatePatchSurfaceSliders = surfaceptsPolyBlock;
     m_templatePatchSurfaceCurve = surfacePatchCurve;
 }
@@ -1036,16 +1081,12 @@ void ProSetMenu::Refresh(bool condition) {
         saveButton->setEnabled(true);
     }
     resetButton->setEnabled(true);
-    //loadTemplateButton->setEnabled(true);
+    // loadTemplateButton->setEnabled(true);
 }
 
-void ProSetMenu::SetIgnorInternals(bool option) {
-    m_ignoreInside = option;
-}
+void ProSetMenu::SetIgnorInternals(bool option) { m_ignoreInside = option; }
 
-bool ProSetMenu::GetIgnorInternals() {
-    return m_ignoreInside;
-}
+bool ProSetMenu::GetIgnorInternals() { return m_ignoreInside; }
 
 ProSetMenu::~ProSetMenu() {
     delete layout;

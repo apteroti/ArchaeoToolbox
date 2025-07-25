@@ -70,8 +70,9 @@
 
 #include "../include/MainWindow.h"
 
-SuperImposition::SuperImposition(DataBase *dataBase, MainWindow *parent, QMutex* mutex)
-    : m_dataBase(dataBase), m_parent(parent),m_mutex(mutex) {
+SuperImposition::SuperImposition(DataBase *dataBase, MainWindow *parent,
+                                 QMutex *mutex)
+    : m_dataBase(dataBase), m_parent(parent), m_mutex(mutex) {
     m_numLm = m_dataBase->GetTotalLandmarks("Template")->GetNumberOfPoints();
     this->setWindowTitle("SuperImposition");
     this->resize(800, 500);
@@ -81,12 +82,12 @@ SuperImposition::SuperImposition(DataBase *dataBase, MainWindow *parent, QMutex*
     m_iren = vtkSmartPointer<vtkGenericRenderWindowInteractor>::New();
     m_style = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
     m_meshActor = vtkSmartPointer<vtkActor>::New();
-    m_lmPointActor = vtkSmartPointer<vtkActor>::New();
-    m_anchorActor = vtkSmartPointer<vtkActor>::New();
     m_labelActor = vtkSmartPointer<vtkActor2D>::New();
     m_meshData = vtkSmartPointer<vtkPolyData>::New();
-    m_anchorData = vtkSmartPointer<vtkPoints>::New();
-    m_lmData = vtkSmartPointer<vtkPolyData>::New();
+    m_fixLmData = vtkSmartPointer<vtkPoints>::New();
+    m_curveLmData = vtkSmartPointer<vtkPoints>::New();
+    m_surfaceLmData = vtkSmartPointer<vtkPoints>::New();
+    m_totalLmData = vtkSmartPointer<vtkPolyData>::New();
     m_lmIdList = new std::vector<int>;
 
     m_renWin = m_vtkRenderWidget->GetRenderWindow();
@@ -343,7 +344,10 @@ void SuperImposition::Populate() {
     }
     m_mutex->lock();
     m_meshData->DeepCopy(m_dataBase->GetPolyNode("Template"));
-    m_lmData->DeepCopy(m_dataBase->GetTotalLandmarks("Template"));
+    m_fixLmData->DeepCopy(m_dataBase->GetTypeI("Template"));
+    m_curveLmData->DeepCopy(m_dataBase->GetCurveSliders("Template"));
+    m_surfaceLmData->DeepCopy(m_dataBase->GetSurfaceSliders("Template"));
+    m_totalLmData->DeepCopy(m_dataBase->GetTotalLandmarks("Template"));
     m_mutex->unlock();
 }
 
@@ -361,37 +365,92 @@ void SuperImposition::Plot() {
     vtkNew<vtkMassProperties> prop;
     prop->SetInputData(m_meshData);
     prop->Update();
-    double area = prop->GetSurfaceArea();
-    area = std::sqrt(area);
+    const double area = prop->GetSurfaceArea();
+    const double diagonal =
+        std::sqrt(area);  // Approximate characteristic length
+    // Compute size factor based on application-specific parameters
+    // Normalized between 0-1 range first, then scaled
 
-    double sizeConstant = m_lmData->GetNumberOfPoints();
-    if (sizeConstant < 100) {
-        sizeConstant = 100.0;
-    }
-    if (sizeConstant > 300) {
-        sizeConstant = 300.0;
-    }
+    int typeINOL = m_dataBase->GetNumberOfTypeI("Template");
+    int curveNOS = m_dataBase->GetNumberOfCurveSliders("Template");
+    int surfaceNOS = m_dataBase->GetNumberOfSurfaceSliders("Template");
+    double sizeFactor =
+        (typeINOL * 0.03 + curveNOS * 0.025 + surfaceNOS * 0.025);
+    // Apply sigmoid function for smooth clamping
+    sizeFactor =
+        1.0 /
+        (1.0 + std::exp(-0.1 * (sizeFactor - 50.0)));  // Sigmoid normalization
+
+    // Map to reasonable visual range (1%-5% of characteristic length)
+    const double minSize = 0.01 * diagonal;
+    const double maxSize = 0.05 * diagonal;
+    double landmarkSize = minSize + sizeFactor * (maxSize - minSize);
+    // Apply to sphere source
     vtkNew<vtkSphereSource> sphereSource;
-    sphereSource->SetRadius(area / (sizeConstant));
-    vtkNew<vtkSphereSource> sphereSource2;
-    sphereSource2->SetRadius((area / sizeConstant) * 1.5);
+    sphereSource->SetRadius(landmarkSize);
 
-    vtkNew<vtkGlyph3DMapper> lmPointMapper;
-    vtkNew<vtkVertexGlyphFilter> lmVertexFilter;
-    lmVertexFilter->SetInputData(m_lmData);
-    lmVertexFilter->Update();
-    lmPointMapper->SetInputData(lmVertexFilter->GetOutput());
-    lmPointMapper->SetSourceConnection(sphereSource2->GetOutputPort());
-    lmPointMapper->ScalingOff();
-    lmPointMapper->ScalarVisibilityOff();
-    m_lmPointActor->GetProperty()->SetColor(0.0, 0.0, 1.0);
-    m_lmPointActor->GetProperty()->SetDiffuse(0.8);
-    m_lmPointActor->GetProperty()->SetSpecular(0.5);
-    m_lmPointActor->GetProperty()->SetSpecularPower(30);
-    m_lmPointActor->SetMapper(lmPointMapper);
-    m_renderer->AddActor(m_lmPointActor);
+    vtkNew<vtkPolyData> fixPoly;
+    fixPoly->SetPoints(m_fixLmData);
+    vtkNew<vtkPolyData> curvePoly;
+    curvePoly->SetPoints(m_curveLmData);
+    vtkNew<vtkPolyData> surfacePoly;
+    surfacePoly->SetPoints(m_surfaceLmData);
+
+    vtkNew<vtkGlyph3DMapper> fixLmPointMapper;
+    vtkNew<vtkVertexGlyphFilter> fixLmVertexFilter;
+    vtkNew<vtkActor> fixPtActor;
+
+    vtkNew<vtkGlyph3DMapper> curveLmPointMapper;
+    vtkNew<vtkVertexGlyphFilter> curveLmVertexFilter;
+    vtkNew<vtkActor> curvePtActor;
+
+    vtkNew<vtkGlyph3DMapper> surfaceLmPointMapper;
+    vtkNew<vtkVertexGlyphFilter> surfaceLmVertexFilter;
+    vtkNew<vtkActor> surfacePtActor;
+
+    fixLmVertexFilter->SetInputData(fixPoly);
+    fixLmVertexFilter->Update();
+    fixLmPointMapper->SetInputData(fixLmVertexFilter->GetOutput());
+    fixLmPointMapper->SetSourceConnection(sphereSource->GetOutputPort());
+    fixLmPointMapper->ScalingOff();
+    fixLmPointMapper->ScalarVisibilityOff();
+    fixPtActor->GetProperty()->SetColor(1.0, 0.0, 0.0);
+    fixPtActor->GetProperty()->SetDiffuse(0.8);
+    fixPtActor->GetProperty()->SetSpecular(0.5);
+    fixPtActor->GetProperty()->SetSpecularPower(30);
+    fixPtActor->SetMapper(fixLmPointMapper);
+    m_renderer->AddActor(fixPtActor);
+
+    curveLmVertexFilter->SetInputData(curvePoly);
+    curveLmVertexFilter->Update();
+    curveLmPointMapper->SetInputData(curveLmVertexFilter->GetOutput());
+    curveLmPointMapper->SetSourceConnection(sphereSource->GetOutputPort());
+    curveLmPointMapper->ScalingOff();
+    curveLmPointMapper->ScalarVisibilityOff();
+    curvePtActor->GetProperty()->SetColor(0.0, 1.0, 0.0);
+    curvePtActor->GetProperty()->SetDiffuse(0.8);
+    curvePtActor->GetProperty()->SetSpecular(0.5);
+    curvePtActor->GetProperty()->SetSpecularPower(30);
+    curvePtActor->SetMapper(curveLmPointMapper);
+    m_renderer->AddActor(curvePtActor);
+
+    surfaceLmVertexFilter->SetInputData(surfacePoly);
+    surfaceLmVertexFilter->Update();
+    surfaceLmPointMapper->SetInputData(surfaceLmVertexFilter->GetOutput());
+    surfaceLmPointMapper->SetSourceConnection(sphereSource->GetOutputPort());
+    surfaceLmPointMapper->ScalingOff();
+    surfaceLmPointMapper->ScalarVisibilityOff();
+    surfacePtActor->GetProperty()->SetColor(0.0, 0.0, 1.0);
+    surfacePtActor->GetProperty()->SetDiffuse(0.8);
+    surfacePtActor->GetProperty()->SetSpecular(0.5);
+    surfacePtActor->GetProperty()->SetSpecularPower(30);
+    surfacePtActor->SetMapper(surfaceLmPointMapper);
+    m_renderer->AddActor(surfacePtActor);
 
     // Label properties
+    vtkNew<vtkVertexGlyphFilter> lmVertexFilter;
+    lmVertexFilter->SetInputData(m_totalLmData);
+    lmVertexFilter->Update();
     vtkNew<vtkLabeledDataMapper> labelMapper;
     labelMapper->SetInputData(lmVertexFilter->GetOutput());
     labelMapper->GetLabelTextProperty()->SetFontSize(10);
@@ -450,7 +509,6 @@ void SuperImposition::MakeImposed() {
                 m_impositionThread = new SuperImpositionThread(
                     m_dataBase, m_nameList, m_lmIdList, 1, m_mutex);
             }
-
 
             connect(m_impositionThread,
                     &SuperImpositionThread::CoordinateChanged, this,
@@ -543,6 +601,4 @@ void SuperImposition::closeEvent(QCloseEvent *event) {
     }
 }
 
-SuperImposition::~SuperImposition() {
-    delete m_lmIdList;
-}
+SuperImposition::~SuperImposition() { delete m_lmIdList; }

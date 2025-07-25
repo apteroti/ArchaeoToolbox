@@ -380,6 +380,30 @@ std::string DataBase::GetGeometryType(std::string name)const {
     return current ? current->geometryType : std::string();
 }
 
+int DataBase::GetNumberOfTypeI(std::string name)const {
+    auto current = head.get();
+    while (current && current->nodeName != name) {
+        current = current->next.get();
+    }
+    return current ? current->typeI->GetNumberOfPoints() : 0;
+}
+
+int DataBase::GetNumberOfCurveSliders(std::string name)const {
+    auto current = head.get();
+    while (current && current->nodeName != name) {
+        current = current->next.get();
+    }
+    return current ? current->curveSlider->GetNumberOfPoints() : 0;
+}
+
+int DataBase::GetNumberOfSurfaceSliders(std::string name)const {
+    auto current = head.get();
+    while (current && current->nodeName != name) {
+        current = current->next.get();
+    }
+    return current ? current->surfaceSlider->GetNumberOfPoints() : 0;
+}
+
 void DataBase::PrintNode()const {
     auto current = head.get();
     while (current) {

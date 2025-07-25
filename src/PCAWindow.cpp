@@ -234,17 +234,22 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         vtkNew<vtkMassProperties> prop;
         prop->SetInputData(m_meshData);
         prop->Update();
-        double area = prop->GetSurfaceArea();
-        area = std::sqrt(area);
-        double sizeConstant = numLM;
-        if (sizeConstant < 100) {
-            sizeConstant = 100;
-        }
-        if (sizeConstant > 300) {
-            sizeConstant = 300;
-        }
+        const double area = prop->GetSurfaceArea();
+        const double diagonal = std::sqrt(area); // Approximate characteristic length
+        // Compute size factor based on application-specific parameters
+        // Normalized between 0-1 range first, then scaled
+        double sizeFactor = (numLM * 0.025);
+
+        // Apply sigmoid function for smooth clamping
+        sizeFactor = 1.0 / (1.0 + std::exp(-0.1*(sizeFactor - 50.0))); // Sigmoid normalization
+
+        // Map to reasonable visual range (1%-5% of characteristic length)
+        const double minSize = 0.01 * diagonal;
+        const double maxSize = 0.05 * diagonal;
+        double landmarkSize = minSize + sizeFactor * (maxSize - minSize);
+        // Apply to sphere source
         vtkNew<vtkSphereSource> sphereSource;
-        sphereSource->SetRadius(area / (sizeConstant));
+        sphereSource->SetRadius(landmarkSize);
         m_lmVertexFilter = vtkSmartPointer<vtkVertexGlyphFilter>::New();
         m_lmActor = vtkSmartPointer<vtkActor>::New();
         m_lmMapper = vtkSmartPointer<vtkGlyph3DMapper>::New();
@@ -673,7 +678,8 @@ void PCAWindow::Export2Csv() {
     auto filter = "csv(*.csv)";
     std::string name;
     QString filename =
-        QFileDialog::getSaveFileName(this, "Save file", "", filter);
+        QFileDialog::getSaveFileName(this, "Save file", "", filter, 
+            nullptr, QFileDialog::DontUseNativeDialog);
     QFileInfo fi(filename);
     QString ext = fi.completeSuffix();
     if (filename.isEmpty()) {

@@ -135,12 +135,4 @@ void ExportDialogue::Finilise(){
     m_parent->DoExport();
     this->close();
 }
-
-/* void ExportDialogue::closeEvent(QCloseEvent* event) {
-    event->ignore();
-    m_parent->SetToExport(lm, si, pv, pm);
-    event->accept();
-    
-} */
-
 ExportDialogue::~ExportDialogue() {}
