@@ -40,13 +40,10 @@ if(WIN32)
     set(WIN32_RESOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Resources/icon.rc)
     list(APPEND SOURCE_FILES ${WIN32_RESOURCES})
 
-    set(OpenCASCADE_DIR "C:/Program Files/OCCT/cmake")
-
     include_directories(
         ./include
         "C:/Repo/eigen3"
         "C:/Program Files/VTK8/include/vtk-8.2"
-        "C:/Program Files/OCCT/inc"
         "C:/Qt/5.15.2/msvc2019_64/include"
     )
 endif()
@@ -54,20 +51,17 @@ endif()
 # Linux-specific
 if(UNIX)
     message(STATUS "Configuring for Linux")
-    set(OpenCASCADE_DIR /usr/local/lib/cmake/opencascade)
-
+    
     include_directories(
         ./include
         ./include/vcglib
         /usr/include/eigen3
         /usr/local/include/vtk-8.2
-        /usr/local/include/opencascade
     )
 endif()
 
 # Find packages (common)
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui Charts Test Help)
-find_package(OpenCASCADE REQUIRED)
 find_package(VTK REQUIRED COMPONENTS
     vtkCommonColor
     vtkCommonCore
@@ -120,6 +114,4 @@ endif()
 target_link_libraries(${PROJECT_NAME} PUBLIC
     ${VTK_LIBRARIES}
     Qt5::Widgets Qt5::Gui Qt5::Core Qt5::Charts Qt5::Help Qt5::Test
-    TKIVtk TKIGES TKSTEP TKFeat TKOffset 
-    TKShHealing
 )

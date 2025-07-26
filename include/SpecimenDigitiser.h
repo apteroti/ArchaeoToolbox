@@ -179,29 +179,6 @@
 #include "SlidingThread.h"
 #include "StatusReporterThread.h"
 #include "Registration.h"
-
-#include <TColgp_HArray1OfPnt.hxx>
-#include <GeomAPI_ProjectPointOnSurf.hxx>
-#include <GeomAdaptor_Surface.hxx>
-#include <GeomAPI_Interpolate.hxx>
-#include <Geom_BSplineCurve.hxx>
-#include <GeomConvert_CompCurveToBSplineCurve.hxx>
-#include <BRepBuilderAPI_MakeEdge.hxx>
-#include <BRepBuilderAPI_MakeWire.hxx>
-#include <BRepBuilderAPI_MakeFace.hxx>
-#include <BRepAlgoAPI_Cut.hxx>
-#include <BRepAdaptor_Surface.hxx>
-#include <STEPControl_Writer.hxx>
-#include <Interface_EntityIterator.hxx>
-#include <TopoDS_Compound.hxx>
-#include <BRep_Builder.hxx>
-#include <BRepPrimAPI_MakeSphere.hxx>
-#include <gp_Pln.hxx>
-#include <gp_Pnt.hxx>
-#include <BRepBuilderAPI_Sewing.hxx>
-#include <Geom_TrimmedCurve.hxx>
-#include <BRepFill_Filling.hxx>
-
 #include "ExclusionPaint.h"
 
 
@@ -306,7 +283,7 @@ private:
 
     vtkSmartPointer<vtkActor> m_surfaceArrowActor;
     vtkSmartPointer<vtkGlyph3D> m_glyphSurfaceArrow;
-    vtkSmartPointer<vtkPolyData> m_surfaceMaskPoly;
+    vtkSmartPointer<vtkPolyData> m_surfaceMask;
 
     vtkSmartPointer<vtkMultiBlockDataSet> m_surfaceBlock;
     vtkSmartPointer<vtkMultiBlockDataSet> m_surfaceCurveCtrlBlock;
@@ -444,7 +421,7 @@ public:
     void GetTemplateCurveSliders(vtkPoints* Output);
     void GetCurveSliders(vtkPoints* Output);
     bool GetIgnorSetting();
-    void DoSomeTest(vtkPolyData* targetMesh, TColgp_Array2OfPnt* plane, vtkPoints* ctrlPts);
+    void GetPlaneBoundaryPoints(vtkPolyData* plane, vtkPoints* boundaryPoints);
     ~SpecimenDigitiser();
 
 public Q_SLOTS:

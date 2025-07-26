@@ -92,42 +92,6 @@
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QShortcut>
 
-#include <TColgp_HArray1OfPnt.hxx>
-#include <TColgp_Array2OfPnt.hxx>
-#include <Geom_BezierSurface.hxx>
-#include <GeomAPI_Interpolate.hxx>
-#include <Geom_BSplineCurve.hxx>
-#include <TopoDS_Edge.hxx>
-#include <TopoDS_Face.hxx>
-#include <TopoDS_Vertex.hxx>
-#include <TopoDS_Wire.hxx>
-#include <BRepBuilderAPI_MakeEdge.hxx>
-#include <IVtkTools_ShapeDataSource.hxx>
-#include <BRepBuilderAPI_MakeFace.hxx>
-#include <BRepBuilderAPI_MakeVertex.hxx>
-#include <BRepBuilderAPI_MakeWire.hxx>
-#include <GeomConvert_CompBezierSurfacesToBSplineSurface.hxx>
-#include <TopTools_HSequenceOfShape.hxx>
-#include <ShapeAnalysis_FreeBounds.hxx>
-#include <BRepOffsetAPI_MakeFilling.hxx>
-#include <IGESControl_Controller.hxx>
-#include <IGESControl_Writer.hxx>
-#include <ShapeAnalysis_Surface.hxx>
-#include <BRep_Tool.hxx>
-#include <BRepTools.hxx>
-#include <TopExp_Explorer.hxx>
-#include <TopoDS.hxx>
-#include <Geom_BSplineSurface.hxx>
-#include <BRepBuilderAPI_NurbsConvert.hxx>
-#include <BRepLib_FindSurface.hxx>
-#include <GeomConvert.hxx>
-#include <StdPrs_ToolRFace.hxx>
-#include <BRepAdaptor_Surface.hxx>
-//#include <BRepAdaptor_HSurface.hxx>
-#include <Adaptor2d_Curve2d.hxx>
-#include <Hatch_Hatcher.hxx>
-#include <Adaptor3d_IsoCurve.hxx>
-
 #include <vtkGenericRenderWindowInteractor.h>
 #include <vtkInteractorStyleTrackballCamera.h>
 #include <vtkGenericOpenGLRenderWindow.h>
@@ -231,6 +195,9 @@
 #include <vtkStaticPointLocator.h>
 #include <vtkThresholdPoints.h>
 #include <vtkSortDataArray.h>
+#include <vtkPointDensityFilter.h>
+#include<vtkKdTreePointLocator.h>
+#include <vtkFloatArray.h>
 
 
 #include "ProSetMenu.fwd.h"
@@ -262,16 +229,14 @@ private:
     int m_nurbsResolution = 4;
     bool m_editableSurface = 1;
     bool m_surfaceChanged = 0;
-    //bool m_curveAnchored = 0;
-    //bool m_editableCurve = 1;
+    
     vtkSmartPointer<vtkIntArray> m_maskArray;
     int m_brushSize = 1;
     bool m_mouseIsClicked = 0;
-    //std::vector<int> m_maskIdList;
+    
     std::vector<int> *m_curveType = nullptr;
     vtkPolyData* m_meshData;
     vtkSmartPointer<vtkIntArray> m_fixedPtsIds;
-    //vtkSmartPointer<vtkIntArray> m_curvePtsIds;
     std::vector<std::vector <int>* > *m_surfacePtsIds = nullptr;
     
     vtkSmartPointer<vtkPolyData> m_cutMeshData;
@@ -279,7 +244,6 @@ private:
     BlueNoiseThread* m_BlueNoiseThread = nullptr;
     StatusReporterThread* m_statThread = nullptr;
     
-    //int m_dynamicRes =0;
     
     ProSetMenu* m_parent;
     //
@@ -410,8 +374,6 @@ private:
     QPushButton *curveSliderButton;
     QPushButton *curveAddButton;
     QPushButton *curveTypeButton;
-    //QPushButton *curveLockButton;
-    //QPushButton *curveAnchorButton;
     QPushButton *curveClearButton;
     QPushButton *surfaceAddButton;
     QPushButton *surfaceLockButton;
@@ -420,6 +382,7 @@ private:
     QPushButton *surfaceAnchorButton;
     QPushButton *surfacePaintButton;
     QPushButton *surfaceResampleButton;
+    QPushButton *surfaceInterpolateButton;
     //Functions
     void TypeITool();
     void SurfaceTool();
@@ -433,7 +396,6 @@ private:
     void CoordinateFunc(vtkObject* caller, long unsigned int eventId, void* callData);
     void MakeCage(vtkPoints* pts, vtkPolyData* outPlanePoly);
     void NeighborFinder(int initId, int brushSize, std::vector<int> &outList);
-    
 
 public:
     TemplateDigitiser(ProSetMenu* parent);
@@ -497,6 +459,7 @@ public:
     void RunStatThread(QThread* thread);
     void OnStatusChanged(int status);
     void PrepareClosing(QCloseEvent* event);
+    void GetPlaneBoundaryPoints(vtkPolyData* plane, vtkPoints* boundaryPoints);
     ~TemplateDigitiser();
 
 protected:
