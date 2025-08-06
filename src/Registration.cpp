@@ -545,7 +545,6 @@ void Registration::SetTemplateScene() {
     pointMapper->SetSourceConnection(sphereSource->GetOutputPort());
     pointMapper->ScalingOff();
     pointMapper->ScalarVisibilityOff();
-    // m_pointActor->GetProperty()->SetPointSize(10);
     m_templatePointActor->GetProperty()->SetColor(0.0, 0.5, 1.0);
     m_templatePointActor->GetProperty()->SetDiffuse(.8);
     m_templatePointActor->GetProperty()->SetSpecular(.5);
@@ -888,8 +887,6 @@ void Registration::SetOverlayScene() {
     m_overlayMapper->ScalarVisibilityOff();
     m_overlayMeshActor->SetMapper(m_overlayMapper);
     m_overlayMeshActor->GetProperty()->SetOpacity(.6);
-    /* m_overlayMeshActor->GetProperty()->SetDiffuseColor(
-        colors->GetColor3d("Aqua").GetData()); */
     m_overlayMeshActor->GetProperty()->SetColor(1, 0.992, 0.815);
 
     m_overlayRenderer->AddActor(m_overlayMeshActor);
@@ -982,7 +979,6 @@ void Registration::SliderTool() {
     morphButton->setEnabled(0);
     betaSpinBox->setEnabled(0);
     lambdaSpinBox->setEnabled(0);
-    // refineButton->setEnabled(1);
     overlayLabel->setText(tr("Specimen & Sliders"));
     vtkNew<vtkNamedColors> colors;
     registerTypeComboBox->setEnabled(0);
@@ -1119,7 +1115,6 @@ void Registration::SI() {
         m_status = ALIGNEDSTATUS::Aligned;
     } else {
         morphButton->setEnabled(0);
-        // m_status = ALIGNEDSTATUS::NotAligned;
     }
 }
 
@@ -1184,16 +1179,14 @@ void Registration::ResetTool() {
     betaSpinBox->setEnabled(1);
     lambdaSpinBox->setEnabled(1);
     Register();
-    // refineButton->setEnabled(0);
 }
 
 void Registration::closeEvent(QCloseEvent* event) {
     if (m_regThread) {
         if (m_regThread->isRunning()) {
-            QMessageBox warning;
+            QMessageBox warning(this);
             warning.setText("Morphing is in the process, be patient please!");
             warning.exec();
-            // m_regThread->wait();
             event->ignore();
         }
         if (!m_regThread->isRunning()) {

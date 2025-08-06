@@ -116,7 +116,6 @@ void ImportThread::run() {
             while (getline(file, line)) {
                 row.clear();
                 std::stringstream str(line);
-                //DataBase* dataBase = m_parent->GetDataBase();
                 while (getline(str, word, ',')) {
                     row.push_back(word);
                 }

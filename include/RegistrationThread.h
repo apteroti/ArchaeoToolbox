@@ -149,8 +149,6 @@ class RegistrationThread : public QThread {
    private:
     bool m_preAlign = 0;
     bool m_ignoreInside = true;
-    // vtkPolyData* m_templateMesh;
-    // vtkPolyData* m_sourceMesh;
     vtkSmartPointer<vtkPolyData> m_templateMesh;
     vtkSmartPointer<vtkPolyData> m_sourceMesh;
     vtkPolyData* m_outMesh;

@@ -108,7 +108,6 @@ TemplateViewer::TemplateViewer(MainWindow* parent) : m_parent(parent) {
 
     // Ambient properties
     m_renderer->SetBackground(colors->GetColor3d("SlateGray").GetData());
-    // m_renWin->SetAlphaBitPlanes(1);
     m_renWin->Render();
     m_iren->Start();
 

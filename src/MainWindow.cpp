@@ -540,7 +540,7 @@ void MainWindow::LoadOBJ() {
             }
         }
         if (!fileName.endsWith(".obj") && !fileName.endsWith(".ply")) {
-            auto errorDialogue = QMessageBox();
+            auto errorDialogue = QMessageBox(this);
             errorDialogue.setIcon(QMessageBox::Critical);
             errorDialogue.setWindowTitle("Error");
             errorDialogue.setText("No Suitable file was Selected");
@@ -555,7 +555,7 @@ void MainWindow::ExportCSV() {
         m_exportDial = new ExportDialogue(this);
         m_exportDial->show();
     } else {
-        auto errorDialogue = QMessageBox();
+        auto errorDialogue = QMessageBox(this);
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText("Nothing to Export!");
@@ -801,7 +801,7 @@ void MainWindow::DoExport() {
 void MainWindow::ExportGeometry() {
     // Check if any item is selected
     if (m_treeWidget->selectedItems().empty()) {
-        QMessageBox errorDialogue;
+        QMessageBox errorDialogue(this);
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText("Nothing to export!");
@@ -870,7 +870,7 @@ void MainWindow::SuperImpose() {
             delete m_SIMP;
             m_SIMP = new SuperImposition(m_dataBase, this, m_mutex);
         } else {
-            auto errorDialogue = QMessageBox();
+            auto errorDialogue = QMessageBox(this);
             errorDialogue.setIcon(QMessageBox::Critical);
             errorDialogue.setWindowTitle("Error");
             errorDialogue.setText("Digitise a mesh, first!");
@@ -878,7 +878,7 @@ void MainWindow::SuperImpose() {
             superImpositionToolbarAction->setEnabled(0);
         }
     } else {
-        auto errorDialogue = QMessageBox();
+        auto errorDialogue = QMessageBox(this);
         // QPixmap Quim(":/icons/graphics/icons/Quim.png");
         errorDialogue.setIcon(QMessageBox::Critical);
         // errorDialogue.setIconPixmap(Quim);
@@ -1006,7 +1006,7 @@ void MainWindow::TemplatePlot() { m_templateView->show(); }
 
 void MainWindow::meshPlot() {
     if (!TemplateIsSet) {
-        auto errorDialogue = QMessageBox();
+        auto errorDialogue = QMessageBox(this);
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
@@ -1047,13 +1047,13 @@ void MainWindow::meshPlot() {
             }
         } else {
             if (m_treeWidget->topLevelItemCount() > 0) {
-                auto errorDialogue = QMessageBox();
+                auto errorDialogue = QMessageBox(this);
                 errorDialogue.setIcon(QMessageBox::Critical);
                 errorDialogue.setWindowTitle("Error");
                 errorDialogue.setText("Select a geometry to proceed!");
                 errorDialogue.exec();
             } else {
-                auto errorDialogue = QMessageBox();
+                auto errorDialogue = QMessageBox(this);
                 errorDialogue.setIcon(QMessageBox::Critical);
                 errorDialogue.setWindowTitle("Error");
                 errorDialogue.setText("Import a mesh, first!");
@@ -1991,7 +1991,7 @@ void MainWindow::PCA() {
             delete m_pcaWindow;
             m_pcaWindow = new PCAWindow(m_dataBase);
         } else {
-            auto errorDialogue = QMessageBox();
+            auto errorDialogue = QMessageBox(this);
             errorDialogue.setIcon(QMessageBox::Critical);
             errorDialogue.setWindowTitle("Error");
             errorDialogue.setText(
@@ -2001,7 +2001,7 @@ void MainWindow::PCA() {
             errorDialogue.exec();
         }
     } else {
-        auto errorDialogue = QMessageBox();
+        auto errorDialogue = QMessageBox(this);
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
@@ -2113,7 +2113,7 @@ void MainWindow::ReadLMDataFromFile() {
             }
         }
     } else {
-        auto errorDialogue = QMessageBox();
+        auto errorDialogue = QMessageBox(this);
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
@@ -2281,7 +2281,7 @@ void MainWindow::ReadProjectFromFile() {
         }
 
     } else {
-        auto errorDialogue = QMessageBox();
+        auto errorDialogue = QMessageBox(this);
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(

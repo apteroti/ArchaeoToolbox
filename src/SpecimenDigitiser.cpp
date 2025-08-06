@@ -183,8 +183,6 @@ SpecimenDigitiser::SpecimenDigitiser(vtkPolyData* data, MainWindow* parent)
     mainToolbar = this->addToolBar("Main Toolbar");
     mainToolbar->setMovable(false);
     this->addToolBarBreak();
-    // typeIToolbar = this->addToolBar("TypeI Toolbar");
-    // typeIToolbar->setVisible(false);
     fixedLandmarkToolbar = this->addToolBar("Landmark Toolbar");
     fixedLandmarkToolbar->setVisible(false);
     surfacePatchToolbar = this->addToolBar("Surface Toolbar");
@@ -253,7 +251,6 @@ SpecimenDigitiser::SpecimenDigitiser(vtkPolyData* data, MainWindow* parent)
     connect(curveTypeButton, &QPushButton::clicked, this,
             &SpecimenDigitiser::ChangeCurveType);
     QLabel* curveSelectLabel = new QLabel();
-    // curveSelectLabel->setFrameStyle(QFrame::Panel | QFrame::Sunken);
     curveSelectLabel->setText(tr("Curve Index"));
     curveToolbar->addWidget(curveSelectLabel);
     curveSelectComboBox = new QComboBox();
@@ -990,7 +987,7 @@ void SpecimenDigitiser::TypeITool() {
             if (m_typeINOL == m_fixedLandmarks->GetNumberOfPoints()) {
                 PrepareSliding();
             } else {
-                QMessageBox warning;
+                QMessageBox warning(this);
                 warning.setText(
                     "Number of digitized Fixed Landmarks are less than the "
                     "decided number. Nothing will be registered!");
@@ -2293,7 +2290,7 @@ void SpecimenDigitiser::FinalizeCurveScene() {
                     m_curveTotalLandmarks->InsertNextPoint(pd->GetPoint(j));
                 }
             } else {
-                QMessageBox warning;
+                QMessageBox warning(this);
                 warning.setText(
                     "Your last curve is not completed. Add more control "
                     "points! Nothing will be registered!");
@@ -2314,13 +2311,9 @@ void SpecimenDigitiser::FinalizeCurveScene() {
         m_curveTubeFilterDeactive->Update();
         m_curveTubeFilterDeactive->Modified();
 
-        /*  m_glyphCurveArrow->SetInputData(emptyPoly);
-         m_glyphCurveArrow->Update();
-         m_glyphCurveArrow->Modified(); */
-
         m_renderer->GetRenderWindow()->Render();
     } else {
-        QMessageBox warning;
+        QMessageBox warning(this);
         warning.setText(
             "Number of digitized curves are less than the decided number. "
             "Nothing will be registered!");
@@ -2380,7 +2373,7 @@ void SpecimenDigitiser::FinalizeSurfaceScene() {
     }
     if ((!m_surfaceBlock->GetNumberOfBlocks() == m_surfacePatchNOP) &&
         m_surfaceNOS == 0) {
-        QMessageBox warning;
+        QMessageBox warning(this);
         warning.setText(
             "Number of digitized Surface Patches are less than the decided "
             "number. Nothing will be registered!");
@@ -3928,7 +3921,7 @@ void SpecimenDigitiser::closeEvent(QCloseEvent* event) {
         if (m_regPlot || m_slidingThread) {
             if (m_regPlot) {
                 if (m_regPlot->IsRunning()) {
-                    QMessageBox warning;
+                    QMessageBox warning(this);
                     warning.setText(
                         "Cannot close this window! \n Registration is in the "
                         "process!");
@@ -3938,11 +3931,10 @@ void SpecimenDigitiser::closeEvent(QCloseEvent* event) {
             }
             if (m_slidingThread) {
                 if (m_slidingThread->isRunning()) {
-                    QMessageBox warning;
+                    QMessageBox warning(this);
                     warning.setText(
                         "Sliding is in the process, be patient please!");
                     warning.exec();
-                    // m_regThread->wait();
                     event->ignore();
                 }
                 if (!m_slidingThread->isRunning()) {
@@ -4114,7 +4106,7 @@ void SpecimenDigitiser::ShowLargestDiameter() {
             }
 
         } else {
-            auto errorDialogue = QMessageBox();
+            auto errorDialogue = QMessageBox(this);
             errorDialogue.setIcon(QMessageBox::Information);
             errorDialogue.setWindowTitle("Attention");
             errorDialogue.setText("The mesh doesn't have loose edges");
@@ -4197,7 +4189,7 @@ void SpecimenDigitiser::PickFromBoundaries() {
             m_renderer->AddActor(m_meshBoundActor);
             m_renderer->GetRenderWindow()->Render();
         } else {
-            auto errorDialogue = QMessageBox();
+            auto errorDialogue = QMessageBox(this);
             errorDialogue.setIcon(QMessageBox::Information);
             errorDialogue.setWindowTitle("Attention");
             errorDialogue.setText("The mesh doesn't have loose edges");

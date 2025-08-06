@@ -131,12 +131,6 @@ class RecoverLMThread : public QThread{
     DataBase* m_dataBase;
     std::vector<std::vector<std::string>> m_content;
     std::string m_path;
-    /* QTreeWidget* m_treeWidget;
-    QTreeWidgetItem* m_treeItem;
-    QAction* meshPlotToolbarAction;
-    QAction* superImpositionToolbarAction;
-    QAction* pcaToolbarAction;
-    bool TemplateIsSet = 0; */
     int m_typeINOL = 0;
     int m_curveNOC = 1;
     int m_curveNOS = 0;

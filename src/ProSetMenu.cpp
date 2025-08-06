@@ -781,7 +781,7 @@ void ProSetMenu::ImportTemplate() {
             Refresh(1);
         }
         if (fileName.endsWith(".att") == 0) {
-            auto errorDialogue = QMessageBox();
+            auto errorDialogue = QMessageBox(this);
             errorDialogue.setIcon(QMessageBox::Critical);
             errorDialogue.setWindowTitle("Error");
             errorDialogue.setText("No Suitable file was Selected");
@@ -835,14 +835,13 @@ void ProSetMenu::ChangeSurfaceMode(int index) {
 void ProSetMenu::LoadTemplate() {
     if (surfaceNOS == 0 && typeINOL == 0 && curveNOS == 0 &&
         surfacePatchUNOS == 0 && surfacePatchVNOS == 0) {
-        auto errorDialogue = QMessageBox();
+        auto errorDialogue = QMessageBox(this);
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText("The project setting is empty");
         errorDialogue.exec();
     } else if (surfaceNOS != 0 && surfaceNOS < surfaceSliderLimit) {
-        // surfaceLineEditNOS->clear();
-        auto errorDialogue = QMessageBox();
+        auto errorDialogue = QMessageBox(this);
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
@@ -851,7 +850,7 @@ void ProSetMenu::LoadTemplate() {
     } else if (surfacePatchUNOS != 0 &&
                (surfacePatchUNOS < surfaceResolutionLimit ||
                 surfacePatchVNOS < surfaceResolutionLimit)) {
-        auto errorDialogue = QMessageBox();
+        auto errorDialogue = QMessageBox(this);
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
@@ -859,14 +858,13 @@ void ProSetMenu::LoadTemplate() {
         errorDialogue.exec();
     } else if (surfacePatchVNOS != 0 &&
                surfacePatchVNOS < surfaceResolutionLimit) {
-        auto errorDialogue = QMessageBox();
+        auto errorDialogue = QMessageBox(this);
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
             "The resolution is less than the limit. Try again");
         errorDialogue.exec();
     } else if (typeINOL != 0 && typeINOL < fixedLandmarkLimit) {
-        // typeILineEdit->clear();
         auto errorDialogue = QMessageBox();
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
@@ -874,8 +872,7 @@ void ProSetMenu::LoadTemplate() {
             "Number of the fixed landmarks is less than the limit. Try again");
         errorDialogue.exec();
     } else if (curveNOS != 0 && curveNOS < curveSliderLimit) {
-        // curveLineEditNOS->clear();
-        auto errorDialogue = QMessageBox();
+        auto errorDialogue = QMessageBox(this);
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
@@ -925,7 +922,7 @@ void ProSetMenu::LoadTemplate() {
                 m_templatePlot->show();
             }
             if (!fileName.endsWith(".obj") && !fileName.endsWith(".ply")) {
-                auto errorDialogue = QMessageBox();
+                auto errorDialogue = QMessageBox(this);
                 errorDialogue.setIcon(QMessageBox::Critical);
                 errorDialogue.setWindowTitle("Error");
                 errorDialogue.setText("No Suitable file was Selected");
@@ -1091,7 +1088,6 @@ void ProSetMenu::Refresh(bool condition) {
         saveButton->setEnabled(true);
     }
     resetButton->setEnabled(true);
-    // loadTemplateButton->setEnabled(true);
 }
 
 void ProSetMenu::SetIgnorInternals(bool option) { m_ignoreInside = option; }

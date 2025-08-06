@@ -94,8 +94,6 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
             counter += 1;
         }
         Calculate(m_dataMatrix);
-        /* Eigen::MatrixXd A = LoadCSV<Eigen::MatrixXd>("../iris.csv");
-        Calculate(A); */
 
         // Now GUI stuff
         this->setWindowTitle("Principal Component Results");
@@ -103,9 +101,6 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         QGridLayout *layout = new QGridLayout;
         m_meshRenderWidget = new QVTKOpenGLWidget();
         m_graphRenderWidget = new QVTKOpenGLWidget();
-        /* m_graphRenderSeries = new QtCharts::QScatterSeries();
-        m_graphRenderSeries->setMarkerShape(QtCharts::QScatterSeries::MarkerShapeCircle);
-        m_graphRenderSeries->setPointLabelsVisible(0); */
         m_dockedToolbar = new QDockWidget;
         m_dockedToolbar->setFeatures(QDockWidget::DockWidgetFloatable |
                                      QDockWidget::DockWidgetMovable);
@@ -130,7 +125,6 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         layout->addWidget(m_meshRenLabel, 0, 2, 1, 3);
         layout->addWidget(graphRenLabel, 0, 8, 1, 9);
         layout->addWidget(m_meshRenderWidget, 1, 2, 10, 7);
-        // layout->addWidget(m_graphChartView, 1, 9, 10, 10);
         layout->addWidget(m_graphRenderWidget, 1, 9, 10, 10);
 
         // Set layout in QWidget
@@ -179,7 +173,6 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
 
         mainToolbar->addWidget(selectPCsLabel2);
         mainToolbar->addWidget(select2ndPCsSpinBox);
-        // mainToolbar->addWidget(exportButton);
         mainToolbar->addWidget(showMIL);
         mainToolbar->addWidget(milLineEdit);
 
@@ -302,11 +295,9 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         m_graphRenWin = m_graphRenderWidget->GetRenderWindow();
         m_scatterChartView->SetRenderWindow(m_graphRenWin);
         m_scatterChartView->GetScene()->AddItem(m_scatterChart);
-        // m_scatterChartView->SetInteractor(m_graphRenderWidget->GetInteractor());
         m_graphRenderWidget->SetRenderWindow(
             m_scatterChartView->GetRenderWindow());
         UpdateScatter(m_x, m_y);
-
         // bg color
         m_meshRenderer->SetBackground(
             colors->GetColor3d("SlateGray").GetData());
@@ -319,7 +310,7 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
 
         this->show();
     } else {
-        auto errorDialogue = QMessageBox();
+        auto errorDialogue = QMessageBox(this);
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
@@ -343,7 +334,6 @@ void PCAWindow::UpdateScatter(int x, int y) {
     table->AddColumn(arrX);
 
     vtkNew<vtkFloatArray> arrY;
-    // arrY->SetName(yAxLabel.c_str());
     arrY->SetName("Y");
     table->AddColumn(arrY);
     table->SetNumberOfRows(numSpecimen);
@@ -400,8 +390,7 @@ void PCAWindow::UpdateContribution(int pc) {
             break;
         }
     }
-    /* std::cout<< "Index of the most influential Landmark is:"<<std::endl;
-    std::cout<< maxIndex<<std::endl; */
+    
     milLineEdit->setText(QString::number(maxIndex));
     QString milText = QString("MIL (%1)").arg(maxContr, 0, 'g', 3);
 

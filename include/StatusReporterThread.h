@@ -81,12 +81,10 @@ class StatusReporterThread : public QThread{
     Q_OBJECT
 private:
     QThread *m_parentThread;
-    //bool m_status = 1;
     bool m_abort = false;
 public:
     StatusReporterThread(QThread *parentThread);
     void run() override;
-    //void SetStatus(bool status);
     void KillNow();
     bool Killing();
     ~StatusReporterThread();

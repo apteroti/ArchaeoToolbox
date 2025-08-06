@@ -15,7 +15,7 @@ set(CMAKE_BUILD_TYPE Debug)
 set(SOURCE_FILES
     main.cpp
     src/MainWindow.cpp src/SpecimenDigitiser.cpp src/DataBase.cpp src/ProSetMenu.cpp
-    src/TemplateDigitiser.cpp src/Morphometrics.cpp src/Registration.cpp
+    src/TemplateDigitiser.cpp src/Registration.cpp
     src/TemplateViewer.cpp src/SuperImpositionThread.cpp src/SuperImposition.cpp
     src/SlidingThread.cpp src/StatusReporterThread.cpp src/PCAWindow.cpp
     src/RecoverLMThread.cpp src/ExportDialogue.cpp src/RegistrationThread.cpp
@@ -24,7 +24,7 @@ set(SOURCE_FILES
 
     include/MainWindow.h include/SpecimenDigitiser.h include/DataBase.h
     include/MainWindow.fwd.h include/ProSetMenu.h include/ProSetMenu.fwd.h
-    include/TemplateDigitiser.h include/Morphometrics.h include/Registration.h
+    include/TemplateDigitiser.h include/Registration.h
     include/TemplateViewer.h include/SpecimenDigitiser.fwd.h
     include/SuperImpositionThread.h include/SuperImposition.h include/SlidingThread.h
     include/StatusReporterThread.h include/PCAWindow.h include/RecoverLMThread.h

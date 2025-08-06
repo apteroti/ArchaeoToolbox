@@ -213,7 +213,6 @@ private:
     vtkSmartPointer<vtkGenericRenderWindowInteractor> m_iren;
     vtkSmartPointer<vtkActor> m_meshActor;
     vtkSmartPointer<vtkInteractorStyleTrackballCamera> m_PointPainterStyle;
-    //vtkSmartPointer<vtkInteractorStyleTrackballCamera> m_style;
     vtkSmartPointer<vtkInteractorStyleImage> m_2Dstyle;
 
     //Toolbar

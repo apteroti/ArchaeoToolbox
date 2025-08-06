@@ -87,7 +87,6 @@ ExclusionPaint::ExclusionPaint(vtkPolyData *data) : m_meshData(data) {
     m_renWin = vtkSmartPointer<vtkRenderWindow>::New();
     m_renderer = vtkSmartPointer<vtkRenderer>::New();
     m_iren = vtkSmartPointer<vtkGenericRenderWindowInteractor>::New();
-    // m_style = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
     m_PointPainterStyle =
         vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
 

@@ -217,7 +217,7 @@ SuperImposition::SuperImposition(DataBase *dataBase, MainWindow *parent,
 
     this->show();
     if (m_nameList.size() == 0) {
-        auto errorDialogue = QMessageBox();
+        auto errorDialogue = QMessageBox(this);
         errorDialogue.setIcon(QMessageBox::Critical);
         errorDialogue.setWindowTitle("Error");
         errorDialogue.setText(
@@ -273,10 +273,7 @@ void SuperImposition::MoveToAnchor() {
     auto items = lmList->selectedItems();
     foreach (QListWidgetItem *item, items) {
         auto temp = lmList->takeItem(lmList->row(item));
-        // int indx  = (temp->text().toInt()) + 1;
-        // lmAnchorList->insertItem(indx, temp);
         lmAnchorList->addItem(temp);
-        // lmAnchorList->sortItems();
     }
     std::vector<int> tempList;
     for (int i = 1; i < lmAnchorList->count(); i++) {
@@ -299,10 +296,7 @@ void SuperImposition::MoveToSource() {
     auto items = lmAnchorList->selectedItems();
     foreach (QListWidgetItem *item, items) {
         auto temp = lmAnchorList->takeItem(lmAnchorList->row(item));
-        // int indx  = (temp->text().toInt()) + 1;
-        // lmList->insertItem(indx, temp);
         lmList->addItem(temp);
-        // lmList->sortItems();
     }
     std::vector<int> tempList;
     for (int i = 1; i < lmList->count(); i++) {
@@ -516,9 +510,6 @@ void SuperImposition::MakeImposed() {
             connect(m_impositionThread,
                     &SuperImpositionThread::CoordinateNotChanged, this,
                     &SuperImposition::OnCoordinateNotChanged);
-            /* connect(m_impositionThread,
-                    &SuperImpositionThread::Done, this,
-                    &SuperImposition::OnProcessIsDone); */
 
             m_parent->RunStatThread(m_impositionThread);
             m_parent->ResetImposition();
@@ -553,14 +544,10 @@ void SuperImposition::OnCoordinateNotChanged(std::string name) {
     std::string errMsg =
         "Specimen " + name +
         " is throwing an exception. \n the superimposition process is Aborted";
-    QMessageBox warning;
+    QMessageBox warning(this);
     warning.setText(QString::fromUtf8(errMsg.c_str()));
     warning.exec();
 }
-
-/* void SuperImposition::OnProcessIsDone(){
-    m_parent->OnSuperImpositionIsDone();
-} */
 
 void SuperImposition::OnStatusChanged(int status) {
     if (status != 0) {
@@ -583,7 +570,7 @@ void SuperImposition::closeEvent(QCloseEvent *event) {
     event->ignore();
     if (m_impositionStatThread) {
         if (m_impositionStatThread->isRunning()) {
-            QMessageBox warning;
+            QMessageBox warning(this);
             warning.setText(
                 "SuperImposition is in the process, be patient please!");
             warning.exec();

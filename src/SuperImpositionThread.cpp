@@ -162,7 +162,6 @@ void SuperImpositionThread::GetKabschTransformation(
     Eigen::Matrix4d rt =
         Eigen::umeyama(specimen.transpose(), tmplate.transpose(), scale);
 
-
     vtkNew<vtkMatrix4x4> tempTrans;
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {

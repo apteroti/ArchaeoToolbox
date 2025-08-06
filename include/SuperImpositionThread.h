@@ -73,7 +73,7 @@
 #include <QThread>
 #include <QtConcurrent/QtConcurrentRun>
 #include <QMutex>
-//#include <QtConcurrent/QtConcurrentMap>
+
 #include <vtkActor.h>
 #include <vtkActor2D.h>
 #include <vtkAppendArcLength.h>

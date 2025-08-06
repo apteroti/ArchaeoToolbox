@@ -244,7 +244,6 @@ class SuperImposition : public QMainWindow {
    public Q_SLOTS:
     void OnCoordinateChanged(std::string name);
     void OnCoordinateNotChanged(std::string name);
-    // void OnProcessIsDone();
     void OnStatusChanged(int status);
     void ChangeImposeMethod(int index);
 

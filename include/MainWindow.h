@@ -130,7 +130,6 @@
 #include <vtkColorSeries.h>
 #include <vtkPLYReader.h>
 
-//#include <boost/variant.hpp>
 #include <Eigen/Eigen>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -141,7 +140,6 @@
 #include "TemplateViewer.h"
 #include "DataBase.h"
 #include "ProSetMenu.h"
-//#include "Registration.h"
 #include "SuperImpositionThread.h"
 #include "SuperImposition.h"
 #include "StatusReporterThread.h"
@@ -152,10 +150,8 @@
 #include "HelpBrowser.h"
 
 #include <iostream>
-//#include <filesystem>
 #include <tuple> 
 #include <thread>
-//#include <sqlite3.h> 
 
 using std::string;
 

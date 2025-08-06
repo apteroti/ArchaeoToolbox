@@ -89,8 +89,6 @@ ExportDialogue::ExportDialogue(MainWindow* parent) : m_parent(parent) {
     connect(exportSelectComboBox, exportSelectFp, this,
             &ExportDialogue::ChangeExport);
 
-    
-
     mainLayout->addWidget(label, 0, 0, 1, 1);
     mainLayout->addWidget(exportSelectComboBox, 0, 2, 0, 5);
     mainLayout->addWidget(okButton, 5, 2, 4, 4);

@@ -172,18 +172,10 @@ class Registration : public QMainWindow {
     vtkPolyData* m_meshData;
     vtkPolyData* m_templateMesh;
     vtkPoints* m_templateSliders;
-
     bool m_anchorStat = 0;
     bool m_accuracy = 1;
     vtkSmartPointer<vtkPoints> m_templateAnchor;
     vtkSmartPointer<vtkPoints> m_sourceAnchor;
-
-    /* vtkPoints* m_templateTypeII;
-    vtkSmartPointer<vtkPoints> m_templateCurveSliders;
-
-    vtkPoints* m_typeII;
-    vtkSmartPointer<vtkPoints> m_curveSliders; */
-    
     int m_resampledRes = 300;
     int m_flexibility = 4; //Beta
     int m_smoothness = 3; //Lambda
@@ -199,8 +191,6 @@ class Registration : public QMainWindow {
     QPushButton* morphButton;
     QPushButton* sliderButton;
     QPushButton* resetButton;
-    //QPushButton* refineButton;
-
     // Labels
     QLabel* overlayLabel;
     QLabel* statusLabel;
@@ -250,10 +240,8 @@ class Registration : public QMainWindow {
     vtkSmartPointer<vtkActor> m_overlayTemplateActor;
     vtkSmartPointer<vtkActor> m_sliderPointActor;
     vtkSmartPointer<vtkVertexGlyphFilter> m_sliderVertexFilter;
-    // vtkSmartPointer<vtkPolyData> m_sliderPointsPoly;
 
    public:
-    // Registration();
     Registration(vtkPolyData* data, vtkPolyData* templateMesh,
                  vtkPoints* sliders, SpecimenDigitiser* parent);
     void Register();

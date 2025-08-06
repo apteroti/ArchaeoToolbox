@@ -165,14 +165,12 @@ TemplateDigitiser::TemplateDigitiser(ProSetMenu* parent) : m_parent(parent) {
     m_curveVertexFilterDeactive = vtkSmartPointer<vtkVertexGlyphFilter>::New();
     m_curveTubeFilterDeactive = vtkSmartPointer<vtkTubeFilter>::New();
     m_curveActorDeactive = vtkSmartPointer<vtkActor>::New();
-    // m_curveLMColorsSeries = vtkSmartPointer<vtkColorSeries>::New();
     m_curveArrowActor = vtkSmartPointer<vtkActor>::New();
     m_glyphCurveArrow = vtkSmartPointer<vtkGlyph3D>::New();
 
     m_curveCtrlBlock = vtkSmartPointer<vtkMultiBlockDataSet>::New();
     m_curveBlock = vtkSmartPointer<vtkMultiBlockDataSet>::New();
     m_curvePolyLineBlock = vtkSmartPointer<vtkMultiBlockDataSet>::New();
-    // m_curveAnchorIdList = new std::vector<int>;
     m_meshBoundActor = vtkSmartPointer<vtkActor>::New();
     m_meshBoundActor->SetPickable(0);
     m_meshBoundaries = vtkSmartPointer<vtkPolyData>::New();
@@ -278,7 +276,6 @@ TemplateDigitiser::TemplateDigitiser(ProSetMenu* parent) : m_parent(parent) {
             &TemplateDigitiser::ChangeCurveType);
 
     QLabel* curveSelectLabel = new QLabel();
-    // curveSelectLabel->setFrameStyle(QFrame::Panel | QFrame::Sunken);
     curveSelectLabel->setText(tr("Curve Index"));
     curveToolbar->addWidget(curveSelectLabel);
     curveSelectComboBox = new QComboBox();
@@ -313,7 +310,6 @@ TemplateDigitiser::TemplateDigitiser(ProSetMenu* parent) : m_parent(parent) {
     curveClearButton = new QPushButton();
     curveClearButton->setCheckable(false);
     curveClearButton->setText("Clear All Curves");
-    // curveClearButton->setEnabled(0);
     curveToolbar->addWidget(curveClearButton);
     curveToolbar->addSeparator();
     connect(curveClearButton, &QPushButton::clicked, this,
@@ -605,7 +601,6 @@ void TemplateDigitiser::ResetCurveScene() {
 
     m_curveLandmarks->Initialize();
     m_curvePointsPoly->Initialize();
-    // m_curveAnchorIdList->clear();
     if (m_curveBlock->GetNumberOfBlocks() > 0) {
         m_curveVertexFilter->Update();
         m_curveVertexFilter->Modified();
@@ -614,7 +609,6 @@ void TemplateDigitiser::ResetCurveScene() {
     m_curveTubeFilter->SetInputData(m_curvePoly);
     m_curveTubeFilter->Update();
     m_curveTubeFilter->Modified();
-    // m_curveActor->SetVisibility(0);
     m_renderer->GetRenderWindow()->Render();
 }
 
@@ -654,7 +648,6 @@ void TemplateDigitiser::ResetSurfaceScene() {
 
 void TemplateDigitiser::AddCurve() {
     curveAddButton->setEnabled(0);
-    // curveAnchorButton->setEnabled(0);
     if (m_curveCtrlBlock->GetNumberOfBlocks() < m_curveNOC) {
         curvePickSourceComboBox->setEnabled(1);
         m_currentCurveId = m_curveCtrlBlock->GetNumberOfBlocks() - 1;
@@ -662,10 +655,6 @@ void TemplateDigitiser::AddCurve() {
         curveSelectComboBox->addItem(
             QString::fromStdString(std::to_string(m_currentCurveId)));
         curveSelectComboBox->setCurrentIndex(m_currentCurveId);
-        /* curveAnchorButton->setChecked(0);
-        PickCurveAnchor();
-        curveLockButton->setChecked(0);
-        ChangeCurveLock(); */
         m_curvePoly->Initialize();
         m_curveTubeFilter->SetInputData(m_curvePoly);
         m_curveTubeFilter->Update();
@@ -735,7 +724,6 @@ void TemplateDigitiser::ChangeCurveSource(
         m_curvectrlVertexFilter->Update();
         m_curvectrlVertexFilter->Modified();
         if (m_curveHighlightCtrlPoints->GetNumberOfPoints() > 2) {
-            // curveAnchorButton->setEnabled(1);
             UpdateCurveData(m_curveHighlightCtrlPoints, m_curvePoly,
                             m_curveLandmarks, m_meshData);
             m_curvePoly->Modified();
@@ -743,7 +731,6 @@ void TemplateDigitiser::ChangeCurveSource(
             m_curveTubeFilter->Update();
             m_curveTubeFilter->Modified();
             m_curvePointsPoly->SetPoints(m_curveLandmarks);
-            // UpdateAnchors(m_curvePointsPoly, m_curveAnchorIdList, 1, 1);
             vtkNew<vtkPolyData> tempCurvePtPoly;
             tempCurvePtPoly->DeepCopy(m_curvePointsPoly);
             m_curveBlock->SetBlock(m_currentCurveId, tempCurvePtPoly);
@@ -856,9 +843,6 @@ void TemplateDigitiser::ChangeCurveType() {
             m_curveTubeFilter->Update();
             m_curveTubeFilter->Modified();
             m_curvePointsPoly->SetPoints(m_curveLandmarks);
-            // UpdateAnchors(m_curvePointsPoly, m_curveAnchorIdList, 1, 0);
-            // curveLockButton->setChecked(0);
-            // ChangeCurveLock();
             m_curveVertexFilter->SetInputData(m_curvePointsPoly);
             m_curveVertexFilter->Update();
             m_curveVertexFilter->Modified();
@@ -883,9 +867,6 @@ void TemplateDigitiser::ChangeCurveType() {
             m_curveTubeFilter->Update();
             m_curveTubeFilter->Modified();
             m_curvePointsPoly->SetPoints(m_curveLandmarks);
-            // UpdateAnchors(m_curvePointsPoly, m_curveAnchorIdList, 1, 0);
-            // curveLockButton->setChecked(0);
-            // ChangeCurveLock();
             m_curveVertexFilter->SetInputData(m_curvePointsPoly);
             m_curveVertexFilter->Update();
             m_curveVertexFilter->Modified();
@@ -914,9 +895,6 @@ void TemplateDigitiser::ChangeCurveTypeAuto() {
             m_curveTubeFilter->Update();
             m_curveTubeFilter->Modified();
             m_curvePointsPoly->SetPoints(m_curveLandmarks);
-            // UpdateAnchors(m_curvePointsPoly, m_curveAnchorIdList, 1, 0);
-            // curveLockButton->setChecked(0);
-            // ChangeCurveLock();
             m_curveVertexFilter->SetInputData(m_curvePointsPoly);
             m_curveVertexFilter->Update();
             m_curveVertexFilter->Modified();
@@ -941,9 +919,6 @@ void TemplateDigitiser::ChangeCurveTypeAuto() {
             m_curveTubeFilter->Update();
             m_curveTubeFilter->Modified();
             m_curvePointsPoly->SetPoints(m_curveLandmarks);
-            // UpdateAnchors(m_curvePointsPoly, m_curveAnchorIdList, 1, 0);
-            // curveLockButton->setChecked(0);
-            // ChangeCurveLock();
             m_curveVertexFilter->SetInputData(m_curvePointsPoly);
             m_curveVertexFilter->Update();
             m_curveVertexFilter->Modified();
@@ -983,7 +958,6 @@ void TemplateDigitiser::ClearCurve() {
     m_curvectrlVertexFilter->Update();
     m_curvectrlVertexFilter->Modified();
     m_curvePointsPoly->Initialize();
-    // m_curveAnchorIdList->clear();
     if (m_curveBlock->GetNumberOfBlocks() > 0) {
         m_curveVertexFilter->Update();
         m_curveVertexFilter->Modified();
@@ -1355,7 +1329,7 @@ void TemplateDigitiser::FinalizeCurveScene() {
                     m_curveTotalLandmarks->InsertNextPoint(pd->GetPoint(j));
                 }
             } else {
-                QMessageBox warning;
+                QMessageBox warning(this);
                 warning.setText(
                     "Your last curve is not completed. Add more control "
                     "points! Nothing will be registered!");
@@ -1375,11 +1349,9 @@ void TemplateDigitiser::FinalizeCurveScene() {
         m_curveTubeFilterDeactive->SetInputData(emptyPoly);
         m_curveTubeFilterDeactive->Update();
         m_curveTubeFilterDeactive->Modified();
-        /* curveAnchorButton->setChecked(0);
-        PickCurveAnchor(); */
         m_renderer->GetRenderWindow()->Render();
     } else {
-        QMessageBox warning;
+        QMessageBox warning(this);
         warning.setText(
             "Number of digitized curves are less than the decided number. "
             "Nothing will be registered!");
@@ -1429,7 +1401,7 @@ void TemplateDigitiser::FinalizeSurfaceScene() {
 
         m_renderer->GetRenderWindow()->Render();
     } else {
-        QMessageBox warning;
+        QMessageBox warning(this);
         warning.setText(
             "Number of digitized Surface Patches are less than the decided "
             "number. Nothing will be registered!");
@@ -2236,7 +2208,7 @@ void TemplateDigitiser::Resample(int resolution, vtkPolyData* mesh) {
             PoissonDisk(resampledPtsPoly, m_fixedLandmarks,
                         m_curveTotalLandmarks, totalArea, resolution, tempPt);
         } else {
-            QMessageBox warning;
+            QMessageBox warning(this);
             warning.setText(
                 "Number of vertices in the mesh is too few for resampling."
                 "Reduce number of surface sliders or "
@@ -2248,7 +2220,7 @@ void TemplateDigitiser::Resample(int resolution, vtkPolyData* mesh) {
             PoissonDisk(paintedPoly, m_fixedLandmarks, m_curveTotalLandmarks,
                         totalArea, resolution, tempPt);
         } else {
-            QMessageBox warning;
+            QMessageBox warning(this);
             warning.setText(
                 "Number of vertices in the mesh is too few for resampling."
                 "Reduce number of surface sliders or "
@@ -3071,7 +3043,7 @@ void TemplateDigitiser::TypeITool() {
         if (m_fixedLandmarks->GetNumberOfPoints() > 0) {
             if (m_typeINOL == m_fixedLandmarks->GetNumberOfPoints()) {
             } else {
-                QMessageBox warning;
+                QMessageBox warning(this);
                 warning.setText(
                     "Number of digitized Fixed Landmarks are less than the "
                     "decided number. Nothing will be registered!");
@@ -3551,8 +3523,6 @@ void TemplateDigitiser::PaintFunc(vtkObject* caller, long unsigned int eventId,
             m_fixedPointActor->Modified();
             m_curvectrlPointActor->SetPickable(0);
             m_curvectrlPointActor->Modified();
-            /* m_curvePointActor->SetPickable(0);
-            m_curvePointActor->Modified(); */
             m_surfaceCurveCtrlPointActor->SetPickable(0);
             m_surfaceCurveCtrlPointActor->Modified();
             auto clickPos = m_iren->GetEventPosition();
@@ -3584,8 +3554,6 @@ void TemplateDigitiser::PaintFunc(vtkObject* caller, long unsigned int eventId,
             m_fixedPointActor->Modified();
             m_curvectrlPointActor->SetPickable(0);
             m_curvectrlPointActor->Modified();
-            /* m_curvePointActor->SetPickable(0);
-            m_curvePointActor->Modified(); */
             m_surfaceCurveCtrlPointActor->SetPickable(0);
             m_surfaceCurveCtrlPointActor->Modified();
             auto clickPos = m_iren->GetEventPosition();
@@ -3667,7 +3635,6 @@ void TemplateDigitiser::resetLeftClck(vtkObject* caller,
                                       long unsigned int eventId,
                                       void* callData) {
     m_PointPickerStyle->OnLeftButtonUp();
-    // m_PointPainterStyle->OnLeftButtonUp();
 }
 
 void TemplateDigitiser::MoveFunc(vtkObject* caller, long unsigned int eventId,
@@ -3679,12 +3646,9 @@ void TemplateDigitiser::MoveFunc(vtkObject* caller, long unsigned int eventId,
         m_fixedPointActor->Modified();
         m_curvectrlPointActor->SetPickable(0);
         m_curvectrlPointActor->Modified();
-        /* m_curvePointActor->SetPickable(0);
-        m_curvePointActor->Modified(); */
         m_surfaceCurveCtrlPointActor->SetPickable(0);
         m_surfaceCurveCtrlPointActor->Modified();
         bool surfaceIsGoingToChange = 0;
-
         if (landmarkButton->isChecked()) {
             m_fixedPointActor->SetPickable(1);
             m_fixedPointActor->Modified();
@@ -3805,7 +3769,6 @@ void TemplateDigitiser::CoordinateFunc(vtkObject* caller,
                 repeller->SetNumberOfIterations(10);
                 repeller->SetPassBand(0.1);
                 repeller->SetFeatureEdgeSmoothing(0);
-                // repeller->SetFeatureAngle(40);
                 repeller->SetBoundarySmoothing(0);
                 repeller->NormalizeCoordinatesOn();
                 repeller->Update();
@@ -3874,8 +3837,7 @@ void TemplateDigitiser::CoordinateFunc(vtkObject* caller,
                 m_renderer->GetRenderWindow()->Render();
             }
         } 
-        else if (curveSliderButton->isChecked() /* &&
-                   !curveAnchorButton->isChecked() && m_editableCurve */) {
+        else if (curveSliderButton->isChecked()) {
             m_curveHighlightCtrlPoints->SetPoint(id, newLocation);
             m_curveHighlightCtrlPoints->Modified();
             m_curvectrlPointsPoly->Modified();
@@ -3893,7 +3855,6 @@ void TemplateDigitiser::CoordinateFunc(vtkObject* caller,
             m_curveTubeFilter->Update();
             m_curveTubeFilter->Modified();
             m_curvePointsPoly->SetPoints(m_curveLandmarks);
-            // UpdateAnchors(m_curvePointsPoly, m_curveAnchorIdList, 1, 0);
             m_curveVertexFilter->SetInputData(m_curvePointsPoly);
             m_curveVertexFilter->Update();
             m_curveVertexFilter->Modified();
@@ -3994,7 +3955,7 @@ void TemplateDigitiser::closeEvent(QCloseEvent* event) {
     event->ignore();
     if (m_BlueNoiseThread) {
         if (m_BlueNoiseThread->isRunning()) {
-            QMessageBox msgBox;
+            QMessageBox msgBox(this);
             msgBox.setText(
                 "The Resampling Process is running. Please Be Patient!");
             msgBox.exec();
@@ -4124,7 +4085,7 @@ void TemplateDigitiser::ShowLargestDiameter() {
             }
 
         } else {
-            auto errorDialogue = QMessageBox();
+            auto errorDialogue = QMessageBox(this);
             errorDialogue.setIcon(QMessageBox::Information);
             errorDialogue.setWindowTitle("Attention");
             errorDialogue.setText("The mesh doesn't have loose edges");
@@ -4153,8 +4114,6 @@ void TemplateDigitiser::DrawDiameter(vtkPoints* meshPoints) {
     if (!distMat.isZero()) {
         Eigen::MatrixXd::Index maxRow, maxCol;
         float max = distMat.maxCoeff(&maxRow, &maxCol);
-        // std::cout<< maxRow<<std::endl;
-        // std::cout<< maxCol<<std::endl;
         vtkNew<vtkLineSource> lineSource;
         lineSource->SetPoint1(meshPoints->GetPoint(maxRow));
         lineSource->SetPoint2(meshPoints->GetPoint(maxCol));
@@ -4229,7 +4188,7 @@ void TemplateDigitiser::PickFromBoundaries() {
             m_renderer->AddActor(m_meshBoundActor);
             m_renderer->GetRenderWindow()->Render();
         } else {
-            auto errorDialogue = QMessageBox();
+            auto errorDialogue = QMessageBox(this);
             errorDialogue.setIcon(QMessageBox::Information);
             errorDialogue.setWindowTitle("Attention");
             errorDialogue.setText("The mesh doesn't have loose edges");
@@ -4313,5 +4272,4 @@ TemplateDigitiser::~TemplateDigitiser() {
     delete m_BlueNoiseThread;
     delete m_statThread;
     delete m_mutex;
-    // delete m_curveAnchorIdList;
 }

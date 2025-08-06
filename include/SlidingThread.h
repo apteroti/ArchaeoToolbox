@@ -72,7 +72,6 @@
 #include <QObject>
 #include <QThread>
 #include <QtConcurrent/QtConcurrentRun>
-// #include <QtConcurrent/QtConcurrentMap>
 #include <vtkActor.h>
 #include <vtkActor2D.h>
 #include <vtkAppendArcLength.h>
@@ -186,7 +185,6 @@ private:
     bool m_improvement = 0;
 
     std::vector<int>* m_curveType;
-    //int m_currentCurveId;
     bool m_abort = false;
 
 public:
