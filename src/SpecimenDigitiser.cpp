@@ -2003,6 +2003,11 @@ void SpecimenDigitiser::ClearSurface() {
 
 void SpecimenDigitiser::DrapeToSurface() {
     if (surfaceIronButton->isChecked()) {
+        // Set opacity to 1.0 immediately
+        QGraphicsOpacityEffect* effect = qobject_cast<QGraphicsOpacityEffect*>(surfaceIronButton->graphicsEffect());
+        if (effect) {
+            effect->setOpacity(1.0);
+        }
         m_ironAnimation->stop();
         surfaceIronButton->setIcon(QIcon(":/icons/graphics/icons/ironOn.svg"));
     }
