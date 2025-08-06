@@ -1641,7 +1641,7 @@ void MainWindow::TemplateStatus(bool status) {
     if (status == 1) {
         templatePlotToolbarAction->setEnabled(1);
         auto name = "Template";
-        m_dataBase->AddNode(name, m_templateMesh, "Mesh");
+        m_dataBase->AddNode(name, m_templateMesh, m_templateMeshType);
         vtkNew<vtkDataObjectTreeIterator> iterCurveSlider;
         vtkNew<vtkPoints> curveSliderPts;
         iterCurveSlider->SetDataSet(m_templateCurveSliders);
@@ -1778,6 +1778,15 @@ void MainWindow::TemplateStatus(bool status) {
 }
 
 void MainWindow::SetTemplateMesh(vtkPolyData* mesh) { m_templateMesh = mesh; }
+
+void MainWindow::SetTemplateMeshType(std::string type){
+    if(type == ""){
+        m_templateMeshType = "Mesh";
+    }
+    else{
+        m_templateMeshType = type;
+    }
+}
 
 void MainWindow::SetTemplateTypeI(vtkPoints* fixedPts) {
     m_templateTypeI = fixedPts;

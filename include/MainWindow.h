@@ -206,6 +206,7 @@ private:
     int m_curveNOC;
     int TableRowNum = 500;
     int TableColNum = 501;
+    std::string m_templateMeshType = "";
     DataBase *m_dataBase;
     SpecimenDigitiser *m_meshPlot = nullptr;
     SuperImposition *m_SIMP = nullptr;
@@ -296,6 +297,7 @@ public:
     void PDist(vtkPoints* points, Eigen::MatrixXd &output);
     double EucDist(double Ax, double Ay, double Az, double Bx, double By, double Bz);
     void SetStatus(STATUS status);
+    void SetTemplateMeshType(std::string type);
     void SetTemplateMesh(vtkPolyData* mesh);
     void SetTemplateTypeI(vtkPoints* pts);
     void SetTemplateCurveSliders(vtkMultiBlockDataSet* ptsPolyBlock, vtkMultiBlockDataSet* curvePtsPolyBlock, int numOfSliders);

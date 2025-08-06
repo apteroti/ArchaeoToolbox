@@ -202,7 +202,6 @@ ProSetMenu::ProSetMenu(MainWindow* parent) : m_parent(parent) {
     registerLayout->addWidget(loadTemplateButton, 0, 0);
     registerLayout->addWidget(registerButton, 0, 1);
     registerLayout->addWidget(resetButton, 1, 0, 1, 2);
-    // registerLayout->addWidget(resetButton, 1, 0);
     registerLayout->addWidget(saveButton, 2, 0);
     registerLayout->addWidget(importButton, 2, 1);
     registerGroup->setLayout(registerLayout);
@@ -270,6 +269,7 @@ void ProSetMenu::Reset() {
                               "This will erase all of the landmarks in your "
                               "project! \n Do you want to continue?",
                               QMessageBox::Yes | QMessageBox::No)) {
+        m_geometryType = "";
         surfaceLineEditNOS->clear();
         surfaceLineEditNOS->setReadOnly(false);
         surfaceNOS = 0;
@@ -317,6 +317,7 @@ void ProSetMenu::Reset() {
 }
 
 void ProSetMenu::Register() {
+    m_parent->SetTemplateMeshType(m_geometryType);
     m_parent->SetTemplateMesh(m_templatePoly);
     m_parent->SetTemplateTypeI(m_templateTypeI);
     m_parent->SetTemplateCurveSliders(m_templateCurveSliders,
@@ -383,6 +384,11 @@ void ProSetMenu::SaveTemplate() {
         QTextStream data(&f);
 
         textItem += QString("Do Not Modify The Content of This File");
+        data << textItem.join("") << ENDL;
+        textItem.clear();
+
+        textItem += QString("Type") + ",";
+        textItem += QString::fromStdString(m_geometryType);
         data << textItem.join("") << ENDL;
         textItem.clear();
 
@@ -567,6 +573,9 @@ void ProSetMenu::ImportTemplate() {
             }
 
             for (int i = 0; i < content.size(); i++) {
+                if (content[i][0] == "Type") {
+                    m_geometryType = content[i][1].c_str();
+                }
                 if (content[i][0] == "Number of Fixed Landmarks") {
                     typeILineEdit->setText(
                         QString::fromUtf8(content[i][1].c_str()));
@@ -897,6 +906,7 @@ void ProSetMenu::LoadTemplate() {
                     cleanFilter->SetInputData(plyReader->GetOutput());
                     cleanFilter->Update();
                 }
+                m_geometryType = "Mesh";
                 m_templatePoly = cleanFilter->GetOutput();
                 loadTemplateButton->setEnabled(false);
                 importButton->setEnabled(false);

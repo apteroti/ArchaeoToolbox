@@ -108,6 +108,7 @@ private:
     int surfaceSliderLimit = 25;
     int surfaceResolutionLimit = 5;
     int curveSliderLimit = 10;
+    std::string m_geometryType = "";
     QGridLayout *layout;
     QLineEdit *typeILineEdit;
     QLineEdit *surfaceLineEditNOS;
