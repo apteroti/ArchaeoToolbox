@@ -91,6 +91,8 @@
 #include <QFuture>
 #include <QThread>
 #include <QGroupBox>
+#include <QtCore/QPropertyAnimation>
+#include <QtWidgets/QGraphicsOpacityEffect>
 
 #include <vtkGenericRenderWindowInteractor.h>
 #include <vtkInteractorStyleTrackballCamera.h>
@@ -196,7 +198,6 @@ private:
     int m_curveNOC = 1;
     int m_currentCurveId = 0;
     int m_currentSurfaceId = 0;
-    int m_nurbsResolution = 4;
     bool m_editableSurface = 1;
     bool m_dataDigitized = 0;
     bool m_surfaceChanged = 0;
@@ -204,14 +205,9 @@ private:
     Registration *m_regPlot = nullptr;
     SlidingThread *m_slidingThread = nullptr;
     StatusReporterThread *m_slidingStatThread = nullptr;
-    
-    vtkSmartPointer<vtkPolyData> m_cutMeshData;
-    //int m_dynamicRes =0;
-    
     std::vector<int> *m_curveType = nullptr;
     vtkPolyData *m_meshData;
     vtkSmartPointer<vtkIntArray> m_fixedPtsIds;
-    // vtkSmartPointer<vtkIntArray> m_curvePtsIds;
     std::vector<std::vector<int> *> *m_surfacePtsIds = nullptr;
     // Template data
     vtkSmartPointer<vtkPolyData> m_templateMesh = nullptr;
@@ -238,7 +234,7 @@ private:
     vtkSmartPointer<vtkActor> m_meshActor;
     vtkSmartPointer<vtkActor> m_fixedPointActor;
     vtkSmartPointer<vtkVertexGlyphFilter> m_fixedVertexFilter;
-    vtkSmartPointer<vtkPoints> m_fixedHighlightPoints; //this is fixed landmarks
+    vtkSmartPointer<vtkPoints> m_fixedLandmarks; //this is fixed landmarks
     vtkSmartPointer<vtkPolyData> m_fixedPointsPoly;
     vtkSmartPointer<vtkInteractorStyleTrackballCamera> m_PointPickerStyle;
     vtkSmartPointer<vtkInteractorStyleTrackballCamera> m_PointMoverStyle;
@@ -249,7 +245,7 @@ private:
     vtkSmartPointer<vtkActor> m_largestDiamTubeActor;
     //------
     vtkSmartPointer<vtkActor> m_cutMeshActor;
-    vtkSmartPointer<vtkPoints> m_surfaceHighlightPoints; // this is for whole surface scenario
+    vtkSmartPointer<vtkPoints> m_surfaceLandmarks; // this is for whole surface scenario
     vtkSmartPointer<vtkPoints> m_surfaceCurveHighlightCtrlPoints;
     vtkSmartPointer<vtkActor> m_surfaceCurveCtrlPointActor;
     vtkSmartPointer<vtkActor> m_surfaceCurveActor;
@@ -261,7 +257,7 @@ private:
     vtkSmartPointer<vtkPolyData> m_surfaceCurvePoly;
     vtkSmartPointer<vtkActor> m_surfacePointActor;
     vtkSmartPointer<vtkVertexGlyphFilter> m_surfaceVertexFilter;
-    vtkSmartPointer<vtkPoints> m_surfacePatchHighlightPoints;
+    vtkSmartPointer<vtkPoints> m_surfacePatchLandmarks;
     vtkSmartPointer<vtkVertexGlyphFilter> m_surfacePatchVertexFilter;
     vtkSmartPointer<vtkActor> m_surfacePatchPointActor;
     vtkSmartPointer<vtkVertexGlyphFilter> m_surfacePatchVertexDeactiveFilter;
@@ -307,8 +303,8 @@ private:
     vtkSmartPointer<vtkActor> m_curvePointActorDeactive;
     vtkSmartPointer<vtkVertexGlyphFilter> m_curveVertexFilterDeactive;
     vtkSmartPointer<vtkPoints> m_curveHighlightCtrlPoints;
-    vtkSmartPointer<vtkPoints> m_curveHighlightPoints;
-    vtkSmartPointer<vtkPoints> m_curveHighlightPointsTotal;
+    vtkSmartPointer<vtkPoints> m_curveLandmarks;
+    vtkSmartPointer<vtkPoints> m_curveTotalLandmarks;
     vtkSmartPointer<vtkVertexGlyphFilter> m_curveVertexFilterActive;
     vtkSmartPointer<vtkActor> m_curvePointActorActive;
 
@@ -323,9 +319,8 @@ private:
 
     // Toolbar
     QToolBar *mainToolbar;
-    //QToolBar *typeIToolbar;
-    QToolBar *landmarkToolbar;
-    QToolBar *surfaceToolbar;
+    QToolBar *fixedLandmarkToolbar;
+    QToolBar *surfacePatchToolbar;
     QToolBar *curveToolbar;
     QLabel *statusLabel;
     QLabel *progressLabel;
@@ -336,7 +331,6 @@ private:
     QComboBox *surfaceSelectComboBox;
     QComboBox *curvePickSourceComboBox;
     QComboBox *surfacePickSourceComboBox;
-    QComboBox *cyclePatchesComboBox;
     QSpinBox * pointSizeSpinBox;
     QSpinBox * lineSizeSpinBox;
     QCheckBox *showDiameterBox;
@@ -353,6 +347,10 @@ private:
     QPushButton *surfaceClearButton;
     QPushButton *surfaceIronButton;
     QPushButton *slidingButton;
+    QPushButton *surfaceInterpolateButton;
+    QPropertyAnimation *m_interpolationAnimation;
+    QPropertyAnimation * m_ironAnimation;
+    QPropertyAnimation * m_slidingAnimation;
     // Functions
     void TypeITool();
     void SurfaceTool();
@@ -388,7 +386,7 @@ public:
     void FinalizeCurveScene();
     void FinalizeSurfaceScene();
     void UpdateCurveData(vtkPoints *pts, vtkPolyData *outputLine, vtkPoints *outputPoints, vtkPolyData *baseMesh);
-    void ConstructSurfaceData(vtkPoints *pts, vtkPoints *outputSliders, vtkPolyData *outputCtrlPtsPoly, vtkPolyData *outputCurvePoly, int resolution);
+    void ConstructSurfaceData(vtkPoints* pts, vtkPoints *outputSliders, vtkPolyData *outputCtrlPtsPoly);
     void ConstructSurfaceData(vtkPolyData *CtrlPtsPoly, vtkPoints *outputSliders);
     void Plot();
     double EucDist(double Ax, double Ay, double Az, double Bx, double By, double Bz);
@@ -399,13 +397,14 @@ public:
     void MakeArrow(vtkPolyData *inputMesh, vtkMultiBlockDataSet *inputCurveBlock, int liftScale, vtkPolyData *output);
     void FinalizeDigitization(Eigen::MatrixXd &Lndmrks, bool sendOffData);
     void CosmeticCurve(vtkPoints *ctrlPts, vtkPolyData *outputCurve);
-    void DijkstraEdgeSearch(vtkPolyData* mesh, vtkPolyData* closedCurve, vtkIdList* edgePointIds);
-    void MeshCutter(vtkPolyData *Poly, vtkPoints *curvePts, vtkPolyData* outMask);
-    void GetCutterCurve(vtkPolyData *poly, vtkPoints *curvePts, vtkIdList* outCurveIds);
-    void CycleThroughPatches(int index);
+    void MeshCutter(vtkPoints *pts);
+    void CutMeshWithCurve(vtkPolyData* inputMesh, vtkPoints* curvePoints, vtkPolyData* outputCutMesh);
+    void GetCutterCurve(vtkPolyData *Poly, vtkPoints *curvePts,
+                        vtkIdList *outCurveIds);
+    void DijkstraEdgeSearch(vtkPolyData *mesh, vtkPolyData *closedCurve,
+                            vtkIdList *edgePointIds);
     void ChangePointSize(int index);
     void ChangeLineSize(int index);
-    //void MakeSurface(vtkPolyData* mask, vtkPoints* curve, vtkPolyData* plane, int& res);
     void OutlineIdFinder(int u, int v, std::vector<int>* output);
     void MakeCage(vtkPoints* pts, vtkPolyData* outPlanePoly);
     void SlidingStatus();
@@ -422,6 +421,7 @@ public:
     void GetCurveSliders(vtkPoints* Output);
     bool GetIgnorSetting();
     void GetPlaneBoundaryPoints(vtkPolyData* plane, vtkPoints* boundaryPoints);
+    void InterpolateSurface();
     ~SpecimenDigitiser();
 
 public Q_SLOTS:

@@ -11,7 +11,6 @@ If you wish to build from source, ensure the following libraries are available o
 - [Qt 5.15.2](https://doc.qt.io/qt-5.15/index.html) (Widgets, GUI, Help, Charts, Test modules)
 - [VTK 8.2+](https://vtk.org/)
 - [CPD library (Coherent Point Drift)](https://github.com/gadomski/cpd)
-- [OpenCASCADE](https://dev.opencascade.org/)
 - [Eigen3](https://eigen.tuxfamily.org/)
 - CMake 3.16 or newer
 - C++17 compatible compiler

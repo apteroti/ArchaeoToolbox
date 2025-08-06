@@ -27,16 +27,19 @@
     <file>graphics/icons/anchorOff.svg</file>
     <file>graphics/icons/no.png</file>
     <file>graphics/icons/sliding.svg</file>
+    <file>graphics/icons/sliding2.svg</file>
     <file>graphics/icons/digitize.svg</file>
     <file>graphics/icons/PCAicon.svg</file>
     <file>graphics/icons/slideCurveLandmarksOn.svg</file>
     <file>graphics/icons/slideCurveLandmarksOff.svg</file>
     <file>graphics/icons/superimposition.svg</file>
+    <file>graphics/icons/superimposition.png</file>
     <file>graphics/icons/Quim.png</file>
     <file>graphics/icons/mainIcon.png</file>
     <file>graphics/icons/brush.svg</file>
     <file>graphics/icons/resampling.svg</file>
     <file>graphics/icons/Help.svg</file>
     <file>graphics/icons/save.svg</file>
+    <file>graphics/icons/Bspline.png</file>
 </qresource>
 </RCC>
