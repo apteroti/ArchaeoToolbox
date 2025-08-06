@@ -275,7 +275,7 @@ private:
 public:
     MainWindow();
     void ContentTree(QDockWidget*);
-    void LoadOBJ();
+    void LoadMesh();
     void ExportCSV();
     void ExportGeometry();
     void DICOMPlot();
@@ -309,6 +309,7 @@ public:
     void DebugPrintMatrix(Eigen::MatrixXd matrix);
     void about();
     void PlotLandmarks(vtkPoints* fixedLandmarks, vtkPoints* curveLandmarks,vtkPoints* surfaceLandmarks,vtkPolyData* mesh);
+    void PlotLandmarks(vtkPoints* fixedLandmarks, vtkPoints* curveLandmarks,vtkPoints* surfaceLandmarks,vtkPolyData* mesh, std::string landmarkType);
     void PaintMesh(std::string name);
     void PCA();
     void PrintHelp();

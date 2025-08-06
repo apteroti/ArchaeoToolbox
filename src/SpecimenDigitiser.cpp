@@ -1023,18 +1023,18 @@ void SpecimenDigitiser::SurfaceTool() {
                 hasFixed = false;
             }
             if (m_curveNOS > 0 &&
-                curveSliders->GetNumberOfPoints() != m_curveNOS) {
+                (curveSliders->GetNumberOfPoints()) != m_curveNOS * m_curveNOC) {
                 hasCurve = false;
             }
-
+            
             if (!hasFixed || !hasCurve) {
                 if (QMessageBox::Yes ==
                     QMessageBox::question(
                         this, "Warning",
                         "To make the automated registration fast and accurate, "
                         "first "
-                        "digitize fixed and / or curve landmarks."
-                        "Do you want to continue?",
+                        "digitize all fixed and / or curve landmarks."
+                        "Do you want to continue regardless?",
                         QMessageBox::Yes | QMessageBox::No)) {
                     m_iren->SetInteractorStyle(m_style);
                     statusLabel->setText("Status: Busy");

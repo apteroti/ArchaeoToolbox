@@ -341,6 +341,7 @@ void Registration::OnMeshMorphed() {
     m_overlayMapper->SetInputData(m_overlaidMesh);
     m_overlayMapper->Modified();
     m_overlayMeshActor->Modified();
+    m_overlayRenderer->ResetCamera();
     m_overlayRenderer->GetRenderWindow()->Render();
 
     sliderButton->setEnabled(1);

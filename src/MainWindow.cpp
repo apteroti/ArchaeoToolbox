@@ -204,9 +204,10 @@ MainWindow::MainWindow() {
     fixedLmMapper->ScalarVisibilityOff();
 
     m_fixedLmActor->GetProperty()->SetColor(1.0, 0.0, 0.0);
-    m_fixedLmActor->GetProperty()->SetDiffuse(0.8);
-    m_fixedLmActor->GetProperty()->SetSpecular(0.5);
-    m_fixedLmActor->GetProperty()->SetSpecularPower(30);
+    m_fixedLmActor->GetProperty()->SetDiffuse(0.6);
+    m_fixedLmActor->GetProperty()->SetAmbient(0.4);
+    m_fixedLmActor->GetProperty()->SetSpecular(0.0);
+    m_fixedLmActor->GetProperty()->SetSpecularPower(1);
     m_fixedLmActor->SetMapper(fixedLmMapper);
     m_mainRenderer->AddActor(m_fixedLmActor);
     // Curve Landmarks
@@ -219,9 +220,10 @@ MainWindow::MainWindow() {
     curveLmMapper->ScalarVisibilityOff();
 
     m_curveLmActor->GetProperty()->SetColor(0.0, 1.0, 0.0);
-    m_curveLmActor->GetProperty()->SetDiffuse(0.8);
-    m_curveLmActor->GetProperty()->SetSpecular(0.5);
-    m_curveLmActor->GetProperty()->SetSpecularPower(30);
+    m_curveLmActor->GetProperty()->SetDiffuse(0.6);
+    m_curveLmActor->GetProperty()->SetAmbient(0.4);
+    m_curveLmActor->GetProperty()->SetSpecular(0.0);
+    m_curveLmActor->GetProperty()->SetSpecularPower(1);
     m_curveLmActor->SetMapper(curveLmMapper);
     m_mainRenderer->AddActor(m_curveLmActor);
 
@@ -235,9 +237,10 @@ MainWindow::MainWindow() {
     surfaceLmMapper->ScalarVisibilityOff();
 
     m_surfaceLmActor->GetProperty()->SetColor(0.0, 0.0, 1.0);
-    m_surfaceLmActor->GetProperty()->SetDiffuse(0.8);
-    m_surfaceLmActor->GetProperty()->SetSpecular(0.5);
-    m_surfaceLmActor->GetProperty()->SetSpecularPower(30);
+    m_surfaceLmActor->GetProperty()->SetDiffuse(0.6);
+    m_surfaceLmActor->GetProperty()->SetAmbient(0.4);
+    m_surfaceLmActor->GetProperty()->SetSpecular(0.0);
+    m_surfaceLmActor->GetProperty()->SetSpecularPower(1);
     m_surfaceLmActor->SetMapper(surfaceLmMapper);
     m_mainRenderer->AddActor(m_surfaceLmActor);
 
@@ -375,7 +378,7 @@ MainWindow::MainWindow() {
     // Setting up signals and slots
     connect(aboutAction, &QAction::triggered, this, &MainWindow::about);
     connect(helpAction, &QAction::triggered, this, &MainWindow::PrintHelp);
-    connect(importMeshAction, &QAction::triggered, this, &MainWindow::LoadOBJ);
+    connect(importMeshAction, &QAction::triggered, this, &MainWindow::LoadMesh);
     connect(exportCSVAction, &QAction::triggered, this, &MainWindow::ExportCSV);
     connect(exportVTKAction, &QAction::triggered, this,
             &MainWindow::ExportGeometry);
@@ -479,7 +482,7 @@ void MainWindow::about() {
            "Copyright (c) Kaveh Yousef Poran <br> 2023"));
 }
 
-void MainWindow::LoadOBJ() {
+void MainWindow::LoadMesh() {
     // we could add this option {QFileDialog::DontUseNativeDialog}
     QString fileName = QFileDialog::getOpenFileName(
         this, "Mesh Files", QDir::homePath(),
@@ -1078,7 +1081,6 @@ void MainWindow::UpdateActiveData() {
                 m_mainMeshActor->SetMapper(m_mainMeshMapper);
                 m_mainMeshActor->Modified();
 
-                // vtkPolyData *landmarks = m_dataBase->GetTotalLandmarks(name);
                 vtkPoints* fixedLM = m_dataBase->GetTypeI(name);
                 vtkPoints* curveLM = m_dataBase->GetCurveSliders(name);
                 vtkPoints* surfaceLM = m_dataBase->GetSurfaceSliders(name);
@@ -1095,6 +1097,8 @@ void MainWindow::UpdateActiveData() {
                             ->parent()
                             ->text(0)
                             .toStdString();
+            auto branchName = m_treeWidget->selectedItems()[0]->text(0)
+                            .toStdString();
             std::string dType = m_dataBase->GetGeometryType(name);
             if (dType == "Mesh") {
                 m_currentMesh = m_dataBase->GetPolyNode(name);
@@ -1105,7 +1109,7 @@ void MainWindow::UpdateActiveData() {
                 vtkPoints* fixedLM = m_dataBase->GetTypeI(name);
                 vtkPoints* curveLM = m_dataBase->GetCurveSliders(name);
                 vtkPoints* surfaceLM = m_dataBase->GetSurfaceSliders(name);
-                PlotLandmarks(fixedLM, curveLM, surfaceLM, m_currentMesh);
+                PlotLandmarks(fixedLM, curveLM, surfaceLM, m_currentMesh, branchName);
                 m_mainRenderer->ResetCamera();
                 m_mainRenderer->GetRenderWindow()->Render();
             }
@@ -1361,8 +1365,6 @@ void MainWindow::UpdateDataBase() {
         vtkPoints* surfaceLM = m_dataBase->GetSurfaceSliders(dataName);
         vtkPolyData* tempMesh = m_dataBase->GetPolyNode(dataName);
         PlotLandmarks(fixedLM, curveLM, surfaceLM, tempMesh);
-        /* delete m_meshPlot;
-        m_meshPlot = nullptr; */
     }
     if (m_status == STATUS::reset) {
         UnlockTheWindow();
@@ -1390,8 +1392,6 @@ void MainWindow::UpdateDataBase() {
             PlotLandmarks(fixedLM, curveLM, surfaceLM, m_currentMesh);
         }
         m_status = STATUS::neutral;
-        /* delete m_meshPlot;
-        m_meshPlot = nullptr; */
     }
 }
 
@@ -1465,7 +1465,6 @@ void MainWindow::SetSliders(vtkPoints* fixedPts, vtkPoints* curveSliderPts,
         name =
             m_treeWidget->selectedItems()[0]->parent()->text(0).toStdString();
     }
-    // vtkNew<vtkPoints> sliderPts;
     vtkNew<vtkPoints> totalPts;
     if (m_dataBase->GetTotalLandmarks(name)->GetNumberOfPoints() > 0) {
         m_dataBase->DeleteAllLandmarks(name);
@@ -1781,7 +1780,7 @@ void MainWindow::SetTemplateMesh(vtkPolyData* mesh) { m_templateMesh = mesh; }
 
 void MainWindow::SetTemplateMeshType(std::string type){
     if(type == ""){
-        m_templateMeshType = "Mesh";
+        m_templateMeshType = "Mesh"; //handling legacy template files
     }
     else{
         m_templateMeshType = type;
@@ -1937,6 +1936,111 @@ void MainWindow::PlotLandmarks(vtkPoints* fixedLandmarks,
             fixedPointMapper->ScalingOff();
             fixedPointMapper->ScalarVisibilityOff();
             m_fixedLmActor->SetMapper(fixedPointMapper);
+            m_fixedLmActor->GetProperty()->SetOpacity(1);
+            m_fixedLmActor->GetProperty()->SetDiffuse(0.6);
+            m_fixedLmActor->GetProperty()->SetAmbient(0.4);
+            m_fixedLmActor->GetProperty()->SetSpecular(0.0);
+            m_fixedLmActor->GetProperty()->SetSpecularPower(1);
+            m_fixedLmActor->Modified();
+            m_mainRenderer->AddActor(m_fixedLmActor);
+        }
+
+        if (curveLandmarks->GetNumberOfPoints() > 0) {
+            vtkNew<vtkPolyData> temp;
+            temp->SetPoints(curveLandmarks);
+            m_curveLmVertexFilter->SetInputData(temp);
+            m_curveLmVertexFilter->Update();
+
+            vtkNew<vtkGlyph3DMapper> curvePointMapper;
+            curvePointMapper->SetInputData(m_curveLmVertexFilter->GetOutput());
+            curvePointMapper->SetSourceConnection(
+                sphereSource->GetOutputPort());
+            curvePointMapper->ScalingOff();
+            curvePointMapper->ScalarVisibilityOff();
+            m_curveLmActor->SetMapper(curvePointMapper);
+            m_curveLmActor->GetProperty()->SetOpacity(1);
+            m_curveLmActor->GetProperty()->SetDiffuse(0.6);
+            m_curveLmActor->GetProperty()->SetAmbient(0.4);
+            m_curveLmActor->GetProperty()->SetSpecular(0.0);
+            m_curveLmActor->GetProperty()->SetSpecularPower(1);
+            m_curveLmActor->Modified();
+            m_mainRenderer->AddActor(m_curveLmActor);
+        }
+
+        if (surfaceLandmarks->GetNumberOfPoints() > 0) {
+            vtkNew<vtkPolyData> temp;
+            temp->SetPoints(surfaceLandmarks);
+            m_surfaceLmVertexFilter->SetInputData(temp);
+            m_surfaceLmVertexFilter->Update();
+
+            vtkNew<vtkGlyph3DMapper> surfacePointMapper;
+            surfacePointMapper->SetInputData(
+                m_surfaceLmVertexFilter->GetOutput());
+            surfacePointMapper->SetSourceConnection(
+                sphereSource->GetOutputPort());
+            surfacePointMapper->ScalingOff();
+            surfacePointMapper->ScalarVisibilityOff();
+            m_surfaceLmActor->SetMapper(surfacePointMapper);
+            m_surfaceLmActor->GetProperty()->SetOpacity(1);
+            m_surfaceLmActor->GetProperty()->SetDiffuse(0.6);
+            m_surfaceLmActor->GetProperty()->SetAmbient(0.4);
+            m_surfaceLmActor->GetProperty()->SetSpecular(0.0);
+            m_surfaceLmActor->GetProperty()->SetSpecularPower(1);
+            m_surfaceLmActor->Modified();
+            m_mainRenderer->AddActor(m_surfaceLmActor);
+        }
+
+    } else {
+        m_mainRenderer->RemoveActor(m_fixedLmActor);
+        m_mainRenderer->RemoveActor(m_curveLmActor);
+        m_mainRenderer->RemoveActor(m_surfaceLmActor);
+    }
+
+    m_mainRenderer->GetRenderWindow()->Render();
+}
+
+void MainWindow::PlotLandmarks(vtkPoints* fixedLandmarks,
+                               vtkPoints* curveLandmarks,
+                               vtkPoints* surfaceLandmarks, vtkPolyData* mesh, std::string landmarkType) {
+    if (fixedLandmarks->GetNumberOfPoints() > 0 ||
+        curveLandmarks->GetNumberOfPoints() > 0 ||
+        surfaceLandmarks->GetNumberOfPoints() > 0) {
+        vtkNew<vtkMassProperties> prop;
+        prop->SetInputData(mesh);
+        prop->Update();
+        const double area = prop->GetSurfaceArea();
+        const double diagonal = std::sqrt(area); // Approximate characteristic length
+        // Compute size factor based on application-specific parameters
+        // Normalized between 0-1 range first, then scaled
+        double sizeFactor = (m_typeINOL * 0.03 + 
+                    m_surfaceNOS * 0.025 +
+                    m_surfacePatchNOP * m_surfacePatchUNOS * m_surfacePatchVNOS * 0.025 +
+                    m_curveNOS * m_curveNOC * 0.025);
+
+        // Apply sigmoid function for smooth clamping
+        sizeFactor = 1.0 / (1.0 + std::exp(-0.1*(sizeFactor - 50.0))); // Sigmoid normalization
+
+        // Map to reasonable visual range (1%-5% of characteristic length)
+        const double minSize = 0.01 * diagonal;
+        const double maxSize = 0.05 * diagonal;
+        double landmarkSize = minSize + sizeFactor * (maxSize - minSize);
+        // Apply to sphere source
+        vtkNew<vtkSphereSource> sphereSource;
+        sphereSource->SetRadius(landmarkSize);
+
+        if (fixedLandmarks->GetNumberOfPoints() > 0) {
+            vtkNew<vtkPolyData> temp;
+            temp->SetPoints(fixedLandmarks);
+            m_fixedLmVertexFilter->SetInputData(temp);
+            m_fixedLmVertexFilter->Update();
+
+            vtkNew<vtkGlyph3DMapper> fixedPointMapper;
+            fixedPointMapper->SetInputData(m_fixedLmVertexFilter->GetOutput());
+            fixedPointMapper->SetSourceConnection(
+                sphereSource->GetOutputPort());
+            fixedPointMapper->ScalingOff();
+            fixedPointMapper->ScalarVisibilityOff();
+            m_fixedLmActor->SetMapper(fixedPointMapper);
             m_fixedLmActor->Modified();
             m_mainRenderer->AddActor(m_fixedLmActor);
         }
@@ -1974,6 +2078,42 @@ void MainWindow::PlotLandmarks(vtkPoints* fixedLandmarks,
             m_surfaceLmActor->SetMapper(surfacePointMapper);
             m_surfaceLmActor->Modified();
             m_mainRenderer->AddActor(m_surfaceLmActor);
+
+        }
+        if(landmarkType == "Type I-II"){
+            m_fixedLmActor->GetProperty()->SetOpacity(1);
+            m_fixedLmActor->GetProperty()->SetDiffuse(0.3);    // Low diffuse glassy
+            m_fixedLmActor->GetProperty()->SetSpecular(0.8);
+            m_fixedLmActor->GetProperty()->SetSpecularPower(120);
+            m_curveLmActor->GetProperty()->SetOpacity(0.3);
+            m_surfaceLmActor->GetProperty()->SetOpacity(0.3);
+            m_fixedLmActor->Modified();
+            m_curveLmActor->Modified();
+            m_surfaceLmActor->Modified();
+        }
+        else if(landmarkType == "Curve Slider"){
+            m_fixedLmActor->GetProperty()->SetOpacity(0.3);
+            m_curveLmActor->GetProperty()->SetOpacity(1);
+            m_curveLmActor->GetProperty()->SetDiffuse(0.3);    
+            m_curveLmActor->GetProperty()->SetSpecular(0.8);
+            m_curveLmActor->GetProperty()->SetSpecularPower(120);
+            m_surfaceLmActor->GetProperty()->SetOpacity(0.3);
+            m_fixedLmActor->Modified();
+            m_curveLmActor->Modified();
+            m_surfaceLmActor->Modified();
+                
+        }
+        else if(landmarkType == "Surface Slider"){
+            m_fixedLmActor->GetProperty()->SetOpacity(0.3);
+            m_curveLmActor->GetProperty()->SetOpacity(0.3);
+            m_surfaceLmActor->GetProperty()->SetOpacity(1);
+            m_surfaceLmActor->GetProperty()->SetOpacity(1);
+            m_surfaceLmActor->GetProperty()->SetDiffuse(0.3);    
+            m_surfaceLmActor->GetProperty()->SetSpecular(0.8);
+            m_surfaceLmActor->GetProperty()->SetSpecularPower(120);
+            m_fixedLmActor->Modified();
+            m_curveLmActor->Modified();
+            m_surfaceLmActor->Modified();
         }
 
     } else {

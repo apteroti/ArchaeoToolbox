@@ -409,9 +409,10 @@ void SuperImposition::Plot() {
     fixLmPointMapper->ScalingOff();
     fixLmPointMapper->ScalarVisibilityOff();
     fixPtActor->GetProperty()->SetColor(1.0, 0.0, 0.0);
-    fixPtActor->GetProperty()->SetDiffuse(0.8);
-    fixPtActor->GetProperty()->SetSpecular(0.5);
-    fixPtActor->GetProperty()->SetSpecularPower(30);
+    fixPtActor->GetProperty()->SetDiffuse(0.6);
+    fixPtActor->GetProperty()->SetAmbient(0.4);
+    fixPtActor->GetProperty()->SetSpecular(0.0);
+    fixPtActor->GetProperty()->SetSpecularPower(1);
     fixPtActor->SetMapper(fixLmPointMapper);
     m_renderer->AddActor(fixPtActor);
 
@@ -422,9 +423,10 @@ void SuperImposition::Plot() {
     curveLmPointMapper->ScalingOff();
     curveLmPointMapper->ScalarVisibilityOff();
     curvePtActor->GetProperty()->SetColor(0.0, 1.0, 0.0);
-    curvePtActor->GetProperty()->SetDiffuse(0.8);
-    curvePtActor->GetProperty()->SetSpecular(0.5);
-    curvePtActor->GetProperty()->SetSpecularPower(30);
+    curvePtActor->GetProperty()->SetDiffuse(0.6);
+    curvePtActor->GetProperty()->SetAmbient(0.4);
+    curvePtActor->GetProperty()->SetSpecular(0.0);
+    curvePtActor->GetProperty()->SetSpecularPower(1);
     curvePtActor->SetMapper(curveLmPointMapper);
     m_renderer->AddActor(curvePtActor);
 
@@ -435,9 +437,10 @@ void SuperImposition::Plot() {
     surfaceLmPointMapper->ScalingOff();
     surfaceLmPointMapper->ScalarVisibilityOff();
     surfacePtActor->GetProperty()->SetColor(0.0, 0.0, 1.0);
-    surfacePtActor->GetProperty()->SetDiffuse(0.8);
-    surfacePtActor->GetProperty()->SetSpecular(0.5);
-    surfacePtActor->GetProperty()->SetSpecularPower(30);
+    surfacePtActor->GetProperty()->SetDiffuse(0.6);
+    surfacePtActor->GetProperty()->SetAmbient(0.4);
+    surfacePtActor->GetProperty()->SetSpecular(0.0);
+    surfacePtActor->GetProperty()->SetSpecularPower(1);
     surfacePtActor->SetMapper(surfaceLmPointMapper);
     m_renderer->AddActor(surfacePtActor);
 

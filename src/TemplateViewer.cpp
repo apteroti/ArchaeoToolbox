@@ -260,9 +260,10 @@ void TemplateViewer::Plot() {
     fixedPointMapper->ScalingOff();
     fixedPointMapper->ScalarVisibilityOff();
     m_fixedPointActor->GetProperty()->SetColor(1.0, 0.0, 0.0);
-    m_fixedPointActor->GetProperty()->SetDiffuse(0.8);
-    m_fixedPointActor->GetProperty()->SetSpecular(0.5);
-    m_fixedPointActor->GetProperty()->SetSpecularPower(30);
+    m_fixedPointActor->GetProperty()->SetDiffuse(0.6);
+    m_fixedPointActor->GetProperty()->SetAmbient(0.4);
+    m_fixedPointActor->GetProperty()->SetSpecular(0.0);
+    m_fixedPointActor->GetProperty()->SetSpecularPower(1);
     m_fixedPointActor->SetMapper(fixedPointMapper);
     m_renderer->AddActor(m_fixedPointActor);
     //--------------------------------------------
@@ -277,9 +278,10 @@ void TemplateViewer::Plot() {
     surfacePointMapper->ScalingOff();
     surfacePointMapper->ScalarVisibilityOff();
     m_surfacePointActor->GetProperty()->SetColor(0.0, 0.0, 1.0);
-    m_surfacePointActor->GetProperty()->SetDiffuse(0.8);
-    m_surfacePointActor->GetProperty()->SetSpecular(0.5);
-    m_surfacePointActor->GetProperty()->SetSpecularPower(30);
+    m_surfacePointActor->GetProperty()->SetDiffuse(0.6);
+    m_surfacePointActor->GetProperty()->SetAmbient(0.4);
+    m_surfacePointActor->GetProperty()->SetSpecular(0.0);
+    m_surfacePointActor->GetProperty()->SetSpecularPower(1);
     m_surfacePointActor->SetMapper(surfacePointMapper);
     m_surfacePointActor->SetPickable(0);
     m_renderer->AddActor(m_surfacePointActor);
@@ -314,9 +316,10 @@ void TemplateViewer::Plot() {
     curvePointMapper->ScalingOff();
     curvePointMapper->ScalarVisibilityOff();
     m_curvePointActor->GetProperty()->SetColor(0.0, 1.0, 0.0);
-    m_curvePointActor->GetProperty()->SetDiffuse(0.8);
-    m_curvePointActor->GetProperty()->SetSpecular(0.5);
-    m_curvePointActor->GetProperty()->SetSpecularPower(30);
+    m_curvePointActor->GetProperty()->SetDiffuse(0.6);
+    m_curvePointActor->GetProperty()->SetAmbient(0.4);
+    m_curvePointActor->GetProperty()->SetSpecular(0.0);
+    m_curvePointActor->GetProperty()->SetSpecularPower(1);
     m_curvePointActor->SetMapper(curvePointMapper);
     m_curvePointActor->SetPickable(0);
     m_renderer->AddActor(m_curvePointActor);

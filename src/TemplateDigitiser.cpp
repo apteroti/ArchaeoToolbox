@@ -2246,15 +2246,15 @@ void TemplateDigitiser::PoissonDisk(vtkPolyData* inputPoly, vtkPoints* fixedLm,
     if (m_typeINOL > 0 && fixedLm->GetNumberOfPoints() != m_typeINOL) {
         hasFixed = false;
     }
-    if (m_curveNOS > 0 && curveSliders->GetNumberOfPoints() != m_curveNOS) {
+    if (m_curveNOS > 0 && curveSliders->GetNumberOfPoints() != m_curveNOS * m_curveNOC) {
         hasCurve = false;
     }
     if (!hasFixed || !hasCurve) {
         if (QMessageBox::Yes ==
             QMessageBox::question(this, "Warning",
                                   "To avoid landmark coincident, first "
-                                  "digitize fixed and / or curve landmarks."
-                                  "Do you want to continue?",
+                                  "digitize all fixed and / or curve landmarks."
+                                  "Do you want to continue anyway?",
                                   QMessageBox::Yes | QMessageBox::No)) {
             PrepareBNSampling(1);
             delete m_BlueNoiseThread;
