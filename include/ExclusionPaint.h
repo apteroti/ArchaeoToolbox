@@ -91,6 +91,8 @@
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QShortcut>
+#include <QtCore/QPropertyAnimation>
+#include <QtWidgets/QGraphicsOpacityEffect>
 
 #include <vtkGenericRenderWindowInteractor.h>
 #include <vtkInteractorStyleTrackballCamera.h>
@@ -218,6 +220,7 @@ private:
     //Toolbar
     QToolBar *mainToolbar;
     QPushButton *surfacePaintButton;
+    QPropertyAnimation * m_painterAnimation;
     QPushButton* closeButton;
     QSpinBox *brushSizeSpinBox;
 

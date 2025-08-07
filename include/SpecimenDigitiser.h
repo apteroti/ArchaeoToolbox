@@ -69,124 +69,134 @@
 #ifndef SPECIMENDIGITISER_H
 #define SPECIMENDIGITISER_H
 
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QAction>
-#include <QtWidgets/QTableWidget>
-#include <QtWidgets/QMenu>
-#include <QtWidgets/QMenuBar>
-#include <QtWidgets/QAction>
-#include <QtGui/QCloseEvent>
-#include <QtWidgets/QMessageBox>
-#include <QtWidgets/QToolBar>
-#include <QtWidgets/QHBoxLayout>
-#include <QtGui/QSurfaceFormat>
-#include <QtWidgets/QMainWindow>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QGraphicsDropShadowEffect>
-#include <QtWidgets/QComboBox>
-#include <QtWidgets/QSpinBox>
 #include <QVTKOpenGLWidget.h>
-#include <QtConcurrent/QtConcurrent>
-#include <QFuture>
-#include <QThread>
-#include <QGroupBox>
-#include <QtCore/QPropertyAnimation>
-#include <QtWidgets/QGraphicsOpacityEffect>
-
-#include <vtkGenericRenderWindowInteractor.h>
-#include <vtkInteractorStyleTrackballCamera.h>
-#include <vtkGenericOpenGLRenderWindow.h>
-#include <vtkSmartPointer.h>
+#include <math.h>
 #include <vtkActor.h>
-#include <vtkRenderer.h>
-#include <vtkRenderWindow.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkProperty.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkLight.h>
-#include <vtkCamera.h>
 #include <vtkActor2D.h>
-#include <vtkTextActor.h>
-#include <vtkProperty2D.h>
-#include <vtkTextProperty.h>
-#include <vtkPolyData.h>
-#include <vtkPointData.h>
-#include <vtkPoints.h>
-#include <vtkInteractorStyleImage.h>
-#include <vtkVertexGlyphFilter.h>
-#include <vtkNew.h>
-#include <vtkCellPicker.h>
-#include <vtkPointPicker.h>
-#include <vtkPointGaussianMapper.h>
-#include <vtkGlyph3DMapper.h>
-#include <vtkGlyph3D.h>
-#include <vtkSphereSource.h>
-#include <vtkMassProperties.h>
-#include <vtkLabeledDataMapper.h>
-#include <vtkDataSetMapper.h>
-#include <vtkNamedColors.h>
-#include <vtkSurfaceReconstructionFilter.h>
-#include <vtkContourFilter.h>
-#include <vtkCleanPolyData.h>
-#include <vtkSmoothPolyDataFilter.h>
-#include <vtkSelectPolyData.h>
-#include <vtkContourTriangulator.h>
-#include <vtkClipPolyData.h>
-#include <vtkMeshQuality.h>
-#include <vtkDoubleArray.h>
-#include <vtkCellData.h>
-#include <vtkPolyDataPointSampler.h>
-#include <vtkDecimatePro.h>
-#include <vtkPointLocator.h>
-#include <vtkDelaunay3D.h>
-#include <vtkUnstructuredGrid.h>
-#include <vtkGeometryFilter.h>
-#include <vtkMultiBlockDataSet.h>
-#include <vtkCompositeDataGeometryFilter.h>
-#include <vtkExtractEdges.h>
-#include <vtkDataObjectTreeIterator.h>
-#include <vtkCellArray.h>
-#include <vtkCompositePolyDataMapper2.h>
-#include <vtkPlaneSource.h>
-#include <vtkAutoInit.h>
-#include <vtkOBJWriter.h>
-#include <vtkImplicitSelectionLoop.h>
-#include <vtkExtractPolyDataGeometry.h>
 #include <vtkAppendArcLength.h>
-#include <vtkTubeFilter.h>
-#include <vtkPolyLine.h>
-#include <vtkConnectivityFilter.h>
+#include <vtkAutoInit.h>
+#include <vtkCamera.h>
+#include <vtkCellArray.h>
+#include <vtkCellData.h>
 #include <vtkCellLocator.h>
+#include <vtkCellPicker.h>
+#include <vtkCenterOfMass.h>
+#include <vtkCleanPolyData.h>
+#include <vtkClipPolyData.h>
+#include <vtkCompositeDataGeometryFilter.h>
+#include <vtkCompositePolyDataMapper2.h>
+#include <vtkConnectivityFilter.h>
+#include <vtkContourFilter.h>
+#include <vtkContourTriangulator.h>
+#include <vtkDataObjectTreeIterator.h>
+#include <vtkDataSetMapper.h>
+#include <vtkDecimatePro.h>
+#include <vtkDelaunay3D.h>
+#include <vtkDoubleArray.h>
+#include <vtkExtractEdges.h>
+#include <vtkExtractGeometry.h>
+#include <vtkExtractPolyDataGeometry.h>
+#include <vtkGenericOpenGLRenderWindow.h>
+#include <vtkGenericRenderWindowInteractor.h>
+#include <vtkGeometryFilter.h>
+#include <vtkGlyph3D.h>
+#include <vtkGlyph3DMapper.h>
+#include <vtkImplicitSelectionLoop.h>
+#include <vtkInteractorStyleImage.h>
+#include <vtkInteractorStyleTrackballCamera.h>
+#include <vtkLabeledDataMapper.h>
+#include <vtkLight.h>
+#include <vtkMassProperties.h>
+#include <vtkMeshQuality.h>
+#include <vtkMultiBlockDataSet.h>
+#include <vtkNamedColors.h>
+#include <vtkNew.h>
+#include <vtkOBJWriter.h>
+#include <vtkParametricFunctionSource.h>
+#include <vtkParametricSpline.h>
+#include <vtkPlaneSource.h>
+#include <vtkPointData.h>
+#include <vtkPointGaussianMapper.h>
+#include <vtkPointLocator.h>
+#include <vtkPointPicker.h>
+#include <vtkPoints.h>
+#include <vtkPolyData.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkPolyDataNormals.h>
+#include <vtkPolyDataPointSampler.h>
+#include <vtkPolyLine.h>
+#include <vtkProperty.h>
+#include <vtkProperty2D.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkRenderer.h>
+#include <vtkSelectPolyData.h>
+#include <vtkSmartPointer.h>
+#include <vtkSmoothPolyDataFilter.h>
+#include <vtkSphereSource.h>
+#include <vtkSplineFilter.h>
+#include <vtkSurfaceReconstructionFilter.h>
+#include <vtkTextActor.h>
+#include <vtkTextProperty.h>
 #include <vtkThinPlateSplineTransform.h>
 #include <vtkTransformPolyDataFilter.h>
-#include <vtkCenterOfMass.h>
+#include <vtkTubeFilter.h>
+#include <vtkUnstructuredGrid.h>
+#include <vtkVertexGlyphFilter.h>
 #include <vtkWindowedSincPolyDataFilter.h>
-#include <vtkSplineFilter.h>
-#include <vtkExtractGeometry.h>
-#include <vtkPolyDataNormals.h>
-#include <vtkParametricSpline.h>
-#include <vtkParametricFunctionSource.h>
 #include <vtkXMLStructuredGridWriter.h>
 
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <math.h>
-#include <Eigen/Eigen>
 #include <Eigen/Dense>
-#include <Eigen/Sparse>
+#include <Eigen/Eigen>
 #include <Eigen/Eigenvalues>
+#include <Eigen/Sparse>
+#include <QFuture>
+#include <QGroupBox>
+#include <QThread>
+#include <QtConcurrent/QtConcurrent>
+#include <QtCore/QPropertyAnimation>
+#include <QtGui/QCloseEvent>
+#include <QtGui/QSurfaceFormat>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QGraphicsDropShadowEffect>
+#include <QtWidgets/QGraphicsOpacityEffect>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QMenuBar>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QSpinBox>
+#include <QtWidgets/QTableWidget>
+#include <QtWidgets/QToolBar>
+#include <algorithm>
+#include <cmath>
+#include <functional>
+#include <iostream>
+#include <limits>
+#include <queue>
+#include <set>
+#include <unordered_map>
+#include <vector>
+
+#include "ExclusionPaint.h"
 #include "MainWindow.fwd.h"
+#include "Registration.h"
 #include "SlidingThread.h"
 #include "StatusReporterThread.h"
-#include "Registration.h"
-#include "ExclusionPaint.h"
 
-
-class SpecimenDigitiser : public QMainWindow
-{
-private:
+class SpecimenDigitiser : public QMainWindow {
+   private:
+    struct AStarNode {
+        vtkIdType vertexId;
+        double fScore;
+        bool operator>(const AStarNode &other) const {
+            return fScore > other.fScore;
+        }
+    };
     // Data
     bool m_ignoreInside = true;
     int m_typeINOL = 0;
@@ -213,11 +223,12 @@ private:
     vtkSmartPointer<vtkPolyData> m_templateMesh = nullptr;
     vtkSmartPointer<vtkPoints> m_templateSurfaceSliders = nullptr;
     vtkSmartPointer<vtkPoints> m_templateTypeI = nullptr;
-    vtkSmartPointer<vtkMultiBlockDataSet> m_templatePatchSurfaceSliders = nullptr;
+    vtkSmartPointer<vtkMultiBlockDataSet> m_templatePatchSurfaceSliders =
+        nullptr;
     vtkSmartPointer<vtkMultiBlockDataSet> m_templateCurveSliders = nullptr;
 
     MainWindow *m_parent;
-    ExclusionPaint* m_exclusionPainter = nullptr;
+    ExclusionPaint *m_exclusionPainter = nullptr;
     //
     QLineEdit *typeILineEdit;
     QLineEdit *curveLineEditNOC;
@@ -234,7 +245,7 @@ private:
     vtkSmartPointer<vtkActor> m_meshActor;
     vtkSmartPointer<vtkActor> m_fixedPointActor;
     vtkSmartPointer<vtkVertexGlyphFilter> m_fixedVertexFilter;
-    vtkSmartPointer<vtkPoints> m_fixedLandmarks; //this is fixed landmarks
+    vtkSmartPointer<vtkPoints> m_fixedLandmarks;  // this is fixed landmarks
     vtkSmartPointer<vtkPolyData> m_fixedPointsPoly;
     vtkSmartPointer<vtkInteractorStyleTrackballCamera> m_PointPickerStyle;
     vtkSmartPointer<vtkInteractorStyleTrackballCamera> m_PointMoverStyle;
@@ -245,7 +256,8 @@ private:
     vtkSmartPointer<vtkActor> m_largestDiamTubeActor;
     //------
     vtkSmartPointer<vtkActor> m_cutMeshActor;
-    vtkSmartPointer<vtkPoints> m_surfaceLandmarks; // this is for whole surface scenario
+    vtkSmartPointer<vtkPoints>
+        m_surfaceLandmarks;  // this is for whole surface scenario
     vtkSmartPointer<vtkPoints> m_surfaceCurveHighlightCtrlPoints;
     vtkSmartPointer<vtkActor> m_surfaceCurveCtrlPointActor;
     vtkSmartPointer<vtkActor> m_surfaceCurveActor;
@@ -331,8 +343,8 @@ private:
     QComboBox *surfaceSelectComboBox;
     QComboBox *curvePickSourceComboBox;
     QComboBox *surfacePickSourceComboBox;
-    QSpinBox * pointSizeSpinBox;
-    QSpinBox * lineSizeSpinBox;
+    QSpinBox *pointSizeSpinBox;
+    QSpinBox *lineSizeSpinBox;
     QCheckBox *showDiameterBox;
     QCheckBox *pickFromBoundariesBox;
     // Buttons
@@ -349,8 +361,8 @@ private:
     QPushButton *slidingButton;
     QPushButton *surfaceInterpolateButton;
     QPropertyAnimation *m_interpolationAnimation;
-    QPropertyAnimation * m_ironAnimation;
-    QPropertyAnimation * m_slidingAnimation;
+    QPropertyAnimation *m_ironAnimation;
+    QPropertyAnimation *m_slidingAnimation;
     // Functions
     void TypeITool();
     void SurfaceTool();
@@ -358,16 +370,19 @@ private:
     void PrepareSliding();
     void DrapeToSurface();
     void MakeSlide();
-    
+
     // Interaction
     void PickFunc(vtkObject *caller, long unsigned int eventId, void *callData);
-    void resetLeftClck(vtkObject *caller, long unsigned int eventId, void *callData);
+    void resetLeftClck(vtkObject *caller, long unsigned int eventId,
+                       void *callData);
     void MoveFunc(vtkObject *caller, long unsigned int eventId, void *callData);
-    void resetMouseMove(vtkObject *caller, long unsigned int eventId, void *callData);
-    void CoordinateFunc(vtkObject *caller, long unsigned int eventId, void *callData);
+    void resetMouseMove(vtkObject *caller, long unsigned int eventId,
+                        void *callData);
+    void CoordinateFunc(vtkObject *caller, long unsigned int eventId,
+                        void *callData);
     void DebugPrintMatrix(Eigen::MatrixXd matrix);
 
-public:
+   public:
     SpecimenDigitiser(vtkPolyData *data, MainWindow *parent);
     void ResetCurveScene();
     void ResetSurfaceScene();
@@ -385,51 +400,61 @@ public:
     void UpdateSurfaceScene(int id);
     void FinalizeCurveScene();
     void FinalizeSurfaceScene();
-    void UpdateCurveData(vtkPoints *pts, vtkPolyData *outputLine, vtkPoints *outputPoints, vtkPolyData *baseMesh);
-    void ConstructSurfaceData(vtkPoints* pts, vtkPoints *outputSliders, vtkPolyData *outputCtrlPtsPoly);
-    void ConstructSurfaceData(vtkPolyData *CtrlPtsPoly, vtkPoints *outputSliders);
+    void UpdateCurveData(vtkPoints *pts, vtkPolyData *outputLine,
+                         vtkPoints *outputPoints, vtkPolyData *baseMesh);
+    void ConstructSurfaceData(vtkPoints *pts, vtkPoints *outputSliders,
+                              vtkPolyData *outputCtrlPtsPoly);
+    void ConstructSurfaceData(vtkPolyData *CtrlPtsPoly,
+                              vtkPoints *outputSliders);
     void Plot();
-    double EucDist(double Ax, double Ay, double Az, double Bx, double By, double Bz);
+    double EucDist(double Ax, double Ay, double Az, double Bx, double By,
+                   double Bz);
     void PDist(vtkPoints *points, Eigen::MatrixXd &output);
     void PDist(Eigen::MatrixXd &points, Eigen::MatrixXd &output);
     void ProjectOnMesh(vtkPoints *points, vtkPolyData *mask);
-    void ProjectOnMesh(vtkPolyData *Poly, vtkPolyData *mask, std::vector<int> *ids = nullptr);
-    void MakeArrow(vtkPolyData *inputMesh, vtkMultiBlockDataSet *inputCurveBlock, int liftScale, vtkPolyData *output);
+    void ProjectOnMesh(vtkPolyData *Poly, vtkPolyData *mask,
+                       std::vector<int> *ids = nullptr);
+    void MakeArrow(vtkPolyData *inputMesh,
+                   vtkMultiBlockDataSet *inputCurveBlock, int liftScale,
+                   vtkPolyData *output);
     void FinalizeDigitization(Eigen::MatrixXd &Lndmrks, bool sendOffData);
     void CosmeticCurve(vtkPoints *ctrlPts, vtkPolyData *outputCurve);
     void MeshCutter(vtkPoints *pts);
-    void CutMeshWithCurve(vtkPolyData* inputMesh, vtkPoints* curvePoints, vtkPolyData* outputCutMesh);
+    void CutMeshWithCurve(vtkPolyData *inputMesh, vtkPoints *curvePoints,
+                          vtkPolyData *outputCutMesh);
     void GetCutterCurve(vtkPolyData *Poly, vtkPoints *curvePts,
                         vtkIdList *outCurveIds);
     void DijkstraEdgeSearch(vtkPolyData *mesh, vtkPolyData *closedCurve,
                             vtkIdList *edgePointIds);
+    void AStarEdgeSearch(vtkPolyData *mesh, vtkPolyData *closedCurve,
+                         vtkIdList *edgePointIds);
     void ChangePointSize(int index);
     void ChangeLineSize(int index);
-    void OutlineIdFinder(int u, int v, std::vector<int>* output);
-    void MakeCage(vtkPoints* pts, vtkPolyData* outPlanePoly);
+    void OutlineIdFinder(int u, int v, std::vector<int> *output);
+    void MakeCage(vtkPoints *pts, vtkPolyData *outPlanePoly);
     void SlidingStatus();
     void ShowLargestDiameter();
-    void DrawDiameter(vtkPoints* meshPoints);
+    void DrawDiameter(vtkPoints *meshPoints);
     void PickFromBoundaries();
     void CleanUp();
-    void SetSurfaceSlider(vtkPoints* pts);
+    void SetSurfaceSlider(vtkPoints *pts);
     void FlipSurfaceButton();
     int GetTemplateNOL();
-    vtkPoints* GetTemplateTypeI();
-    vtkPoints* GetTypeI();
-    void GetTemplateCurveSliders(vtkPoints* Output);
-    void GetCurveSliders(vtkPoints* Output);
+    vtkPoints *GetTemplateTypeI();
+    vtkPoints *GetTypeI();
+    void GetTemplateCurveSliders(vtkPoints *Output);
+    void GetCurveSliders(vtkPoints *Output);
     bool GetIgnorSetting();
-    void GetPlaneBoundaryPoints(vtkPolyData* plane, vtkPoints* boundaryPoints);
+    void GetPlaneBoundaryPoints(vtkPolyData *plane, vtkPoints *boundaryPoints);
     void InterpolateSurface();
     ~SpecimenDigitiser();
 
-public Q_SLOTS:
+   public Q_SLOTS:
     void OnCoordinateChanged(Eigen::MatrixXd sendOffData);
     void OnCoordinateNotChanged(Eigen::MatrixXd sendOffData);
     void OnStatusChanged(int status);
 
-protected:
+   protected:
     void keyReleaseEvent(QKeyEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void closeEvent(QCloseEvent *event) override;

@@ -74,6 +74,7 @@
 #include <vtkActor.h>
 #include <vtkActor2D.h>
 #include <vtkAppendArcLength.h>
+#include <vtkAppendPolyData.h>
 #include <vtkArrowSource.h>
 #include <vtkAutoInit.h>
 #include <vtkBooleanOperationPolyDataFilter.h>
@@ -174,7 +175,6 @@
 #include <vtkWindowedSincPolyDataFilter.h>
 #include <vtkXMLMultiBlockDataWriter.h>
 #include <vtkXMLPolyDataWriter.h>
-#include <vtkAppendPolyData.h>
 
 #include <Eigen/Dense>
 #include <Eigen/Eigen>
@@ -200,8 +200,14 @@
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QToolBar>
 #include <algorithm>
+#include <cmath>
+#include <functional>
 #include <iostream>
+#include <limits>
+#include <queue>
 #include <random>
+#include <set>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -211,6 +217,13 @@
 
 class TemplateDigitiser : public QMainWindow {
    private:
+    struct AStarNode {
+        vtkIdType vertexId;
+        double fScore;
+        bool operator>(const AStarNode &other) const {
+            return fScore > other.fScore;
+        }
+    };
     // Data
     QMutex *m_mutex;
     bool m_ignoreInside = 1;
@@ -375,7 +388,7 @@ class TemplateDigitiser : public QMainWindow {
     QPushButton *surfaceResampleButton;
     QPushButton *surfaceInterpolateButton;
     QPropertyAnimation *m_interpolationAnimation;
-    QPropertyAnimation * m_ironAnimation;
+    QPropertyAnimation *m_ironAnimation;
     // Functions
     void TypeITool();
     void SurfaceTool();
@@ -392,6 +405,7 @@ class TemplateDigitiser : public QMainWindow {
     void CoordinateFunc(vtkObject *caller, long unsigned int eventId,
                         void *callData);
     void MakeCage(vtkPoints *pts, vtkPolyData *outPlanePoly);
+
     void NeighborFinder(int initId, int brushSize, std::vector<int> &outList);
 
    public:
@@ -446,6 +460,8 @@ class TemplateDigitiser : public QMainWindow {
                         vtkIdList *outCurveIds);
     void DijkstraEdgeSearch(vtkPolyData *mesh, vtkPolyData *closedCurve,
                             vtkIdList *edgePointIds);
+    void AStarEdgeSearch(vtkPolyData *mesh, vtkPolyData *closedCurve,
+                         vtkIdList *edgePointIds);
     void ChangePointSize(int index);
     void ChangeLineSize(int index);
     void OutlineIdFinder(int u, int v, std::vector<int> *output);

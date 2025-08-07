@@ -107,6 +107,18 @@ ExclusionPaint::ExclusionPaint(vtkPolyData *data) : m_meshData(data) {
     mainToolbar->addSeparator();
     connect(surfacePaintButton, &QPushButton::clicked, this,
             &ExclusionPaint::BrushTool);
+    // Create opacity effect
+    QGraphicsOpacityEffect *effectForPainting =
+        new QGraphicsOpacityEffect(surfacePaintButton);
+    surfacePaintButton->setGraphicsEffect(effectForPainting);
+    // Create animation
+    m_painterAnimation = new QPropertyAnimation(effectForPainting, "opacity");
+    m_painterAnimation->setDuration(1000);   // 1 second cycle
+    m_painterAnimation->setStartValue(1.0);  // Fully visible
+    m_painterAnimation->setEndValue(0.2);    // Almost transparent
+    m_painterAnimation->setEasingCurve(QEasingCurve::InOutQuad);
+    m_painterAnimation->setLoopCount(-1);  // Infinite loop
+    m_painterAnimation->start();
 
     QLabel *brushSizeLabel = new QLabel();
     brushSizeLabel->setText(tr("Brush Size"));
@@ -125,8 +137,8 @@ ExclusionPaint::ExclusionPaint(vtkPolyData *data) : m_meshData(data) {
     closeButton->setCheckable(false);
     mainToolbar->addWidget(closeButton);
 
-    connect(closeButton, &QPushButton::clicked, this, &ExclusionPaint::HandleCloseButton);
-
+    connect(closeButton, &QPushButton::clicked, this,
+            &ExclusionPaint::HandleCloseButton);
 
     Plot();
     this->show();
@@ -195,7 +207,14 @@ void ExclusionPaint::Plot() {
 
 void ExclusionPaint::BrushTool() {
     if (surfacePaintButton->isChecked()) {
+        QGraphicsOpacityEffect *effect = qobject_cast<QGraphicsOpacityEffect *>(
+            surfacePaintButton->graphicsEffect());
+        if (effect) {
+            effect->setOpacity(1.0);
+        }
+        m_painterAnimation->stop();
     } else {
+        m_painterAnimation->start();
     }
 }
 
@@ -359,11 +378,9 @@ void ExclusionPaint::HandleCloseButton() {
 void ExclusionPaint::closeEvent(QCloseEvent *event) {
     if (!m_forceClose) {
         QMessageBox::StandardButton reply = QMessageBox::question(
-            this,
-            tr("Confirm Close"),
+            this, tr("Confirm Close"),
             tr("Close the window and proceed with digitalisation?"),
-            QMessageBox::Yes | QMessageBox::No
-        );
+            QMessageBox::Yes | QMessageBox::No);
 
         if (reply != QMessageBox::Yes) {
             event->ignore();
