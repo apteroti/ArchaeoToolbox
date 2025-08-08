@@ -129,6 +129,7 @@
 #include <vtkColorTransferFunction.h>
 #include <vtkColorSeries.h>
 #include <vtkPLYReader.h>
+#include <vtkTriangleFilter.h>
 
 #include <Eigen/Eigen>
 #include <Eigen/Dense>

@@ -491,25 +491,28 @@ void MainWindow::LoadMesh() {
     if (fileName.isEmpty()) {
     } else {
         if (fileName.endsWith(".obj") || fileName.endsWith(".ply")) {
-            vtkSmartPointer<vtkCleanPolyData> cleanFilter =
-                vtkSmartPointer<vtkCleanPolyData>::New();
+            vtkNew<vtkCleanPolyData> cleanFilter;
+            cleanFilter->PointMergingOn();
+            cleanFilter->SetTolerance(0.0001);
+            cleanFilter->ConvertLinesToPointsOn();
+            cleanFilter->ConvertPolysToLinesOn();
+            cleanFilter->ConvertStripsToPolysOn();
             if (fileName.endsWith(".obj")) {
-                vtkSmartPointer<vtkOBJReader> objReader =
-                    vtkSmartPointer<vtkOBJReader>::New();
+                vtkNew<vtkOBJReader> objReader;
                 objReader->SetFileName(fileName.toLocal8Bit().data());
                 objReader->Update();
                 cleanFilter->SetInputData(objReader->GetOutput());
-                // cleanFilter->SetTolerance(0.001);
                 cleanFilter->Update();
             } else if (fileName.endsWith(".ply")) {
-                vtkSmartPointer<vtkPLYReader> plyReader =
-                    vtkSmartPointer<vtkPLYReader>::New();
+                vtkNew<vtkPLYReader> plyReader;
                 plyReader->SetFileName(fileName.toLocal8Bit().data());
                 plyReader->Update();
                 cleanFilter->SetInputData(plyReader->GetOutput());
-                // cleanFilter->SetTolerance(0.001);
                 cleanFilter->Update();
             }
+            vtkNew <vtkTriangleFilter> triangleFilter;
+            triangleFilter->SetInputConnection(cleanFilter->GetOutputPort());
+            triangleFilter->Update();
 
             string realName = QFileInfo(fileName).baseName().toStdString();
             // name template is reserved
@@ -520,7 +523,7 @@ void MainWindow::LoadMesh() {
                 realName += "_Duplicate";
             }
 
-            m_dataBase->AddNode(realName, cleanFilter->GetOutput(), "Mesh");
+            m_dataBase->AddNode(realName, triangleFilter->GetOutput(), "Mesh");
             m_treeItem = new QTreeWidgetItem();
             m_treeItem->setText(0, QString::fromStdString(realName));
             m_treeItem->setText(1, "Mesh");

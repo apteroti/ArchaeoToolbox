@@ -83,6 +83,7 @@
 #include <vtkSmartPointer.h>
 #include <vtkMultiBlockDataSet.h>
 #include <vtkPLYReader.h>
+#include <vtkTriangleFilter.h>
 
 
 #include "MainWindow.fwd.h"

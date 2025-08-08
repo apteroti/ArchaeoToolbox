@@ -886,25 +886,30 @@ void ProSetMenu::LoadTemplate() {
         if (fileName.isEmpty()) {
         } else {
             if (fileName.endsWith(".obj") || fileName.endsWith(".ply")) {
-                vtkSmartPointer<vtkCleanPolyData> cleanFilter =
-                    vtkSmartPointer<vtkCleanPolyData>::New();
+                    vtkNew<vtkCleanPolyData> cleanFilter;
+                    cleanFilter->PointMergingOn();
+                    cleanFilter->SetTolerance(0.0001);
+                    cleanFilter->ConvertLinesToPointsOn();
+                    cleanFilter->ConvertPolysToLinesOn();
+                    cleanFilter->ConvertStripsToPolysOn();
                 if (fileName.endsWith(".obj")) {
-                    vtkSmartPointer<vtkOBJReader> objReader =
-                        vtkSmartPointer<vtkOBJReader>::New();
+                    vtkNew<vtkOBJReader> objReader;
                     objReader->SetFileName(fileName.toLocal8Bit().data());
                     objReader->Update();
                     cleanFilter->SetInputData(objReader->GetOutput());
                     cleanFilter->Update();
                 } else if (fileName.endsWith(".ply")) {
-                    vtkSmartPointer<vtkPLYReader> plyReader =
-                        vtkSmartPointer<vtkPLYReader>::New();
+                    vtkNew <vtkPLYReader> plyReader;
                     plyReader->SetFileName(fileName.toLocal8Bit().data());
                     plyReader->Update();
                     cleanFilter->SetInputData(plyReader->GetOutput());
                     cleanFilter->Update();
                 }
+                vtkNew <vtkTriangleFilter> triangleFilter;
+                triangleFilter->SetInputConnection(cleanFilter->GetOutputPort());
+                triangleFilter->Update();
                 m_geometryType = "Mesh";
-                m_templatePoly = cleanFilter->GetOutput();
+                m_templatePoly = triangleFilter->GetOutput();
                 loadTemplateButton->setEnabled(false);
                 importButton->setEnabled(false);
                 registerButton->setEnabled(false);
