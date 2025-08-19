@@ -1,69 +1,68 @@
 /***********************************************************************************************
-                                                                    
-************************************************************************************************                                                                                       
-* ArchaeoToolbox                                                                               *
-* Geometric Morphometrics Software                                                             *
-*                                                                                              *
-* Copyright(C) 2023                                                                            *
-* Kaveh Yousef Pouran                                                                          *
-* Laboratori d’Arqueozoologia, Universitat Autònoma de Barcelona                               *
-*                                                                                              *
-* All rights reserved.                                                                         *
-*                                                                                              *
-* This program is free software; you can redistribute it and/or modify                         *   
-* it under the terms of the GNU General Public License as published by                         *
-* the Free Software Foundation; either version 2 of the License, or                            *
-* (at your option) any later version.                                                          *
-*                                                                                              *
-* This program is distributed in the hope that it will be useful,                              *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of                               *
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                                *
-* GNU General Public License (http://www.gnu.org/licenses/gpl.txt)                             *
-* for more details.                                                                            *
-*                                                                                              *
 
- ***********************************************************************************************                                                                                                                                                               
-                                                                               .          
-                                                  .                            =:         
-                                                  #                            +*         
-                                                 ##                            %@.        
-                                                =@@                            #@%        
-                                               .@@*                            @@@:       
-                                               %@@*                           #@@@=       
-                                               =@@@#-                     .:+#@@@#        
-                                                *@@@@@*=::.:=-=+*%%%+-=*%@@@@@@@=         
-                                                 -%@@@@@@@@@@@@@@@@@@@@@@@@%#+-           
-                                                   .-=+*#@@@@@@@@@@@@@@@@+.               
-                                                       =@@@@@@@@@@@@@@@@@@@@*.            
-                                                    .=%@@@@@@@@@@@@@@@@@@@@@@*            
-                                              -****%@@@@@@@@@@@@@@@@@@@@@%@@@=            
-                                             .@@@@@@@@@@@@@@@@@@@@@@@@@@%  -.             
-                                              -@@@@@@@@@@@@@@@@@@@@@@@@@*.                
-                                              %@@@@@@@@@@@@@@@@@@@@@@@@@@+                
-                                            :%@@@@@@@@@@@@@@@@@@@@@@@@@@%                 
-                                    .:=*#%%%@@@@@@@@@@@@@@@@@@@@@@@@@%-=.                 
-                                -+%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*                     
-                           .-+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                     
-                     .--=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                     
-                  :*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=                     
-                .#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+                     
-               :@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+                     
-               %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.                     
-               +@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                      
-                #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+.                       
-           .-+*@@@+:@@@@@@@@@@@@@@@%**+==-------===+@@@@@@@@@@@@@-                        
-         :#@@@%%%+ .@@@@@@@@@@@*-:                 +@@@@@@@@@@@@@@%+:                     
-       +%@@*.      -@@@@@@@@@=                    =@@@@**#*=--*%@@@@@@*                   
-       -*=.       :@@@@@@@@=                       @@@@         .-#@@@@.                  
-                 #@@@@@*@@@:                       *@@+            +@@%                   
-                 %@@@%  *%@@+                      @@@.            -@@@                   
-                 =@@@:    +@@%                    -@@@.            :@@@:                  
-                 *@@@      *@@%                   *@@@=            :@@@-                  
-                -@@@#      =@@@#                 :@@@@@            #@@@@.                 
-                #@@@@.     .###=                 .++++-           .*%%##:                 
-                %@@@@.                                                                    
-               .*%%%*                                                                     
-                      
+************************************************************************************************
+* ArchaeoToolbox *
+* Geometric Morphometrics Software *
+* *
+* Copyright(C) 2023 *
+* Kaveh Yousef Pouran *
+* Laboratori d’Arqueozoologia, Universitat Autònoma de Barcelona *
+* *
+* All rights reserved. *
+* *
+* This program is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by *
+* the Free Software Foundation; either version 2 of the License, or *
+* (at your option) any later version. *
+* *
+* This program is distributed in the hope that it will be useful, *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the *
+* GNU General Public License (http://www.gnu.org/licenses/gpl.txt) *
+* for more details. *
+* *
+
+ ***********************************************************************************************
+                                                                               .
+                                                  . =: # +*
+                                                 ## %@.
+                                                =@@ #@%
+                                               .@@* @@@:
+                                               %@@* #@@@=
+                                               =@@@#- .:+#@@@#
+                                                *@@@@@*=::.:=-=+*%%%+-=*%@@@@@@@=
+                                                 -%@@@@@@@@@@@@@@@@@@@@@@@@%#+-
+                                                   .-=+*#@@@@@@@@@@@@@@@@+.
+                                                       =@@@@@@@@@@@@@@@@@@@@*.
+                                                    .=%@@@@@@@@@@@@@@@@@@@@@@*
+                                              -****%@@@@@@@@@@@@@@@@@@@@@%@@@=
+                                             .@@@@@@@@@@@@@@@@@@@@@@@@@@%  -.
+                                              -@@@@@@@@@@@@@@@@@@@@@@@@@*.
+                                              %@@@@@@@@@@@@@@@@@@@@@@@@@@+
+                                            :%@@@@@@@@@@@@@@@@@@@@@@@@@@%
+                                    .:=*#%%%@@@@@@@@@@@@@@@@@@@@@@@@@%-=.
+                                -+%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+                           .-+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
+                     .--=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
+                  :*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=
+                .#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+
+               :@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+
+               %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.
+               +@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
+                #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+.
+           .-+*@@@+:@@@@@@@@@@@@@@@%**+==-------===+@@@@@@@@@@@@@-
+         :#@@@%%%+ .@@@@@@@@@@@*-:                 +@@@@@@@@@@@@@@%+:
+       +%@@*.      -@@@@@@@@@=                    =@@@@**#*=--*%@@@@@@*
+       -*=.       :@@@@@@@@=                       @@@@         .-#@@@@.
+                 #@@@@@*@@@:                       *@@+            +@@%
+                 %@@@%  *%@@+                      @@@.            -@@@
+                 =@@@:    +@@%                    -@@@.            :@@@:
+                 *@@@      *@@%                   *@@@=            :@@@-
+                -@@@#      =@@@#                 :@@@@@            #@@@@.
+                #@@@@.     .###=                 .++++-           .*%%##:
+                %@@@@.
+               .*%%%*
+
 ***********************************************************************************************/
 
 #include "../include/TemplateDigitiser.h"
@@ -96,6 +95,8 @@ TemplateDigitiser::TemplateDigitiser(ProSetMenu* parent) : m_parent(parent) {
     m_fixedPtsIds = vtkSmartPointer<vtkIntArray>::New();
     m_surfacePtsIds = new std::vector<std::vector<int>*>;
     m_surfacePtsIds->push_back(new std::vector<int>);
+    m_curvePtsIds = new std::vector<std::vector<int>*>;
+    m_curvePtsIds->push_back(new std::vector<int>);
     m_grabPicker = vtkSmartPointer<vtkPointPicker>::New();
     m_cosmeticCurvePoly = vtkSmartPointer<vtkPolyData>::New();
     m_largestDiamTubeActor = vtkSmartPointer<vtkActor>::New();
@@ -288,12 +289,12 @@ TemplateDigitiser::TemplateDigitiser(ProSetMenu* parent) : m_parent(parent) {
     QLabel* curvePickLabel = new QLabel();
     curvePickLabel->setText(tr("From Surface"));
     curveToolbar->addWidget(curvePickLabel);
-    curvePickSourceComboBox = new QComboBox();
-    curvePickSourceComboBox->addItem(QString::fromStdString("Index"));
-    curveToolbar->addWidget(curvePickSourceComboBox);
+    fromSurfaceComboBox = new QComboBox();
+    fromSurfaceComboBox->addItem(QString::fromStdString("Index"));
+    curveToolbar->addWidget(fromSurfaceComboBox);
     curveToolbar->addSeparator();
     void (QComboBox ::*curveSourceFp)(int) = &QComboBox ::currentIndexChanged;
-    connect(curvePickSourceComboBox, curveSourceFp, this,
+    connect(fromSurfaceComboBox, curveSourceFp, this,
             &TemplateDigitiser::ChangeCurveSource);
 
     QLabel* curvePickFromLooseLabel = new QLabel();
@@ -444,12 +445,12 @@ TemplateDigitiser::TemplateDigitiser(ProSetMenu* parent) : m_parent(parent) {
     QLabel* surfacePickLabel = new QLabel();
     surfacePickLabel->setText(tr("From Curve"));
     surfacePatchToolbar->addWidget(surfacePickLabel);
-    surfacePickSourceComboBox = new QComboBox();
-    surfacePickSourceComboBox->addItem(QString::fromStdString("Index"));
-    surfacePatchToolbar->addWidget(surfacePickSourceComboBox);
+    fromCurveComboBox = new QComboBox();
+    fromCurveComboBox->addItem(QString::fromStdString("Index"));
+    surfacePatchToolbar->addWidget(fromCurveComboBox);
     surfacePatchToolbar->addSeparator();
     void (QComboBox ::*surfaceSourceFp)(int) = &QComboBox ::currentIndexChanged;
-    connect(surfacePickSourceComboBox, surfaceSourceFp, this,
+    connect(fromCurveComboBox, surfaceSourceFp, this,
             &TemplateDigitiser::ChangeSurfaceSource);
 
     surfaceClearButton = new QPushButton();
@@ -614,13 +615,6 @@ void TemplateDigitiser::ResetCurveScene() {
 }
 
 void TemplateDigitiser::ResetSurfaceScene() {
-    if (m_surfaceCurvePoly->GetNumberOfPoints() > 0 &&
-        m_surfacePatchLandmarks->GetNumberOfPoints() == 0) {
-        QMessageBox::information(
-            this, "Information",
-            "Pre-sliders will be digitised automatically!");
-        InterpolateSurface();
-    }
     m_surfaceCurveHighlightCtrlPoints->Initialize();
     m_surfaceCurveCtrlPointsPoly->Initialize();
     m_surfaceCurveCtrlVertexFilter->Update();
@@ -650,7 +644,7 @@ void TemplateDigitiser::ResetSurfaceScene() {
 void TemplateDigitiser::AddCurve() {
     curveAddButton->setEnabled(0);
     if (m_curveCtrlBlock->GetNumberOfBlocks() < m_curveNOC) {
-        curvePickSourceComboBox->setEnabled(1);
+        m_curvePtsIds->push_back(new std::vector<int>);
         m_currentCurveId = m_curveCtrlBlock->GetNumberOfBlocks() - 1;
         m_currentCurveId += 1;
         curveSelectComboBox->addItem(
@@ -667,7 +661,6 @@ void TemplateDigitiser::AddCurve() {
 void TemplateDigitiser::AddSurface() {
     surfaceAddButton->setEnabled(0);
     if (m_surfaceCurveCtrlBlock->GetNumberOfBlocks() < m_surfacePatchNOP) {
-        surfacePickSourceComboBox->setEnabled(1);
         m_surfacePtsIds->push_back(new std::vector<int>);
         surfaceIronButton->setEnabled(0);
         surfaceIronButton->setChecked(0);
@@ -703,7 +696,7 @@ void TemplateDigitiser::ChangeCurve(int index) {
 
 void TemplateDigitiser::ChangeCurveSource(
     int index) {  // for getting curve from surface outline
-    std::string textNum = curvePickSourceComboBox->currentText().toStdString();
+    std::string textNum = fromSurfaceComboBox->currentText().toStdString();
     int num = -1;
     try {
         num = stoi(textNum);
@@ -755,15 +748,16 @@ void TemplateDigitiser::ChangeCurveSource(
             if (m_curveCtrlBlock->GetNumberOfBlocks() < m_curveNOC) {
                 curveAddButton->setEnabled(1);
             }
-            surfacePickSourceComboBox->addItem(
-                QString::number(m_currentCurveId));
+            QString newItem = QString::number(m_currentCurveId);
+            if (fromCurveComboBox->findText(newItem, Qt::MatchExactly) == -1) {
+                fromCurveComboBox->addItem(newItem);
+            }
         }
     }
 }
 
 void TemplateDigitiser::ChangeSurfaceSource(int index) {
-    std::string textNum =
-        surfacePickSourceComboBox->currentText().toStdString();
+    std::string textNum = fromCurveComboBox->currentText().toStdString();
     int num = -1;
     try {
         num = stoi(textNum);
@@ -803,21 +797,31 @@ void TemplateDigitiser::ChangeSurfaceSource(int index) {
                 m_surfacePatchNOP - (m_surfaceBlock->GetNumberOfBlocks());
             surfaceLineEditNOP->setText(
                 QString::fromStdString(std::to_string(numOfPatches)));
-            if (m_surfaceCurveCtrlBlock->GetNumberOfBlocks() <
-                m_surfacePatchNOP) {
-                surfaceAddButton->setEnabled(1);
+            QString newItem = QString::number(m_currentSurfaceId);
+            if (fromSurfaceComboBox->findText(newItem, Qt::MatchExactly) ==
+                -1) {
+                fromSurfaceComboBox->addItem(newItem);
             }
-            curvePickSourceComboBox->addItem(
-                QString::number(m_currentSurfaceId));
         }
     }
 }
 
 void TemplateDigitiser::ChangeSurface(int index) {
+    int previousInd = m_currentSurfaceId;
+
     if (m_surfaceCurveCtrlBlock->GetNumberOfBlocks() > 0) {
-        m_currentSurfaceId = index;
-        ResetSurfaceScene();
-        UpdateSurfaceScene(m_currentSurfaceId);
+        if (m_surfaceCurvePoly->GetNumberOfPoints() > 0 &&
+            m_surfacePatchLandmarks->GetNumberOfPoints() == 0) {
+            QMessageBox::information(this, "Information",
+                                     "First, place missing pre-sliders!");
+            surfaceSelectComboBox->blockSignals(1);
+            surfaceSelectComboBox->setCurrentIndex(previousInd);
+            surfaceSelectComboBox->blockSignals(0);
+        } else {
+            m_currentSurfaceId = index;
+            ResetSurfaceScene();
+            UpdateSurfaceScene(m_currentSurfaceId);
+        }
     }
 }
 
@@ -937,12 +941,22 @@ void TemplateDigitiser::ChangeCurveTypeAuto() {
 }
 
 void TemplateDigitiser::ClearCurve() {
+    curveSelectComboBox->blockSignals(1);
+    fromSurfaceComboBox->blockSignals(1);
+    fromCurveComboBox->blockSignals(1);
     while (curveSelectComboBox->count() > 1) {
         curveSelectComboBox->removeItem(0);
     }
-    while (surfacePickSourceComboBox->count() > 1) {
-        surfacePickSourceComboBox->removeItem(1);
+    curveSelectComboBox->setCurrentIndex(0);
+
+    while (fromCurveComboBox->count() > 1) {
+        fromCurveComboBox->removeItem(1);
     }
+    for (int i = 0; i < m_curvePtsIds->size(); i++) {
+        delete m_curvePtsIds->at(i);
+    }
+    m_curvePtsIds->resize(0);
+    m_curvePtsIds->push_back(new std::vector<int>);
 
     m_currentCurveId = 0;
     curveSelectComboBox->setItemText(
@@ -951,8 +965,12 @@ void TemplateDigitiser::ClearCurve() {
     for (int i = 0; i < m_curveNOC; i++) {
         m_curveType->push_back(1);
     }
-    curvePickSourceComboBox->setEnabled(1);
-    curvePickSourceComboBox->setCurrentIndex(0);
+    fromSurfaceComboBox->setCurrentIndex(0);
+
+    fromSurfaceComboBox->blockSignals(0);
+    curveSelectComboBox->blockSignals(0);
+    fromCurveComboBox->blockSignals(0);
+
     m_curvectrlPointsPoly->Initialize();
     vtkNew<vtkPolyData> tempCtrlPtsPoly;
     m_curvectrlVertexFilter->SetInputData(tempCtrlPtsPoly);
@@ -997,22 +1015,31 @@ void TemplateDigitiser::ClearCurve() {
 }
 
 void TemplateDigitiser::ClearSurface() {
+    surfaceSelectComboBox->blockSignals(1);
+    fromCurveComboBox->blockSignals(1);
+    fromSurfaceComboBox->blockSignals(1);
     while (surfaceSelectComboBox->count() > 1) {
         surfaceSelectComboBox->removeItem(0);
     }
-    while (curvePickSourceComboBox->count() > 1) {
-        curvePickSourceComboBox->removeItem(1);
+    surfaceSelectComboBox->setCurrentIndex(0);
+    while (fromSurfaceComboBox->count() > 1) {
+        fromSurfaceComboBox->removeItem(1);
     }
-    surfacePickSourceComboBox->setEnabled(1);
-    surfacePickSourceComboBox->setCurrentIndex(0);
+    fromCurveComboBox->setCurrentIndex(0);
     m_currentSurfaceId = 0;
     surfaceSelectComboBox->setItemText(
         0, QString::fromStdString(std::to_string(m_currentSurfaceId)));
+    surfaceSelectComboBox->blockSignals(0);
+    fromCurveComboBox->blockSignals(0);
+    fromSurfaceComboBox->blockSignals(0);
+
     for (int i = 0; i < m_surfacePtsIds->size(); i++) {
         delete m_surfacePtsIds->at(i);
     }
     m_surfacePtsIds->resize(0);
     m_surfacePtsIds->push_back(new std::vector<int>);
+
+    vtkNew<vtkPolyData> emptyPoly;
 
     m_surfaceCurveHighlightCtrlPoints->Initialize();
     m_surfaceCurveCtrlPointsPoly->Initialize();
@@ -1023,7 +1050,7 @@ void TemplateDigitiser::ClearSurface() {
     m_surfaceCtrlVertexFilter->Modified();
     m_surfaceCurvePoly->Initialize();
     m_surfacePatchLandmarks->Initialize();
-    vtkNew<vtkPolyData> emptyPoly;
+
     m_surfaceTubeFilter->SetInputData(emptyPoly);
     m_surfaceTubeFilter->Update();
     m_surfaceTubeFilter->Modified();
@@ -1259,9 +1286,9 @@ void TemplateDigitiser::UpdateSurfaceScene(int id) {
                 m_surfacePatchVertexFilter->Update();
                 m_surfacePatchVertexFilter->Modified();
 
-                auto tempSurfaceCurve = dynamic_cast<vtkPolyData*>(
-                    m_surfaceCurveBlock->GetBlock(id));
-                m_surfaceCurveTubeFilter->SetInputData(tempSurfaceCurve);
+                m_surfaceCurvePoly->DeepCopy(dynamic_cast<vtkPolyData*>(
+                    m_surfaceCurveBlock->GetBlock(id)));
+                m_surfaceCurveTubeFilter->SetInputData(m_surfaceCurvePoly);
                 m_surfaceCurveTubeFilter->Update();
                 m_surfaceCurveTubeFilter->Modified();
 
@@ -1415,13 +1442,24 @@ void TemplateDigitiser::UpdateCurveData(vtkPoints* pts, vtkPolyData* outputLine,
                                         vtkPoints* outputPoints,
                                         vtkPolyData* baseMesh) {
     // Here put closed or open curve
-    if (pts->GetNumberOfPoints() > 2) {
+    if (pts->GetNumberOfPoints() > 1) {
         // m_curveActor->SetVisibility(1);
         vtkNew<vtkPoints> tempPoints;
         outputPoints->Initialize();
         outputLine->Initialize();
 
+        // Create Kochanek splines with high tension
+        vtkNew<vtkKochanekSpline> xSpline;
+        vtkNew<vtkKochanekSpline> ySpline;
+        vtkNew<vtkKochanekSpline> zSpline;
+
+        xSpline->SetDefaultTension(m_splineTension);
+        ySpline->SetDefaultTension(m_splineTension);
+        zSpline->SetDefaultTension(m_splineTension);
         vtkNew<vtkParametricSpline> tempCurve;
+        tempCurve->SetXSpline(xSpline);
+        tempCurve->SetYSpline(ySpline);
+        tempCurve->SetZSpline(zSpline);
         tempCurve->SetPoints(pts);
         double delta = 1 / (double)(m_curveNOS + 1);
         if (m_curveType->at(m_currentCurveId) == 1) {  // close curve
@@ -1584,140 +1622,18 @@ void TemplateDigitiser::MakeCage(vtkPoints* inputPts,
                                  vtkPolyData* outPlanePoly) {
     outPlanePoly->Initialize();
 
-    // 1. Create and configure the spline
-    vtkNew<vtkParametricSpline> spline;
-    spline->SetPoints(inputPts);
-    spline->SetClosed(1);
+    // 1. Create initial plane from first 3 points of the curve
+    if (inputPts->GetNumberOfPoints() < 3) return;
 
-    // 2. Sample 3 initial points
-    vtkNew<vtkPoints> curveInit3Pts;
-    double delta = 1.0 / 3.0;
-    for (int i = 0; i < 3; i++) {
-        double u[3] = {delta * i, 0, 0};
-        double pt[3];
-        spline->Evaluate(u, pt, nullptr);
-        curveInit3Pts->InsertNextPoint(pt);
-    }
+    // 2. Build RectSlimMapper and sample the grid
+    RectSlimMapper slim(m_surfaceMask, inputPts, outPlanePoly);
 
-    // 3. Calculate curve length
-    vtkNew<vtkPolyData> curvePoly;
-    vtkNew<vtkCellArray> lines;
-    lines->InsertNextCell(inputPts->GetNumberOfPoints());
-    for (vtkIdType i = 0; i < inputPts->GetNumberOfPoints(); i++) {
-        lines->InsertCellPoint(i);
-    }
-    curvePoly->SetPoints(inputPts);
-    curvePoly->SetLines(lines);
-
-    vtkNew<vtkAppendArcLength> arcLengthFilter;
-    arcLengthFilter->SetInputData(curvePoly);
-    arcLengthFilter->Update();
-    double totalLength = arcLengthFilter->GetOutput()
-                             ->GetPointData()
-                             ->GetArray("arc_length")
-                             ->GetTuple1(inputPts->GetNumberOfPoints() - 1);
-
-    // 4. Determine resolution
-    int dynamicRes = static_cast<int>(std::sqrt(totalLength) * 0.5);
-    dynamicRes = (dynamicRes % 2 == 0) ? dynamicRes + 1 : dynamicRes;
-
-    // 5. Create initial plane
-    vtkNew<vtkPlaneSource> plane;
-    plane->SetXResolution(dynamicRes);
-    plane->SetYResolution(dynamicRes);
-    plane->SetOrigin(curveInit3Pts->GetPoint(0));
-    plane->SetPoint1(curveInit3Pts->GetPoint(1));
-    plane->SetPoint2(curveInit3Pts->GetPoint(2));
-    plane->Update();
-
-    // 6. Resample curve points
-    int resampleNumber = ((dynamicRes + 1) * 2) + ((dynamicRes - 1) * 2);
-    
-    vtkNew<vtkPoints> curveResampledPts;
-    delta = 1.0 / resampleNumber;
-    for (int i = 0; i < resampleNumber; i++) {
-        double u[3] = {delta * i, 0, 0};
-        double pt[3];
-        spline->Evaluate(u, pt, nullptr);
-        curveResampledPts->InsertNextPoint(pt);
-    }
-
-    // 7. Get plane boundary points in order
-    vtkNew<vtkPoints> planeBoundaryPts;
-    GetPlaneBoundaryPoints(plane->GetOutput(), planeBoundaryPts);
-
-    // 8. Apply Thin Plate Spline transform
-    vtkNew<vtkThinPlateSplineTransform> tps;
-    tps->SetSourceLandmarks(planeBoundaryPts);
-    tps->SetTargetLandmarks(curveResampledPts);
-    tps->SetBasisToR();
-    tps->SetSigma(1.0);
-
-    vtkNew<vtkTransformPolyDataFilter> transform;
-    transform->SetInputConnection(plane->GetOutputPort());
-    transform->SetTransform(tps);
-    transform->Update();
-
-    // 9. Apply windowed sinc smoothing
-    vtkNew<vtkWindowedSincPolyDataFilter> smoother;
-    smoother->SetInputConnection(transform->GetOutputPort());
-    smoother->SetNumberOfIterations(50);
-    smoother->SetPassBand(0.1);
-    smoother->SetFeatureEdgeSmoothing(1);
-    smoother->SetFeatureAngle(5);
-    smoother->SetBoundarySmoothing(0);
-    smoother->NormalizeCoordinatesOn();
-    smoother->Update();
-    vtkPolyData* temp = smoother->GetOutput();
-    // 10. Final projection and output
-    ProjectOnMesh(temp, m_surfaceMask);
-    vtkNew<vtkSmoothPolyDataFilter> repeller;
-    repeller->SetInputData(temp);
-    repeller->SetNumberOfIterations(200);
-    repeller->SetConvergence(0.05);
-    repeller->Update();
-
-    // Create output grid
-    int uRes = m_surfacePatchUNOS + 2;
+    int uRes = m_surfacePatchUNOS + 2;  // +2 because RectSlimMapper uses 0..1
     int vRes = m_surfacePatchVNOS + 2;
 
-    vtkNew<vtkPoints> outputPoints;
-    vtkNew<vtkFloatArray> parametricCoords;
-    parametricCoords->SetNumberOfComponents(2);
+    slim.Sample(uRes, vRes);
 
-    for (int v = 0; v < vRes; v++) {
-        for (int u = 0; u < uRes; u++) {
-            double uv[2] = {static_cast<double>(u) / (uRes - 1),
-                            static_cast<double>(v) / (vRes - 1)};
-            parametricCoords->InsertNextTuple(uv);
-
-            // Map to deformed plane
-            int srcU = static_cast<int>(uv[0] * dynamicRes);
-            int srcV = static_cast<int>(uv[1] * dynamicRes);
-            int idx = srcV * (dynamicRes + 1) + srcU;
-
-            double pt[3];
-            repeller->GetOutput()->GetPoint(idx, pt);
-            outputPoints->InsertNextPoint(pt);
-        }
-    }
-
-    vtkNew<vtkPolyData> result;
-    result->SetPoints(outputPoints);
-    result->GetPointData()->SetTCoords(parametricCoords);
-
-    // Create grid topology
-    vtkNew<vtkCellArray> polys;
-    for (int v = 0; v < vRes - 1; v++) {
-        for (int u = 0; u < uRes - 1; u++) {
-            vtkIdType pts[4] = {v * uRes + u, v * uRes + u + 1,
-                                (v + 1) * uRes + u + 1, (v + 1) * uRes + u};
-            polys->InsertNextCell(4, pts);
-        }
-    }
-    result->SetPolys(polys);
-
-    outPlanePoly->DeepCopy(result);
+    ProjectOnMesh(outPlanePoly, m_surfaceMask);
 }
 
 // Helper function to get ordered boundary points
@@ -1797,11 +1713,9 @@ void TemplateDigitiser::Plot() {
     prop->SetInputData(m_meshData);
     prop->Update();
     const double area = prop->GetSurfaceArea();
-    const double diagonal =
-        std::sqrt(area);  // Approximate characteristic length
+    m_diagonal = std::sqrt(area);  // Approximate characteristic length
     // Compute size factor based on application-specific parameters
     // Normalized between 0-1 range first, then scaled
-
     double sizeFactor =
         (m_typeINOL * 0.03 +
          (m_surfacePatchNOP * m_surfacePatchUNOS * m_surfacePatchVNOS) * 0.025 +
@@ -1812,8 +1726,8 @@ void TemplateDigitiser::Plot() {
         (1.0 + std::exp(-0.1 * (sizeFactor - 50.0)));  // Sigmoid normalization
 
     // Map to reasonable visual range (1%-5% of characteristic length)
-    const double minSize = 0.01 * diagonal;
-    const double maxSize = 0.05 * diagonal;
+    const double minSize = 0.01 * m_diagonal;
+    const double maxSize = 0.05 * m_diagonal;
     m_sizeConstant = minSize + sizeFactor * (maxSize - minSize);
     // Apply to sphere source
     vtkNew<vtkSphereSource> sphereSource;
@@ -1865,7 +1779,7 @@ void TemplateDigitiser::Plot() {
     m_renderer->AddActor(m_surfaceCurveCtrlPointActor);
 
     vtkNew<vtkPolyDataMapper> surfaceEdgeMapper;
-    m_surfaceTubeFilter->SetRadius(0.1);
+    m_surfaceTubeFilter->SetRadius(m_tubeRadRatio * m_diagonal * 0.3);
     m_surfaceTubeFilter->SetNumberOfSides(10);
     surfaceEdgeMapper->SetInputData(m_surfaceTubeFilter->GetOutput());
     surfaceEdgeMapper->SetScalarVisibility(0);
@@ -1879,7 +1793,7 @@ void TemplateDigitiser::Plot() {
     m_renderer->AddActor(m_surfaceEdgeActor);
 
     vtkNew<vtkPolyDataMapper> surfaceCurveMapperDeactive;
-    m_surfaceCurveTubeFilterDeactive->SetRadius(0.3);
+    m_surfaceCurveTubeFilterDeactive->SetRadius(m_tubeRadRatio * m_diagonal);
     m_surfaceCurveTubeFilterDeactive->SetNumberOfSides(10);
     surfaceCurveMapperDeactive->SetInputData(
         m_surfaceCurveTubeFilterDeactive->GetOutput());
@@ -1894,7 +1808,7 @@ void TemplateDigitiser::Plot() {
     m_renderer->AddActor(m_surfaceCurveActorDeactive);
 
     vtkNew<vtkPolyDataMapper> surfaceCurveMapper;
-    m_surfaceCurveTubeFilter->SetRadius(0.3);
+    m_surfaceCurveTubeFilter->SetRadius(m_tubeRadRatio * m_diagonal);
     m_surfaceCurveTubeFilter->SetNumberOfSides(10);
     surfaceCurveMapper->SetInputData(m_surfaceCurveTubeFilter->GetOutput());
     surfaceCurveMapper->SetScalarVisibility(0);
@@ -1981,7 +1895,7 @@ void TemplateDigitiser::Plot() {
     m_glyphSurfaceArrow->SetSourceData(surfaceArrow->GetOutput());
     m_glyphSurfaceArrow->SetVectorModeToUseVector();
     m_glyphSurfaceArrow->SetScaleModeToScaleByVector();
-    m_glyphSurfaceArrow->SetScaleFactor(10);
+    m_glyphSurfaceArrow->SetScaleFactor(m_arrowSizeRatio * m_diagonal);
     m_glyphSurfaceArrow->Update();
 
     vtkNew<vtkPolyDataMapper> glyph3DSurfaceMapper;
@@ -2005,7 +1919,7 @@ void TemplateDigitiser::Plot() {
     m_renderer->AddActor(m_curvectrlPointActor);
     //--------------------------------------------
     vtkNew<vtkDataSetMapper> curveMapperDeactive;
-    m_curveTubeFilterDeactive->SetRadius(0.3);
+    m_curveTubeFilterDeactive->SetRadius(m_tubeRadRatio * m_diagonal);
     m_curveTubeFilterDeactive->SetNumberOfSides(10);
     curveMapperDeactive->ScalarVisibilityOff();
     curveMapperDeactive->SetInputData(m_curveTubeFilterDeactive->GetOutput());
@@ -2019,7 +1933,7 @@ void TemplateDigitiser::Plot() {
     m_renderer->AddActor(m_curveActorDeactive);
     //--------------------------------------------
     vtkNew<vtkDataSetMapper> curveMapper;
-    m_curveTubeFilter->SetRadius(0.3);
+    m_curveTubeFilter->SetRadius(m_tubeRadRatio * m_diagonal);
     m_curveTubeFilter->SetNumberOfSides(10);
     curveMapper->ScalarVisibilityOff();
     curveMapper->SetInputData(m_curveTubeFilter->GetOutput());
@@ -2062,7 +1976,7 @@ void TemplateDigitiser::Plot() {
     m_glyphCurveArrow->SetSourceData(curveArrow->GetOutput());
     m_glyphCurveArrow->SetVectorModeToUseVector();
     m_glyphCurveArrow->SetScaleModeToScaleByVector();
-    m_glyphCurveArrow->SetScaleFactor(10);
+    m_glyphCurveArrow->SetScaleFactor(m_arrowSizeRatio * m_diagonal);
     m_glyphCurveArrow->Update();
 
     vtkNew<vtkPolyDataMapper> glyph3DCurveMapper;
@@ -2454,31 +2368,52 @@ void TemplateDigitiser::ProjectOnMesh(vtkPoints* point, vtkPolyData* mask) {
 
 void TemplateDigitiser::ProjectOnMesh(vtkPolyData* Poly, vtkPolyData* mask,
                                       std::vector<int>* ids) {
+    // 1. Add null checks for critical inputs
+    if (!Poly || !mask) {
+        std::cerr << "Error: Null input data" << std::endl;
+        return;
+    }
+
+    // 2. Handle empty mask early
+    if (mask->GetNumberOfCells() == 0) {
+        std::cerr << "Warning: Empty mask dataset" << std::endl;
+        return;
+    }
+
     vtkNew<vtkCellLocator> ptLocator;
     ptLocator->SetDataSet(mask);
     ptLocator->BuildLocator();
-    if (ids) {
-        for (int i = 0; i < Poly->GetNumberOfPoints(); i++) {
-            if (std::find(ids->begin(), ids->end(), i) != ids->end()) {
-            } else {
-                double closestPoint[3];
-                vtkIdType closestCellId = -1;
-                int subId = -1;
-                double dist = -1;
-                ptLocator->FindClosestPoint(Poly->GetPoint(i), closestPoint,
-                                            closestCellId, subId, dist);
-                Poly->GetPoints()->SetPoint(i, closestPoint);
-            }
+
+    const int numPoints = Poly->GetNumberOfPoints();
+    vtkPoints* points = Poly->GetPoints();
+
+    // 3. Create exclusion set for efficient lookups
+    std::set<int> excludeSet;
+    if (ids && !ids->empty()) {
+        excludeSet = std::set<int>(ids->begin(), ids->end());
+    }
+
+    for (int i = 0; i < numPoints; i++) {
+        // 4. Skip excluded points
+        if (!excludeSet.empty() && (excludeSet.find(i) != excludeSet.end())) {
+            continue;
         }
-    } else {
-        for (int i = 0; i < Poly->GetNumberOfPoints(); i++) {
-            double closestPoint[3];
-            vtkIdType closestCellId = -1;
-            int subId = -1;
-            double dist = -1;
-            ptLocator->FindClosestPoint(Poly->GetPoint(i), closestPoint,
-                                        closestCellId, subId, dist);
-            Poly->GetPoints()->SetPoint(i, closestPoint);
+
+        double x[3];
+        points->GetPoint(i, x);
+        double closestPoint[3] = {x[0], x[1],
+                                  x[2]};  // Initialize with original point
+        vtkIdType closestCellId = -1;
+        int subId = -1;
+        double dist2 = -1;
+
+        // 5. Find closest point (safe for empty mask due to early return)
+        ptLocator->FindClosestPoint(x, closestPoint, closestCellId, subId,
+                                    dist2);
+
+        // 6. Only update if valid cell found
+        if (closestCellId >= 0) {
+            points->SetPoint(i, closestPoint);
         }
     }
 }
@@ -2488,23 +2423,90 @@ void TemplateDigitiser::MeshCutter(vtkPoints* pts) {
         m_surfaceMask->Initialize();
         m_surfaceCurvePoly->Initialize();
 
-        vtkNew<vtkPolyData> tempPoly;
-        CutMeshWithCurve(m_meshData, m_cosmeticCurvePoly->GetPoints(), tempPoly);
-        m_surfaceMask->DeepCopy(tempPoly);
+        vtkNew<vtkCellArray> line;
+        line->InsertNextCell(pts->GetNumberOfPoints() + 1);
+        for (int i = 0; i < pts->GetNumberOfPoints(); i++) {
+            line->InsertCellPoint(i);
+        }
+        line->InsertCellPoint(0);
+        vtkNew<vtkPolyData> curvePoly;
+        curvePoly->SetPoints(pts);
+        curvePoly->SetLines(line);
 
-        m_surfaceCurvePoly->DeepCopy(m_cosmeticCurvePoly);
+        vtkNew<vtkKochanekSpline> spline;
+        spline->SetDefaultTension(m_splineTension);
+        spline->SetClosed(true);  // Critical for closed curves
+        vtkNew<vtkSplineFilter> splineFilter;
+        splineFilter->SetInputData(curvePoly);
+        splineFilter->SetSubdivideToLength();
+        splineFilter->SetSpline(spline);
+        splineFilter->Update();
+
+        m_surfaceCurvePoly->ShallowCopy(splineFilter->GetOutput());
         m_surfaceCurvePoly->Modified();
-        vtkNew<vtkPolyData> tempcurvePolyLine;
-        tempcurvePolyLine->DeepCopy(m_surfaceCurvePoly);
-        m_surfaceCurveBlock->SetBlock(m_currentSurfaceId, tempcurvePolyLine);
 
-        m_surfaceCurveTubeFilter->SetInputData(m_surfaceCurvePoly);
-        m_surfaceCurveTubeFilter->Update();
-        m_surfaceCurveTubeFilter->Modified();
+        vtkNew<vtkPolyData> tempPoly;
+
+        WaitDialog waitDialog(this);
+        waitDialog.setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+        waitDialog.setModal(true);
+        waitDialog.setFixedSize(140, 100);
+
+        QVBoxLayout layout(&waitDialog);
+
+        QLabel msg("Processing...");
+        msg.setAlignment(Qt::AlignCenter);
+        SpinnerWidget spinner;
+        layout.addWidget(&msg);
+        layout.addWidget(&spinner, 0, Qt::AlignCenter);
+
+        // Spinner thread
+        SpinnerThread spinThread(&spinner);
+        QObject::connect(&spinThread, &SpinnerThread::updateAngle, &spinner,
+                         &SpinnerWidget::setAngle);
+
+        // Cutting thread
+        QThread cutThread;
+        CuttingThread* worker = new CuttingThread(
+            m_meshData, m_surfaceCurvePoly->GetPoints(), tempPoly);
+        worker->moveToThread(&cutThread);
+
+        QObject::connect(&cutThread, &QThread::started, worker,
+                         &CuttingThread::run);
+        QObject::connect(worker, &CuttingThread::finished, &cutThread,
+                         &QThread::quit);
+        QObject::connect(worker, &CuttingThread::finished, &spinThread,
+                         &QThread::quit);
+        QObject::connect(worker, &CuttingThread::finished, &waitDialog,
+                         &QDialog::accept);
+        QObject::connect(&cutThread, &QThread::finished, worker,
+                         &QObject::deleteLater);
+
+        // Start both threads
+        spinThread.start();
+        cutThread.start();
+
+        waitDialog.exec();  // Blocks UI
+
+        // Cleanup
+        spinThread.wait();
+        cutThread.wait();
+
+        m_surfaceMask->DeepCopy(tempPoly);
+        m_surfaceMask->Modified();
         vtkNew<vtkPolyData> tempMask;
         tempMask->DeepCopy(m_surfaceMask);
         m_surfaceMaskBlock->SetBlock(m_currentSurfaceId, tempMask);
         m_surfaceMaskBlock->Modified();
+
+        m_surfaceCurveTubeFilter->SetInputData(m_surfaceCurvePoly);
+        m_surfaceCurveTubeFilter->Update();
+        m_surfaceCurveTubeFilter->Modified();
+
+        vtkNew<vtkPolyData> tempcurvePolyLine;
+        tempcurvePolyLine->DeepCopy(m_surfaceCurvePoly);
+        m_surfaceCurveBlock->SetBlock(m_currentSurfaceId, tempcurvePolyLine);
+
         vtkNew<vtkPolyData> surfaceArrowPoly;
         MakeArrow(m_meshData, m_surfaceCurveBlock, 4, surfaceArrowPoly);
         m_glyphSurfaceArrow->SetInputData(surfaceArrowPoly);
@@ -2512,383 +2514,47 @@ void TemplateDigitiser::MeshCutter(vtkPoints* pts) {
     }
 }
 
-void TemplateDigitiser::CutMeshWithCurve(vtkPolyData* inputMesh,
-                                         vtkPoints* curvePoints,
-                                         vtkPolyData* outputCutMesh) {
-    if (!inputMesh || !curvePoints || curvePoints->GetNumberOfPoints() < 3) {
-        std::cerr << "Invalid mesh or curve points." << std::endl;
-        return;
-    }
+void TemplateDigitiser::UpdateSurfaceDirection() {
+    if (m_cosmeticCurvePoly->GetNumberOfPoints() > 2) {
+        m_surfaceCurvePoly->Initialize();
+        m_surfaceCurvePoly->ShallowCopy(m_cosmeticCurvePoly);
+        m_surfaceCurvePoly->Modified();
 
-    // --- Step 0: Fast region extraction ---
-    vtkNew<vtkConnectivityFilter> preSelector;
-    preSelector->SetInputData(inputMesh);
-    preSelector->SetExtractionModeToAllRegions();
-    preSelector->ColorRegionsOn();
-    preSelector->Update();
+        m_surfaceCurveTubeFilter->SetInputData(m_surfaceCurvePoly);
+        m_surfaceCurveTubeFilter->Update();
+        m_surfaceCurveTubeFilter->Modified();
 
-    vtkPolyData* labeledMesh =
-        vtkPolyData::SafeDownCast(preSelector->GetOutput());
-    vtkDataArray* regionArray = labeledMesh->GetPointData()->GetScalars();
-    if (!regionArray) {
-        std::cerr << "Missing region scalars." << std::endl;
-        return;
-    }
+        vtkNew<vtkPolyData> tempcurvePolyLine;
+        tempcurvePolyLine->DeepCopy(m_surfaceCurvePoly);
+        m_surfaceCurveBlock->SetBlock(m_currentSurfaceId, tempcurvePolyLine);
 
-    // --- Step 0.1: Identify unique region IDs ---
-    std::unordered_set<int> touchedRegions;
-    vtkSmartPointer<vtkPointLocator> bodyLocator =
-        vtkSmartPointer<vtkPointLocator>::New();
-    bodyLocator->SetDataSet(labeledMesh);
-    bodyLocator->BuildLocator();
-
-    vtkIdType nCheck =
-        std::min(static_cast<vtkIdType>(3), curvePoints->GetNumberOfPoints());
-    double pt[3];
-    for (int i = 0; i < nCheck; ++i) {
-        curvePoints->GetPoint(i, pt);
-        vtkIdType id = bodyLocator->FindClosestPoint(pt);
-        int regionId = static_cast<int>(regionArray->GetComponent(id, 0));
-        touchedRegions.insert(regionId);
-    }
-
-    // --- Step 0.2: Append regions ---
-    vtkNew<vtkAppendPolyData> regionCombiner;
-    for (int regionId : touchedRegions) {
-        vtkNew<vtkThreshold> regionThreshold;
-        regionThreshold->SetInputData(labeledMesh);
-        regionThreshold->SetInputArrayToProcess(
-            0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, "RegionId");
-        regionThreshold->ThresholdBetween(regionId, regionId);
-
-        vtkNew<vtkGeometryFilter> converter;
-        converter->SetInputConnection(regionThreshold->GetOutputPort());
-
-        regionCombiner->AddInputConnection(converter->GetOutputPort());
-    }
-    regionCombiner->Update();
-
-    vtkNew<vtkPolyData> relevantBodies;
-    relevantBodies->DeepCopy(regionCombiner->GetOutput());
-    relevantBodies->GetPointData()->RemoveArray("RegionId");
-
-    // --- Step 1: Close curve if not closed ---
-    // 
-    // --- Step 2: cut faces using the curve ---
-    vtkNew<vtkIdList> cutterIdList;
-    GetCutterCurve(relevantBodies, curvePoints, cutterIdList);
-    for (vtkIdType i = 0; i < cutterIdList->GetNumberOfIds(); i++) {
-        relevantBodies->DeleteCell(cutterIdList->GetId(i));
-    }
-    relevantBodies->RemoveDeletedCells();
-
-    // --- Step 3: Extract largest region only ---
-    vtkNew<vtkConnectivityFilter> selector;
-    selector->SetInputData(relevantBodies);
-    selector->SetExtractionModeToLargestRegion();
-    selector->ColorRegionsOn();
-    selector->Update();
-
-    vtkPolyData* coloredRegions =
-        vtkPolyData::SafeDownCast(selector->GetOutput());
-    vtkDataArray* regionColors = coloredRegions->GetPointData()->GetScalars();
-    if (!regionColors) {
-        std::cerr << "No region color scalars found." << std::endl;
-        return;
-    }
-
-    // --- Step 4: Inverse selection array ---
-    vtkNew<vtkIntArray> inverseSelection;
-    inverseSelection->SetName("InverseSelection");
-    inverseSelection->SetNumberOfComponents(1);
-    inverseSelection->SetNumberOfTuples(relevantBodies->GetNumberOfPoints());
-    inverseSelection->Fill(1);
-
-    // Use batched spatial query via locator
-    vtkNew<vtkPointLocator> locator;
-    locator->SetDataSet(coloredRegions);
-    locator->BuildLocator();
-
-    const vtkIdType nPts = relevantBodies->GetNumberOfPoints();
-#pragma omp parallel for shared(inverseSelection) schedule(static)
-    for (vtkIdType i = 0; i < nPts; ++i) {
-        double pt[3];
-        relevantBodies->GetPoint(i, pt);
-        vtkIdType closest = locator->FindClosestPoint(pt);
-        if (regionColors->GetComponent(closest, 0) == 1.0) {
-            inverseSelection->SetValue(i, 0);
-        }
-    }
-
-    relevantBodies->GetPointData()->AddArray(inverseSelection);
-
-    // --- Step 5: Threshold by InverseSelection ---
-    vtkNew<vtkThreshold> threshold;
-    threshold->SetInputData(relevantBodies);
-    threshold->SetInputArrayToProcess(
-        0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS, "InverseSelection");
-    threshold->ThresholdBetween(0, 0);
-
-    vtkNew<vtkGeometryFilter> geometryFilter;
-    geometryFilter->SetInputConnection(threshold->GetOutputPort());
-
-    vtkNew<vtkCleanPolyData> cleaner;
-    cleaner->SetInputConnection(geometryFilter->GetOutputPort());
-    cleaner->Update();
-
-    outputCutMesh->ShallowCopy(cleaner->GetOutput());
-    outputCutMesh->GetPointData()->RemoveArray("InverseSelection");
-}
-
-void TemplateDigitiser::GetCutterCurve(vtkPolyData* Poly, vtkPoints* curvePts,
-                                       vtkIdList* outCurveIds) {
-    outCurveIds->Initialize();
-
-    // Build point locator ONCE
-    vtkNew<vtkPointLocator> curvePtLocator;
-    curvePtLocator->SetDataSet(Poly);
-    curvePtLocator->BuildLocator();
-
-    // Snap curve points to surface
-    vtkNew<vtkPoints> snappedPts;
-    for (vtkIdType i = 0; i < curvePts->GetNumberOfPoints(); i++) {
-        double p[3];
-        curvePts->GetPoint(i, p);
-        vtkIdType closestId = curvePtLocator->FindClosestPoint(p);
-        Poly->GetPoint(closestId, p);  // Get actual coordinate
-        snappedPts->InsertNextPoint(p);
-    }
-
-    // Build closed line cell
-    vtkNew<vtkCellArray> line;
-    vtkIdType n = snappedPts->GetNumberOfPoints();
-    line->InsertNextCell(n + 1);
-    for (vtkIdType i = 0; i < n; i++) {
-        line->InsertCellPoint(i);
-    }
-    line->InsertCellPoint(0);
-
-    vtkNew<vtkPolyData> curvePoly;
-    curvePoly->SetPoints(snappedPts);
-    curvePoly->SetLines(line);
-
-    // Call optimized Astar
-    vtkNew<vtkIdList> edgePointIds;
-    AStarEdgeSearch(Poly, curvePoly, edgePointIds);
-
-    // --- Optimization: Build point-to-cell map ---
-    std::unordered_map<vtkIdType, std::vector<vtkIdType>> pointToCells;
-    for (vtkIdType cellId = 0; cellId < Poly->GetNumberOfCells(); ++cellId) {
-        vtkCell* cell = Poly->GetCell(cellId);
-        vtkIdList* ids = cell->GetPointIds();
-        for (vtkIdType j = 0; j < ids->GetNumberOfIds(); ++j) {
-            pointToCells[ids->GetId(j)].push_back(cellId);
-        }
-    }
-
-    std::unordered_set<vtkIdType> visitedCells;
-    for (vtkIdType i = 0; i < edgePointIds->GetNumberOfIds(); ++i) {
-        vtkIdType ptId = edgePointIds->GetId(i);
-        auto it = pointToCells.find(ptId);
-        if (it != pointToCells.end()) {
-            for (vtkIdType cellId : it->second) {
-                visitedCells.insert(cellId);
-            }
-        }
-    }
-
-    for (vtkIdType cellId : visitedCells) {
-        outCurveIds->InsertNextId(cellId);
+        vtkNew<vtkPolyData> surfaceArrowPoly;
+        MakeArrow(m_meshData, m_surfaceCurveBlock, 4, surfaceArrowPoly);
+        m_glyphSurfaceArrow->SetInputData(surfaceArrowPoly);
+        m_glyphSurfaceArrow->Update();
+        ResetPatch();
     }
 }
 
-void TemplateDigitiser::DijkstraEdgeSearch(vtkPolyData* mesh,
-                                           vtkPolyData* closedCurve,
-                                           vtkIdList* edgePointIds) {
-    mesh->BuildLinks();  // Required by Dijkstra
+void TemplateDigitiser::ResetPatch() {
+    if (m_surfacePatchLandmarks->GetNumberOfPoints() > 0 &&
+        !surfaceIronButton->isChecked()) {
+        m_surfacePatchLandmarks->Initialize();
+        m_surfaceCtrlPointsPoly->Initialize();
+        vtkNew<vtkPolyData> emptyPoly;
+        m_surfaceCtrlVertexFilter->SetInputData(emptyPoly);
+        m_surfaceCtrlVertexFilter->Update();
+        m_surfaceCtrlVertexFilter->Modified();
 
-    vtkNew<vtkDijkstraGraphGeodesicPath> edgeSearch;
-    edgeSearch->StopWhenEndReachedOn();
-    edgeSearch->SetInputData(mesh);
+        m_surfaceTubeFilter->SetInputData(emptyPoly);
+        m_surfaceTubeFilter->Update();
+        m_surfaceTubeFilter->Modified();
 
-    vtkNew<vtkStaticPointLocator> locator;
-    locator->SetDataSet(mesh);
-    locator->BuildLocator();
+        m_surfacePatchVertexFilter->SetInputData(emptyPoly);
+        m_surfacePatchVertexFilter->Update();
+        m_surfacePatchVertexFilter->Modified();
 
-    vtkIdType n = closedCurve->GetNumberOfPoints();
-    double p0[3], p1[3];
-    closedCurve->GetPoint(0, p0);
-    vtkIdType id0 = locator->FindClosestPoint(p0);
-
-    for (vtkIdType i = 1; i <= n; ++i) {
-        closedCurve->GetPoint(i % n, p1);
-        vtkIdType id1 = locator->FindClosestPoint(p1);
-
-        edgeSearch->SetStartVertex(id0);
-        edgeSearch->SetEndVertex(id1);
-        edgeSearch->Update();
-
-        vtkPolyData* path = edgeSearch->GetOutput();
-        for (vtkIdType j = 0; j < path->GetNumberOfPoints(); ++j) {
-            double x[3];
-            path->GetPoint(j, x);
-            vtkIdType closest = locator->FindClosestPoint(x);
-            edgePointIds->InsertUniqueId(closest);  // prevent duplicates
-        }
-
-        std::copy(std::begin(p1), std::end(p1), std::begin(p0));
-        id0 = id1;
-    }
-}
-
-void TemplateDigitiser::AStarEdgeSearch(vtkPolyData* mesh,
-                                        vtkPolyData* closedCurve,
-                                        vtkIdList* edgePointIds) {
-    edgePointIds->Initialize();
-
-    vtkPoints* points = mesh->GetPoints();
-    if (!points) return;
-
-    vtkIdType numVertices = points->GetNumberOfPoints();
-    if (numVertices == 0) return;
-
-    // Build adjacency list: vertexId -> vector of connected vertexIds with edge
-    // length
-    std::vector<std::vector<std::pair<vtkIdType, double>>> adjacency(
-        numVertices);
-
-    for (vtkIdType cellId = 0; cellId < mesh->GetNumberOfCells(); ++cellId) {
-        vtkCell* cell = mesh->GetCell(cellId);
-        vtkIdList* ids = cell->GetPointIds();
-
-        vtkIdType n = ids->GetNumberOfIds();
-        for (vtkIdType i = 0; i < n; ++i) {
-            vtkIdType v0 = ids->GetId(i);
-            vtkIdType v1 = ids->GetId((i + 1) % n);
-
-            double p0[3], p1[3];
-            points->GetPoint(v0, p0);
-            points->GetPoint(v1, p1);
-            double dist = sqrt(vtkMath::Distance2BetweenPoints(p0, p1));
-
-            adjacency[v0].emplace_back(v1, dist);
-            adjacency[v1].emplace_back(v0, dist);
-        }
-    }
-
-    vtkIdType nLoopPts = closedCurve->GetNumberOfPoints();
-    if (nLoopPts < 2) return;
-
-    // Create and build vtkPointLocator for mesh points
-    vtkSmartPointer<vtkPointLocator> pointLocator =
-        vtkSmartPointer<vtkPointLocator>::New();
-    pointLocator->SetDataSet(mesh);
-    pointLocator->BuildLocator();
-
-    // Use vtkPointLocator to find closest mesh points for closedCurve points
-    std::vector<std::pair<vtkIdType, vtkIdType>> pathSegments(nLoopPts);
-    for (vtkIdType i = 0; i < nLoopPts; ++i) {
-        double p0[3], p1[3];
-        closedCurve->GetPoint(i, p0);
-        closedCurve->GetPoint((i + 1) % nLoopPts, p1);
-        pathSegments[i].first = pointLocator->FindClosestPoint(p0);
-        pathSegments[i].second = pointLocator->FindClosestPoint(p1);
-    }
-
-    // Lambda: A* search for one start-goal pair
-    auto AStarSearch = [&](vtkIdType start,
-                           vtkIdType goal) -> std::vector<vtkIdType> {
-        std::vector<double> gScore(numVertices,
-                                   std::numeric_limits<double>::infinity());
-        std::vector<double> fScore(numVertices,
-                                   std::numeric_limits<double>::infinity());
-        std::vector<vtkIdType> cameFrom(numVertices, -1);
-        std::vector<bool> closedSet(numVertices, false);
-
-        auto heuristic = [&](vtkIdType a, vtkIdType b) -> double {
-            double pa[3], pb[3];
-            points->GetPoint(a, pa);
-            points->GetPoint(b, pb);
-            return sqrt(vtkMath::Distance2BetweenPoints(pa, pb));
-        };
-
-        std::priority_queue<AStarNode, std::vector<AStarNode>,
-                            std::greater<AStarNode>>
-            openSet;
-
-        gScore[start] = 0.0;
-        fScore[start] = heuristic(start, goal);
-        openSet.push({start, fScore[start]});
-
-        while (!openSet.empty()) {
-            AStarNode current = openSet.top();
-            openSet.pop();
-
-            if (current.vertexId == goal) {
-                // Reconstruct path
-                std::vector<vtkIdType> path;
-                vtkIdType cur = goal;
-                while (cur != -1) {
-                    path.push_back(cur);
-                    cur = cameFrom[cur];
-                }
-                std::reverse(path.begin(), path.end());
-                return path;
-            }
-
-            if (closedSet[current.vertexId]) continue;
-            closedSet[current.vertexId] = true;
-
-            for (const auto& neighbor : adjacency[current.vertexId]) {
-                vtkIdType neighborId = neighbor.first;
-                double edgeWeight = neighbor.second;
-                if (closedSet[neighborId]) continue;
-
-                double tentative_gScore = gScore[current.vertexId] + edgeWeight;
-                if (tentative_gScore < gScore[neighborId]) {
-                    cameFrom[neighborId] = current.vertexId;
-                    gScore[neighborId] = tentative_gScore;
-                    fScore[neighborId] =
-                        tentative_gScore + heuristic(neighborId, goal);
-                    openSet.push({neighborId, fScore[neighborId]});
-                }
-            }
-        }
-
-        return {};  // no path found
-    };
-
-    // Create per-thread containers for thread safety
-    int maxThreads = omp_get_max_threads();
-    std::vector<vtkSmartPointer<vtkIdList>> threadResults(maxThreads);
-    for (int i = 0; i < maxThreads; ++i) {
-        threadResults[i] = vtkSmartPointer<vtkIdList>::New();
-    }
-
-    // Parallel loop over curve segments
-#pragma omp parallel for schedule(dynamic)
-    for (int i = 0; i < static_cast<int>(nLoopPts); ++i) {
-        int tid = omp_get_thread_num();
-
-        vtkIdType start = pathSegments[i].first;
-        vtkIdType goal = pathSegments[i].second;
-
-        std::vector<vtkIdType> path = AStarSearch(start, goal);
-        for (vtkIdType v : path) {
-            threadResults[tid]->InsertNextId(v);
-        }
-    }
-
-    // Merge thread-local results into edgePointIds (optional: remove duplicates
-    // here)
-    std::set<vtkIdType> uniqueIds;
-    for (auto& list : threadResults) {
-        for (vtkIdType i = 0; i < list->GetNumberOfIds(); ++i) {
-            vtkIdType id = list->GetId(i);
-            if (uniqueIds.insert(id).second) {
-                edgePointIds->InsertNextId(id);
-            }
-        }
+        surfaceAddButton->setEnabled(0);
     }
 }
 
@@ -3072,24 +2738,25 @@ void TemplateDigitiser::ChangeLineSize(int index) {
 
     if (index == 0) {
         if (m_surfaceTubeFilter->GetOutput()->GetNumberOfPoints() > 0) {
-            m_surfaceTubeFilter->SetRadius(0.1);
+            m_surfaceTubeFilter->SetRadius(m_tubeRadRatio * m_diagonal * 0.3);
             m_surfaceTubeFilter->Update();
         }
         if (m_surfaceCurveTubeFilterDeactive->GetOutput()->GetNumberOfPoints() >
             0) {
-            m_surfaceCurveTubeFilterDeactive->SetRadius(0.3);
+            m_surfaceCurveTubeFilterDeactive->SetRadius(m_tubeRadRatio *
+                                                        m_diagonal);
             m_surfaceCurveTubeFilterDeactive->Update();
         }
         if (m_surfaceCurveTubeFilter->GetOutput()->GetNumberOfPoints() > 0) {
-            m_surfaceCurveTubeFilter->SetRadius(0.3);
+            m_surfaceCurveTubeFilter->SetRadius(m_tubeRadRatio * m_diagonal);
             m_surfaceCurveTubeFilter->Update();
         }
         if (m_curveTubeFilterDeactive->GetOutput()->GetNumberOfPoints() > 0) {
-            m_curveTubeFilterDeactive->SetRadius(0.3);
+            m_curveTubeFilterDeactive->SetRadius(m_tubeRadRatio * m_diagonal);
             m_curveTubeFilterDeactive->Update();
         }
         if (m_curveTubeFilter->GetOutput()->GetNumberOfPoints() > 0) {
-            m_curveTubeFilter->SetRadius(0.3);
+            m_curveTubeFilter->SetRadius(m_tubeRadRatio * m_diagonal);
             m_curveTubeFilter->Update();
         }
     }
@@ -3121,7 +2788,7 @@ void TemplateDigitiser::MakeArrow(vtkPolyData* inputMesh,
          iterPts->GoToNextItem()) {
         vtkDataObject* dso = iterPts->GetCurrentDataObject();
         vtkPolyData* pd = dynamic_cast<vtkPolyData*>(dso);
-        if (pd->GetNumberOfPoints() > 2) {
+        if (pd->GetNumberOfPoints() > 1) {
             double x1 = pd->GetPoint(1)[0] - pd->GetPoint(0)[0];
             double y1 = pd->GetPoint(1)[1] - pd->GetPoint(0)[1];
             double z1 = pd->GetPoint(1)[2] - pd->GetPoint(0)[2];
@@ -3199,6 +2866,13 @@ void TemplateDigitiser::SurfaceTool() {
             }
         }
     } else {
+        if (m_surfaceCurvePoly->GetNumberOfPoints() > 0 &&
+            m_surfacePatchLandmarks->GetNumberOfPoints() == 0) {
+            QMessageBox::information(
+                this, "Information",
+                "Missing pre-sliders will be digitised automatically!");
+            InterpolateSurface();
+        }
         surfacePatchToolbar->setVisible(false);
         surfaceToolbar->setVisible(false);
         m_iren->SetInteractorStyle(m_style);
@@ -3250,21 +2924,29 @@ void TemplateDigitiser::CosmeticCurve(vtkPoints* ctrlPts,
             vtkNew<vtkPolyData> curvePoly;
             curvePoly->SetPoints(ctrlPts);
             curvePoly->SetLines(line);
+            // Create Kochanek spline with high tension
+            vtkNew<vtkKochanekSpline> spline;
+            spline->SetDefaultTension(m_splineTension);
+            spline->SetClosed(true);  // Critical for closed curves
             vtkNew<vtkSplineFilter> splineFilter;
             splineFilter->SetInputData(curvePoly);
             splineFilter->SetSubdivideToLength();
+            splineFilter->SetSpline(spline);
             splineFilter->Update();
+
             outputCurve->DeepCopy(splineFilter->GetOutput());
         } else if (curveSliderButton->isChecked()) {
-            vtkNew<vtkCellArray> line;
-            line->InsertNextCell(ctrlPts->GetNumberOfPoints());
-            for (int i = 0; i < ctrlPts->GetNumberOfPoints(); i++) {
-                line->InsertCellPoint(i);
+            if (ctrlPts->GetNumberOfPoints() > 1) {
+                vtkNew<vtkCellArray> line;
+                line->InsertNextCell(ctrlPts->GetNumberOfPoints());
+                for (int i = 0; i < ctrlPts->GetNumberOfPoints(); i++) {
+                    line->InsertCellPoint(i);
+                }
+                vtkNew<vtkPolyData> curvePoly;
+                curvePoly->SetPoints(ctrlPts);
+                curvePoly->SetLines(line);
+                outputCurve->DeepCopy(curvePoly);
             }
-            vtkNew<vtkPolyData> curvePoly;
-            curvePoly->SetPoints(ctrlPts);
-            curvePoly->SetLines(line);
-            outputCurve->DeepCopy(curvePoly);
         }
     }
 }
@@ -3284,8 +2966,6 @@ void TemplateDigitiser::PickFunc(vtkObject* caller, long unsigned int eventId,
                 m_fixedPointActor->Modified();
                 m_curvectrlPointActor->SetPickable(0);
                 m_curvectrlPointActor->Modified();
-                /* m_curvePointActor->SetPickable(0);
-                m_curvePointActor->Modified(); */
                 m_surfaceCurveCtrlPointActor->SetPickable(0);
                 m_surfaceCurveCtrlPointActor->Modified();
                 auto clickPos = m_iren->GetEventPosition();
@@ -3348,14 +3028,21 @@ void TemplateDigitiser::PickFunc(vtkObject* caller, long unsigned int eventId,
             m_fixedPointActor->Modified();
             m_curvectrlPointActor->SetPickable(0);
             m_curvectrlPointActor->Modified();
-            /* m_curvePointActor->SetPickable(0);
-            m_curvePointActor->Modified(); */
             m_surfaceCurveCtrlPointActor->SetPickable(0);
             m_surfaceCurveCtrlPointActor->Modified();
             auto clickPos = m_iren->GetEventPosition();
             vtkNew<vtkCellPicker> picker;
             picker->Pick(clickPos[0], clickPos[1], 0, m_renderer);
-            if (picker->GetPointId() != -1) {
+            int pointId = picker->GetPointId();
+            auto* vecPtr = m_curvePtsIds->at(m_currentCurveId);
+            if (!vecPtr) {
+                return;
+            }
+            auto& innerVec = *vecPtr;
+            bool isMissing = (std::find(innerVec.begin(), innerVec.end(),
+                                        pointId) == innerVec.end());
+            if (pointId != -1 && isMissing) {
+                m_curvePtsIds->at(m_currentCurveId)->push_back(pointId);
                 if (pickFromBoundariesBox->isChecked()) {
                     if (m_meshBoundaries->GetNumberOfCells() > 0) {
                         vtkNew<vtkCellLocator> ptLocator;
@@ -3366,15 +3053,15 @@ void TemplateDigitiser::PickFunc(vtkObject* caller, long unsigned int eventId,
                         int subId = -1;
                         double dist = -1;
                         ptLocator->FindClosestPoint(
-                            m_meshData->GetPoint(picker->GetPointId()),
-                            closestPoint, closestCellId, subId, dist);
+                            m_meshData->GetPoint(pointId), closestPoint,
+                            closestCellId, subId, dist);
                         m_curveHighlightCtrlPoints->InsertNextPoint(
                             closestPoint);
                         m_curveHighlightCtrlPoints->Modified();
                     }
                 } else {
                     m_curveHighlightCtrlPoints->InsertNextPoint(
-                        m_meshData->GetPoint(picker->GetPointId()));
+                        m_meshData->GetPoint(pointId));
                     m_curveHighlightCtrlPoints->Modified();
                 }
                 m_curvectrlPointsPoly->SetPoints(m_curveHighlightCtrlPoints);
@@ -3385,49 +3072,40 @@ void TemplateDigitiser::PickFunc(vtkObject* caller, long unsigned int eventId,
                 m_curvectrlVertexFilter->SetInputData(m_curvectrlPointsPoly);
                 m_curvectrlVertexFilter->Update();
                 m_curvectrlVertexFilter->Modified();
-                if (m_curveHighlightCtrlPoints->GetNumberOfPoints() == 2) {
-                    CosmeticCurve(m_curveHighlightCtrlPoints,
-                                  m_cosmeticCurvePoly);
-                    m_curveTubeFilter->SetInputData(m_cosmeticCurvePoly);
-                    m_curveTubeFilter->Update();
-                    m_curveTubeFilter->Modified();
+
+                if (pickFromBoundariesBox->isChecked()) {
+                    UpdateCurveData(m_curveHighlightCtrlPoints, m_curvePoly,
+                                    m_curveLandmarks, m_meshBoundaries);
+                } else {
+                    UpdateCurveData(m_curveHighlightCtrlPoints, m_curvePoly,
+                                    m_curveLandmarks, m_meshData);
                 }
-                if (m_curveHighlightCtrlPoints->GetNumberOfPoints() > 2) {
-                    // curveAnchorButton->setEnabled(1);
-                    if (pickFromBoundariesBox->isChecked()) {
-                        UpdateCurveData(m_curveHighlightCtrlPoints, m_curvePoly,
-                                        m_curveLandmarks, m_meshBoundaries);
-                    } else {
-                        UpdateCurveData(m_curveHighlightCtrlPoints, m_curvePoly,
-                                        m_curveLandmarks, m_meshData);
-                    }
-                    m_curvePoly->Modified();
-                    m_curveTubeFilter->SetInputData(m_curvePoly);
-                    m_curveTubeFilter->Update();
-                    m_curveTubeFilter->Modified();
-                    m_curvePointsPoly->SetPoints(m_curveLandmarks);
-                    vtkNew<vtkPolyData> tempCurvePtPoly;
-                    tempCurvePtPoly->DeepCopy(m_curvePointsPoly);
-                    m_curveBlock->SetBlock(m_currentCurveId, tempCurvePtPoly);
-                    m_curveBlock->Modified();
-                    m_curveVertexFilter->SetInputData(m_curvePointsPoly);
-                    m_curveVertexFilter->Update();
-                    m_curveVertexFilter->Modified();
-                    vtkNew<vtkPolyData> tempCurvePolyLine;
-                    tempCurvePolyLine->DeepCopy(m_curvePoly);
-                    m_curvePolyLineBlock->SetBlock(m_currentCurveId,
-                                                   tempCurvePolyLine);
-                    m_curvePolyLineBlock->Modified();
-                    vtkNew<vtkPolyData> curveArrowPoly;
-                    MakeArrow(m_meshData, m_curvePolyLineBlock, 3,
-                              curveArrowPoly);
-                    m_glyphCurveArrow->SetInputData(curveArrowPoly);
-                    m_glyphCurveArrow->Update();
-                }
+                m_curvePoly->Modified();
+                m_curveTubeFilter->SetInputData(m_curvePoly);
+                m_curveTubeFilter->Update();
+                m_curveTubeFilter->Modified();
+                m_curvePointsPoly->SetPoints(m_curveLandmarks);
+                vtkNew<vtkPolyData> tempCurvePtPoly;
+                tempCurvePtPoly->DeepCopy(m_curvePointsPoly);
+                m_curveBlock->SetBlock(m_currentCurveId, tempCurvePtPoly);
+                m_curveBlock->Modified();
+                m_curveVertexFilter->SetInputData(m_curvePointsPoly);
+                m_curveVertexFilter->Update();
+                m_curveVertexFilter->Modified();
+                vtkNew<vtkPolyData> tempCurvePolyLine;
+                tempCurvePolyLine->DeepCopy(m_curvePoly);
+                m_curvePolyLineBlock->SetBlock(m_currentCurveId,
+                                               tempCurvePolyLine);
+                m_curvePolyLineBlock->Modified();
+                vtkNew<vtkPolyData> curveArrowPoly;
+                MakeArrow(m_meshData, m_curvePolyLineBlock, 3, curveArrowPoly);
+                m_glyphCurveArrow->SetInputData(curveArrowPoly);
+                m_glyphCurveArrow->Update();
+
                 m_renderer->GetRenderWindow()->Render();
                 if (m_currentCurveId ==
                     m_curveCtrlBlock->GetNumberOfBlocks() - 1) {
-                    if (m_curveHighlightCtrlPoints->GetNumberOfPoints() == 3) {
+                    if (m_curveHighlightCtrlPoints->GetNumberOfPoints() == 2) {
                         curveLineEditNOC->setText(
                             QString::fromStdString(std::to_string(
                                 m_curveNOC -
@@ -3436,8 +3114,11 @@ void TemplateDigitiser::PickFunc(vtkObject* caller, long unsigned int eventId,
                             m_curveNOC) {
                             curveAddButton->setEnabled(1);
                         }
-                        surfacePickSourceComboBox->addItem(
-                            QString::number(m_currentCurveId));
+                        QString newItem = QString::number(m_currentCurveId);
+                        if (fromCurveComboBox->findText(
+                                newItem, Qt::MatchExactly) == -1) {
+                            fromCurveComboBox->addItem(newItem);
+                        }
                     }
                 }
             }
@@ -3456,7 +3137,16 @@ void TemplateDigitiser::PickFunc(vtkObject* caller, long unsigned int eventId,
             picker->Pick(clickPos[0], clickPos[1], 0, m_renderer);
             if (picker->GetPointId() > 0) {
                 auto temp = m_curvectrlVertexFilter->GetOutput();
-                if (temp->GetNumberOfPoints() > 3) {
+                if (temp->GetNumberOfPoints() > 2) {
+                    auto& innerVec = *m_curvePtsIds->at(
+                        m_currentCurveId);  // Get reference to the inner vector
+                    int idToRemove = picker->GetPointId();
+                    auto it =
+                        std::find(innerVec.begin(), innerVec.end(), idToRemove);
+                    if (it != innerVec.end()) {
+                        innerVec.erase(
+                            it);  // Remove the first occurrence of the value
+                    }
                     temp->GetPoints()->GetData()->RemoveTuple(
                         picker->GetPointId());
                     temp->GetPoints()->GetData()->Modified();
@@ -3474,8 +3164,6 @@ void TemplateDigitiser::PickFunc(vtkObject* caller, long unsigned int eventId,
                     m_curveTubeFilter->Update();
                     m_curveTubeFilter->Modified();
                     m_curvePointsPoly->SetPoints(m_curveLandmarks);
-                    // UpdateAnchors(m_curvePointsPoly, m_curveAnchorIdList, 1,
-                    // 0);
                     m_curveVertexFilter->SetInputData(m_curvePointsPoly);
                     m_curveVertexFilter->Update();
                     m_curveVertexFilter->Modified();
@@ -3516,15 +3204,18 @@ void TemplateDigitiser::PickFunc(vtkObject* caller, long unsigned int eventId,
             auto clickPos = m_iren->GetEventPosition();
             vtkNew<vtkCellPicker> picker;
             picker->Pick(clickPos[0], clickPos[1], 0, m_renderer);
-            if (picker->GetPointId() != -1 &&
-                std::find(m_surfacePtsIds->at(m_currentSurfaceId)->begin(),
-                          m_surfacePtsIds->at(m_currentSurfaceId)->end(),
-                          picker->GetPointId()) !=
-                    m_surfacePtsIds->at(m_currentSurfaceId)->end() == 0) {
-                m_surfacePtsIds->at(m_currentSurfaceId)
-                    ->push_back(picker->GetPointId());
+            int pointId = picker->GetPointId();
+            auto* vecPtr = m_surfacePtsIds->at(m_currentSurfaceId);
+            if (!vecPtr) {
+                return;
+            }
+            auto& innerVec = *vecPtr;
+            bool isMissing = (std::find(innerVec.begin(), innerVec.end(),
+                                        pointId) == innerVec.end());
+            if (pointId != -1 && isMissing) {
+                m_surfacePtsIds->at(m_currentSurfaceId)->push_back(pointId);
                 m_surfaceCurveHighlightCtrlPoints->InsertNextPoint(
-                    m_meshData->GetPoint(picker->GetPointId()));
+                    m_meshData->GetPoint(pointId));
                 m_surfaceCurveHighlightCtrlPoints->Modified();
                 m_surfaceCurveCtrlPointsPoly->SetPoints(
                     m_surfaceCurveHighlightCtrlPoints);
@@ -3534,9 +3225,7 @@ void TemplateDigitiser::PickFunc(vtkObject* caller, long unsigned int eventId,
                 m_surfaceCurveCtrlVertexFilter->Modified();
                 CosmeticCurve(m_surfaceCurveHighlightCtrlPoints,
                               m_cosmeticCurvePoly);
-                m_surfaceCurveTubeFilter->SetInputData(m_cosmeticCurvePoly);
-                m_surfaceCurveTubeFilter->Update();
-                m_surfaceCurveTubeFilter->Modified();
+                UpdateSurfaceDirection();
                 if (m_surfaceCurveHighlightCtrlPoints->GetNumberOfPoints() >
                     2) {
                     m_surfaceChanged = 1;
@@ -3561,8 +3250,16 @@ void TemplateDigitiser::PickFunc(vtkObject* caller, long unsigned int eventId,
                 if (m_surfaceCurveHighlightCtrlPoints->GetNumberOfPoints() >
                     3) {
                     m_surfaceChanged = 1;
-                    m_surfacePtsIds->at(m_currentSurfaceId)
-                        ->push_back(picker->GetPointId());
+                    auto& innerVec = *m_surfacePtsIds->at(
+                        m_currentSurfaceId);  // Get reference to the inner
+                                              // vector
+                    int idToRemove = picker->GetPointId();
+                    auto it =
+                        std::find(innerVec.begin(), innerVec.end(), idToRemove);
+                    if (it != innerVec.end()) {
+                        innerVec.erase(
+                            it);  // Remove the first occurrence of the value
+                    }
                     m_surfaceCurveHighlightCtrlPoints->GetData()->RemoveTuple(
                         picker->GetPointId());
                     m_surfaceCurveHighlightCtrlPoints->GetData()->Modified();
@@ -3578,8 +3275,8 @@ void TemplateDigitiser::PickFunc(vtkObject* caller, long unsigned int eventId,
                                                       tempCtrlPoly);
                     m_surfaceCurveCtrlBlock->Modified();
                     CosmeticCurve(m_surfaceCurveHighlightCtrlPoints,
-                              m_cosmeticCurvePoly);
-                    MeshCutter(m_surfaceCurveHighlightCtrlPoints);
+                                  m_cosmeticCurvePoly);
+                    UpdateSurfaceDirection();
                     if (!surfaceInterpolateButton->isEnabled()) {
                         surfaceInterpolateButton->setEnabled(1);
                         m_interpolationAnimation->start();
@@ -3796,6 +3493,7 @@ void TemplateDigitiser::MoveFunc(vtkObject* caller, long unsigned int eventId,
 
         if (m_grabPicker->GetPointId() != -1) {
             m_iren->SetInteractorStyle(m_PointMoverStyle);
+            ResetPatch();
             if (m_surfaceCurveHighlightCtrlPoints->GetNumberOfPoints() > 2 &&
                 surfaceIsGoingToChange) {
                 m_surfaceChanged = 1;
@@ -3847,10 +3545,25 @@ void TemplateDigitiser::CoordinateFunc(vtkObject* caller,
             m_renderer->GetRenderWindow()->Render();
         } else if (surfaceSliderButton->isChecked() && m_editableSurface == 1) {
             if (m_surfaceNOS == 0 && !surfaceIronButton->isChecked()) {
-                if (std::find(m_surfacePtsIds->at(m_currentSurfaceId)->begin(),
-                              m_surfacePtsIds->at(m_currentSurfaceId)->end(),
-                              meshPicker->GetPointId()) !=
-                    m_surfacePtsIds->at(m_currentSurfaceId)->end() == 0) {
+                auto* innerVecPtr = m_surfacePtsIds->at(m_currentSurfaceId);
+                if (!innerVecPtr) {
+                    return;
+                }
+                auto& innerVec =
+                    *innerVecPtr;  // Get reference to the inner vector
+                int targetId = meshPicker->GetPointId();
+                if (std::find(innerVec.begin(), innerVec.end(), targetId) ==
+                    innerVec.end()) {
+                    int oldId =
+                        m_grabPicker
+                            ->GetPointId();  // The existing point ID to replace
+                    int newId = meshPicker->GetPointId();  // The new point ID
+
+                    auto it =
+                        std::find(innerVec.begin(), innerVec.end(), oldId);
+                    if (it != innerVec.end()) {
+                        *it = newId;  // Replace the old ID with the new ID
+                    }
                     m_surfaceCurveHighlightCtrlPoints->SetPoint(id,
                                                                 newLocation);
                     m_surfaceCurveCtrlPointsPoly->SetPoints(
@@ -3895,26 +3608,8 @@ void TemplateDigitiser::CoordinateFunc(vtkObject* caller,
 
                 m_surfaceCtrlPointsPoly->DeepCopy(repeller->GetOutput());
 
-                vtkNew<vtkCellLocator> ptLocator;
-                ptLocator->SetDataSet(m_surfaceMask);
-                ptLocator->BuildLocator();
-
-                for (int i = 0;
-                     i < m_surfaceCtrlPointsPoly->GetNumberOfPoints(); i++) {
-                    if (std::find(outlineIds->begin(), outlineIds->end(), i) !=
-                        outlineIds->end()) {
-                    } else {
-                        double closestPoint[3];
-                        vtkIdType closestCellId = -1;
-                        int subId = -1;
-                        double dist = -1;
-                        ptLocator->FindClosestPoint(
-                            m_surfaceCtrlPointsPoly->GetPoint(i), closestPoint,
-                            closestCellId, subId, dist);
-                        m_surfaceCtrlPointsPoly->GetPoints()->SetPoint(
-                            i, closestPoint);
-                    }
-                }
+                ProjectOnMesh(m_surfaceCtrlPointsPoly, m_surfaceMask,
+                              outlineIds);
 
                 delete outlineIds;
                 ConstructSurfaceData(m_surfaceCtrlPointsPoly,
@@ -3957,46 +3652,67 @@ void TemplateDigitiser::CoordinateFunc(vtkObject* caller,
                 m_renderer->GetRenderWindow()->Render();
             }
         } else if (curveSliderButton->isChecked()) {
-            m_curveHighlightCtrlPoints->SetPoint(id, newLocation);
-            m_curveHighlightCtrlPoints->Modified();
-            m_curvectrlPointsPoly->Modified();
-            m_curvectrlVertexFilter->Update();
-            m_curvectrlVertexFilter->Modified();
-            if (pickFromBoundariesBox->isChecked()) {
-                UpdateCurveData(m_curveHighlightCtrlPoints, m_curvePoly,
-                                m_curveLandmarks, m_meshBoundaries);
-            } else {
-                UpdateCurveData(m_curveHighlightCtrlPoints, m_curvePoly,
-                                m_curveLandmarks, m_meshData);
+            auto* innerVecPtr = m_curvePtsIds->at(m_currentCurveId);
+            if (!innerVecPtr) {
+                return;
             }
-            m_curvePoly->Modified();
-            m_curveTubeFilter->SetInputData(m_curvePoly);
-            m_curveTubeFilter->Update();
-            m_curveTubeFilter->Modified();
-            m_curvePointsPoly->SetPoints(m_curveLandmarks);
-            m_curveVertexFilter->SetInputData(m_curvePointsPoly);
-            m_curveVertexFilter->Update();
-            m_curveVertexFilter->Modified();
-            vtkNew<vtkPolyData> tempCtrlPoly;
-            tempCtrlPoly->DeepCopy(m_curvectrlPointsPoly);
-            m_curveCtrlBlock->SetBlock(m_currentCurveId, tempCtrlPoly);
-            m_curveCtrlBlock->Modified();
-            if (m_curveHighlightCtrlPoints->GetNumberOfPoints() > 2) {
-                vtkNew<vtkPolyData> tempCurvePtPoly;
-                tempCurvePtPoly->DeepCopy(m_curvePointsPoly);
-                m_curveBlock->SetBlock(m_currentCurveId, tempCurvePtPoly);
-                m_curveBlock->Modified();
-                vtkNew<vtkPolyData> tempCurvePolyLine;
-                tempCurvePolyLine->DeepCopy(m_curvePoly);
-                m_curvePolyLineBlock->SetBlock(m_currentCurveId,
-                                               tempCurvePolyLine);
-                m_curvePolyLineBlock->Modified();
-                vtkNew<vtkPolyData> curveArrowPoly;
-                MakeArrow(m_meshData, m_curvePolyLineBlock, 3, curveArrowPoly);
-                m_glyphCurveArrow->SetInputData(curveArrowPoly);
-                m_glyphCurveArrow->Update();
+            auto& innerVec = *innerVecPtr;  // Get reference to the inner vector
+            int targetId = meshPicker->GetPointId();
+            if (std::find(innerVec.begin(), innerVec.end(), targetId) ==
+                innerVec.end()) {
+                int oldId =
+                    m_grabPicker
+                        ->GetPointId();  // The existing point ID to replace
+                int newId = meshPicker->GetPointId();  // The new point ID
+
+                auto it = std::find(innerVec.begin(), innerVec.end(), oldId);
+                if (it != innerVec.end()) {
+                    *it = newId;  // Replace the old ID with the new ID
+                }
+                m_curveHighlightCtrlPoints->SetPoint(id, newLocation);
+                m_curveHighlightCtrlPoints->Modified();
+                m_curvectrlPointsPoly->Modified();
+                m_curvectrlVertexFilter->Update();
+                m_curvectrlVertexFilter->Modified();
+
+                if (pickFromBoundariesBox->isChecked()) {
+                    UpdateCurveData(m_curveHighlightCtrlPoints, m_curvePoly,
+                                    m_curveLandmarks, m_meshBoundaries);
+                } else {
+                    UpdateCurveData(m_curveHighlightCtrlPoints, m_curvePoly,
+                                    m_curveLandmarks, m_meshData);
+                }
+
+                m_curvePoly->Modified();
+                m_curveTubeFilter->SetInputData(m_curvePoly);
+                m_curveTubeFilter->Update();
+                m_curveTubeFilter->Modified();
+                m_curvePointsPoly->SetPoints(m_curveLandmarks);
+                m_curveVertexFilter->SetInputData(m_curvePointsPoly);
+                m_curveVertexFilter->Update();
+                m_curveVertexFilter->Modified();
+                vtkNew<vtkPolyData> tempCtrlPoly;
+                tempCtrlPoly->DeepCopy(m_curvectrlPointsPoly);
+                m_curveCtrlBlock->SetBlock(m_currentCurveId, tempCtrlPoly);
+                m_curveCtrlBlock->Modified();
+                if (m_curveHighlightCtrlPoints->GetNumberOfPoints() > 2) {
+                    vtkNew<vtkPolyData> tempCurvePtPoly;
+                    tempCurvePtPoly->DeepCopy(m_curvePointsPoly);
+                    m_curveBlock->SetBlock(m_currentCurveId, tempCurvePtPoly);
+                    m_curveBlock->Modified();
+                    vtkNew<vtkPolyData> tempCurvePolyLine;
+                    tempCurvePolyLine->DeepCopy(m_curvePoly);
+                    m_curvePolyLineBlock->SetBlock(m_currentCurveId,
+                                                   tempCurvePolyLine);
+                    m_curvePolyLineBlock->Modified();
+                    vtkNew<vtkPolyData> curveArrowPoly;
+                    MakeArrow(m_meshData, m_curvePolyLineBlock, 3,
+                              curveArrowPoly);
+                    m_glyphCurveArrow->SetInputData(curveArrowPoly);
+                    m_glyphCurveArrow->Update();
+                }
+                m_renderer->GetRenderWindow()->Render();
             }
-            m_renderer->GetRenderWindow()->Render();
         }
     }
 }
@@ -4090,6 +3806,7 @@ void TemplateDigitiser::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Control || event->key() == Qt::Key_Shift) {
         if (surfaceSliderButton->isChecked()) {
             if (m_editableSurface == 1 && !surfaceIronButton->isChecked()) {
+                m_surfaceChanged = 0;
                 vtkNew<vtkPolyData> epmptyPoly;
                 m_surfaceTubeFilter->SetInputData(epmptyPoly);
                 m_surfaceTubeFilter->Update();
@@ -4100,8 +3817,6 @@ void TemplateDigitiser::keyPressEvent(QKeyEvent* event) {
                 m_surfaceCtrlVertexFilter->SetInputData(epmptyPoly);
                 m_surfaceCtrlVertexFilter->Update();
                 m_surfaceCtrlVertexFilter->Modified();
-                m_glyphSurfaceArrow->SetInputData(epmptyPoly);
-                m_glyphSurfaceArrow->Update();
                 m_surfaceLabelVertexFilter->SetInputData(epmptyPoly);
                 m_surfaceLabelVertexFilter->Update();
                 m_surfaceLabelVertexFilter->Modified();
@@ -4373,7 +4088,10 @@ void TemplateDigitiser::InterpolateSurface() {
         if (m_surfaceBlock->GetNumberOfBlocks() < m_surfacePatchNOP) {
             surfaceAddButton->setEnabled(1);
         }
-        curvePickSourceComboBox->addItem(QString::number(m_currentSurfaceId));
+        QString newItem = QString::number(m_currentSurfaceId);
+        if (fromSurfaceComboBox->findText(newItem, Qt::MatchExactly) == -1) {
+            fromSurfaceComboBox->addItem(newItem);
+        }
     }
 
     surfaceInterpolateButton->setEnabled(0);
@@ -4383,11 +4101,21 @@ void TemplateDigitiser::InterpolateSurface() {
 
 TemplateDigitiser::~TemplateDigitiser() {
     delete m_vtkRenderWidget;
-    delete m_curveType;
-    for (int i = 0; i < m_surfacePtsIds->size(); i++) {
-        delete m_surfacePtsIds->at(i);
+    if (m_curveType) {
+        delete m_curveType;
     }
-    delete m_surfacePtsIds;
+    if (m_surfacePtsIds) {
+        for (int i = 0; i < m_surfacePtsIds->size(); i++) {
+            delete m_surfacePtsIds->at(i);
+        }
+        delete m_surfacePtsIds;
+    }
+    if (m_curvePtsIds) {
+        for (int i = 0; i < m_curvePtsIds->size(); i++) {
+            delete m_curvePtsIds->at(i);
+        }
+        delete m_curvePtsIds;
+    }
     delete m_BlueNoiseThread;
     delete m_statThread;
     delete m_mutex;

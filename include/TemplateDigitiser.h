@@ -106,6 +106,7 @@
 #include <vtkExtractPolyDataGeometry.h>
 #include <vtkFeatureEdges.h>
 #include <vtkFloatArray.h>
+#include <vtkGenericCell.h>
 #include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkGenericRenderWindowInteractor.h>
 #include <vtkGeometryFilter.h>
@@ -175,6 +176,7 @@
 #include <vtkWindowedSincPolyDataFilter.h>
 #include <vtkXMLMultiBlockDataWriter.h>
 #include <vtkXMLPolyDataWriter.h>
+#include <vtkKochanekSpline.h>
 
 #include <Eigen/Dense>
 #include <Eigen/Eigen>
@@ -212,18 +214,14 @@
 #include <vector>
 
 #include "BlueNoiseThread.h"
+#include "CuttingThread.h"
 #include "ProSetMenu.fwd.h"
+#include "SpinnerDialog.h"
 #include "StatusReporterThread.h"
+#include "RectSlimMapper.h"
 
 class TemplateDigitiser : public QMainWindow {
    private:
-    struct AStarNode {
-        vtkIdType vertexId;
-        double fScore;
-        bool operator>(const AStarNode &other) const {
-            return fScore > other.fScore;
-        }
-    };
     // Data
     QMutex *m_mutex;
     bool m_ignoreInside = 1;
@@ -238,16 +236,19 @@ class TemplateDigitiser : public QMainWindow {
     int m_currentSurfaceId = 0;
     bool m_editableSurface = 1;
     bool m_surfaceChanged = 0;
-
+    double m_splineTension = 0.5;  // Range: -1.0 to 1.0 (higher = flatter)
     vtkSmartPointer<vtkIntArray> m_maskArray;
     int m_brushSize = 1;
     bool m_mouseIsClicked = 0;
-
+    double m_diagonal = 0;
+    const double m_tubeRadRatio = 0.3 / 170.304;
+    const double m_arrowSizeRatio = 10.0 / 170.304;
+    double m_sizeConstant = 0;
     std::vector<int> *m_curveType = nullptr;
     vtkPolyData *m_meshData;
     vtkSmartPointer<vtkIntArray> m_fixedPtsIds;
     std::vector<std::vector<int> *> *m_surfacePtsIds = nullptr;
-
+    std::vector<std::vector<int> *> *m_curvePtsIds = nullptr;
     BlueNoiseThread *m_BlueNoiseThread = nullptr;
     StatusReporterThread *m_statThread = nullptr;
 
@@ -349,8 +350,6 @@ class TemplateDigitiser : public QMainWindow {
     vtkSmartPointer<vtkActor> m_meshBoundActor;
     vtkSmartPointer<vtkPolyData> m_meshBoundaries;
 
-    double m_sizeConstant = 0;
-
     // Toolbar
     QToolBar *mainToolbar;
     QToolBar *fixedLandmarkToolbar;
@@ -364,8 +363,8 @@ class TemplateDigitiser : public QMainWindow {
     // box
     QComboBox *curveSelectComboBox;
     QComboBox *surfaceSelectComboBox;
-    QComboBox *curvePickSourceComboBox;
-    QComboBox *surfacePickSourceComboBox;
+    QComboBox *fromSurfaceComboBox;
+    QComboBox *fromCurveComboBox;
     QSpinBox *pointSizeSpinBox;
     QSpinBox *lineSizeSpinBox;
     QSpinBox *brushSizeSpinBox;
@@ -454,14 +453,7 @@ class TemplateDigitiser : public QMainWindow {
                    vtkPolyData *output);
     void CosmeticCurve(vtkPoints *ctrlPts, vtkPolyData *outputCurve);
     void MeshCutter(vtkPoints *pts);
-    void CutMeshWithCurve(vtkPolyData *inputMesh, vtkPoints *curvePoints,
-                          vtkPolyData *outputCutMesh);
-    void GetCutterCurve(vtkPolyData *Poly, vtkPoints *curvePts,
-                        vtkIdList *outCurveIds);
-    void DijkstraEdgeSearch(vtkPolyData *mesh, vtkPolyData *closedCurve,
-                            vtkIdList *edgePointIds);
-    void AStarEdgeSearch(vtkPolyData *mesh, vtkPolyData *closedCurve,
-                         vtkIdList *edgePointIds);
+
     void ChangePointSize(int index);
     void ChangeLineSize(int index);
     void OutlineIdFinder(int u, int v, std::vector<int> *output);
@@ -487,6 +479,9 @@ class TemplateDigitiser : public QMainWindow {
     void PrepareClosing(QCloseEvent *event);
     void GetPlaneBoundaryPoints(vtkPolyData *plane, vtkPoints *boundaryPoints);
     void InterpolateSurface();
+    void UpdateSurfaceDirection();
+    void ResetPatch();
+    
     ~TemplateDigitiser();
 
    protected:

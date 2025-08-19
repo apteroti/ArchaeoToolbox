@@ -20,7 +20,8 @@ set(SOURCE_FILES
     src/SlidingThread.cpp src/StatusReporterThread.cpp src/PCAWindow.cpp
     src/RecoverLMThread.cpp src/ExportDialogue.cpp src/RegistrationThread.cpp
     src/BlueNoiseThread.cpp src/HelpBrowser.cpp src/ImportThread.cpp src/ExclusionPaint.cpp 
-    src/CPD3D.cpp
+    src/CPD3D.cpp src/DecimationDialog.cpp src/CuttingThread.cpp src/RectSlimMapper.cpp
+    
 
     include/MainWindow.h include/SpecimenDigitiser.h include/DataBase.h
     include/MainWindow.fwd.h include/ProSetMenu.h include/ProSetMenu.fwd.h
@@ -30,6 +31,8 @@ set(SOURCE_FILES
     include/StatusReporterThread.h include/PCAWindow.h include/RecoverLMThread.h
     include/ExportDialogue.h include/RegistrationThread.h include/BlueNoiseThread.h
     include/HelpBrowser.h include/ImportThread.h include/ExclusionPaint.h include/CPD3D.h
+    include/DecimationDialog.h include/VCGDefinitions.h include/DecimateThread.h
+    include/SpinnerDialog.h include/CuttingThread.h include/RectSlimMapper.h
     
 
     Resources/resources.qrc
@@ -62,7 +65,6 @@ if(UNIX)
     )
 endif()
 
-# Find packages (common)
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui Charts Test Help)
 find_package(VTK REQUIRED COMPONENTS
     vtkCommonColor
@@ -112,7 +114,7 @@ else()
     message(WARNING "OpenMP not found. Parallelization disabled")
 endif()
 
-# Link libraries (use keyword form consistently)
+# Link libraries
 target_link_libraries(${PROJECT_NAME} PUBLIC
     ${VTK_LIBRARIES}
     Qt5::Widgets Qt5::Gui Qt5::Core Qt5::Charts Qt5::Help Qt5::Test

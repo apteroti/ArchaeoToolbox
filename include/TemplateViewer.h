@@ -127,6 +127,8 @@
 
 class TemplateViewer: public QMainWindow{
 private:
+    double m_diagonal = 0;
+    const double m_arrowSizeRatio = 10.0 / 170.304;
     vtkSmartPointer<vtkPolyData> m_meshData;
     MainWindow* m_parent;
     vtkSmartPointer<vtkPoints> m_typeI;

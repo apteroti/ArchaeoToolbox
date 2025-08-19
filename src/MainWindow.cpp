@@ -510,39 +510,73 @@ void MainWindow::LoadMesh() {
                 cleanFilter->SetInputData(plyReader->GetOutput());
                 cleanFilter->Update();
             }
-            vtkNew <vtkTriangleFilter> triangleFilter;
-            triangleFilter->SetInputConnection(cleanFilter->GetOutputPort());
-            triangleFilter->Update();
+            if (cleanFilter->GetOutput()->GetNumberOfPoints() > 0) {
+                vtkNew<vtkTriangleFilter> triangleFilter;
+                triangleFilter->SetInputConnection(
+                    cleanFilter->GetOutputPort());
+                triangleFilter->Update();
+                MyMesh vcgMesh;
+                ConvertVTKToVCG(triangleFilter->GetOutput(), vcgMesh);
+                vtkNew<vtkPolyData> tempPoly;
+                DecimationDialog dialog(this);
+                if (dialog.exec() == QDialog::Accepted) {
+                    float percent = dialog.GetSelectedPercentage()/100.0;
+                    DecimateWithAnimatedDialog(vcgMesh, percent);
+                    ConvertVCGToVTK(vcgMesh, tempPoly);
+                }
+                else{
+                    vcg::tri::Clean<MyMesh>::RemoveDegenerateFace(vcgMesh);
+                    vcg::tri::Clean<MyMesh>::RemoveDuplicateFace(vcgMesh);
+                    vcg::tri::Clean<MyMesh>::RemoveDuplicateVertex(vcgMesh);
+                    vcg::tri::Clean<MyMesh>::RemoveUnreferencedVertex(vcgMesh);
+                    vcg::tri::UpdateTopology<MyMesh>::FaceFace(vcgMesh);
+                    vcg::tri::Clean<MyMesh>::RemoveNonManifoldFace(vcgMesh);
+                    vcg::tri::UpdateTopology<MyMesh>::FaceFace(vcgMesh);
+                    vcg::tri::Clean<MyMesh>::RemoveNonManifoldVertex(vcgMesh);
+                    vcg::tri::UpdateTopology<MyMesh>::FaceFace(vcgMesh);
+                    vcg::tri::UpdateBounding<MyMesh>::Box (vcgMesh);
+                    vcg::tri::UpdateTopology<MyMesh>::VertexFace(vcgMesh);
+                    vcg::tri::UpdateFlags<MyMesh>::VertexBorderFromNone(vcgMesh);
+                    ConvertVCGToVTK(vcgMesh, tempPoly);
+                }
 
-            string realName = QFileInfo(fileName).baseName().toStdString();
-            // name template is reserved
-            if (realName == "Template") {
-                realName += "1";
-            }
-            while (m_dataBase->CheckMembership(realName)) {
-                realName += "_Duplicate";
-            }
+                string realName = QFileInfo(fileName).baseName().toStdString();
+                // name template is reserved
+                if (realName == "Template") {
+                    realName += "1";
+                }
+                while (m_dataBase->CheckMembership(realName)) {
+                    realName += "_Duplicate";
+                }
 
-            m_dataBase->AddNode(realName, triangleFilter->GetOutput(), "Mesh");
-            m_treeItem = new QTreeWidgetItem();
-            m_treeItem->setText(0, QString::fromStdString(realName));
-            m_treeItem->setText(1, "Mesh");
-            m_treeWidget->addTopLevelItem(m_treeItem);
-            if (m_treeWidget->selectedItems().size() == 0 &&
-                m_treeWidget->topLevelItemCount()) {
-                m_treeWidget
-                    ->topLevelItem(m_treeWidget->topLevelItemCount() - 1)
-                    ->setSelected(true);
+                m_dataBase->AddNode(realName, tempPoly, "Mesh");
+                m_treeItem = new QTreeWidgetItem();
+                m_treeItem->setText(0, QString::fromStdString(realName));
+                m_treeItem->setText(1, "Mesh");
+                m_treeWidget->addTopLevelItem(m_treeItem);
+                if (m_treeWidget->selectedItems().size() == 0 &&
+                    m_treeWidget->topLevelItemCount()) {
+                    m_treeWidget
+                        ->topLevelItem(m_treeWidget->topLevelItemCount() - 1)
+                        ->setSelected(true);
+                }
+                if (meshPlotToolbarAction->isEnabled() != 1) {
+                    meshPlotToolbarAction->setEnabled(1);
+                    // exportVTKAction->setEnabled(1);
+                }
+                if (!superImpositionToolbarAction->isEnabled()) {
+                    superImpositionToolbarAction->setEnabled(1);
+                }
+                if (!pcaToolbarAction->isEnabled()) {
+                    pcaToolbarAction->setEnabled(1);
+                }
             }
-            if (meshPlotToolbarAction->isEnabled() != 1) {
-                meshPlotToolbarAction->setEnabled(1);
-                // exportVTKAction->setEnabled(1);
-            }
-            if (!superImpositionToolbarAction->isEnabled()) {
-                superImpositionToolbarAction->setEnabled(1);
-            }
-            if (!pcaToolbarAction->isEnabled()) {
-                pcaToolbarAction->setEnabled(1);
+            else{
+                auto errorDialogue = QMessageBox(this);
+                errorDialogue.setIcon(QMessageBox::Critical);
+                errorDialogue.setWindowTitle("Error");
+                errorDialogue.setText("The file is empty!");
+                errorDialogue.exec();
             }
         }
         if (!fileName.endsWith(".obj") && !fileName.endsWith(".ply")) {
@@ -553,6 +587,216 @@ void MainWindow::LoadMesh() {
             errorDialogue.exec();
         }
     }
+}
+
+void MainWindow::DecimateWithAnimatedDialog(MyMesh& m, float reductionRatio) {
+    // Modal dialog
+    WaitDialog waitDialog(this);
+    waitDialog.setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+    waitDialog.setModal(true);
+    waitDialog.setFixedSize(200, 150);
+    
+    QVBoxLayout layout(&waitDialog);
+
+    QLabel msg("Decimating mesh...");
+    msg.setAlignment(Qt::AlignCenter);
+    SpinnerWidget spinner;
+    layout.addWidget(&msg);
+    layout.addWidget(&spinner, 0, Qt::AlignCenter);
+
+    // Spinner thread
+    SpinnerThread spinThread(&spinner);
+    QObject::connect(&spinThread, &SpinnerThread::updateAngle, &spinner, &SpinnerWidget::setAngle);
+
+    // Decimation thread
+    QThread decThread;
+    DecimateWorker* worker = new DecimateWorker;
+    worker->mesh = &m;
+    worker->ratio = reductionRatio;
+    worker->moveToThread(&decThread);
+
+    QObject::connect(&decThread, &QThread::started, worker, &DecimateWorker::run);
+    QObject::connect(worker, &DecimateWorker::finished, &decThread, &QThread::quit);
+    QObject::connect(worker, &DecimateWorker::finished, &spinThread, &QThread::quit);
+    QObject::connect(worker, &DecimateWorker::finished, &waitDialog, &QDialog::accept);
+    QObject::connect(&decThread, &QThread::finished, worker, &QObject::deleteLater);
+
+    // Start both threads
+    spinThread.start();
+    decThread.start();
+
+    waitDialog.exec(); // Blocks UI
+
+    // Cleanup
+    spinThread.wait();
+    decThread.wait();
+}
+
+void MainWindow::ConvertVTKToVCG(vtkPolyData* polyData, MyMesh& vcgMesh) {
+    // Clear existing mesh
+    vcgMesh.Clear();
+
+    // Validate input
+    if (!polyData || !polyData->GetPoints()) {
+        qWarning() << "Invalid VTK polydata input";
+        return;
+    }
+
+    vtkPoints* points = polyData->GetPoints();
+    vtkIdType numPoints = points->GetNumberOfPoints();
+    
+    // Add vertices
+    for (vtkIdType i = 0; i < numPoints; ++i) {
+        double p[3];
+        points->GetPoint(i, p);
+        vcg::tri::Allocator<MyMesh>::AddVertex(vcgMesh, vcg::Point3f(p[0], p[1], p[2]));
+    }
+
+    // Add faces 
+    vtkCellArray* polys = polyData->GetPolys();
+    polys->InitTraversal();
+    vtkIdType npts, *pts;
+    
+    while (polys->GetNextCell(npts, pts)) {
+        if (npts != 3) continue;  // Only triangles
+        
+        // Pass vertex pointers to AddFace
+        vcg::tri::Allocator<MyMesh>::AddFace(
+            vcgMesh,
+            &vcgMesh.vert[pts[0]],
+            &vcgMesh.vert[pts[1]],
+            &vcgMesh.vert[pts[2]]
+        );
+    }
+
+    // Transfer normals if available
+    vtkFloatArray* normals =
+        vtkFloatArray::SafeDownCast(polyData->GetPointData()->GetNormals());
+    if (normals && normals->GetNumberOfTuples() == numPoints) {
+        for (vtkIdType i = 0; i < numPoints; ++i) {
+            vcgMesh.vert[i].N() =
+                vcg::Point3f(normals->GetTypedComponent(i, 0),
+                             normals->GetTypedComponent(i, 1),
+                             normals->GetTypedComponent(i, 2));
+        }
+    }
+
+    // Transfer colors if available
+    vtkUnsignedCharArray* colors = vtkUnsignedCharArray::SafeDownCast(
+        polyData->GetPointData()->GetScalars());
+    if (colors && colors->GetNumberOfComponents() == 3 &&
+        colors->GetNumberOfTuples() == numPoints) {
+        for (vtkIdType i = 0; i < numPoints; ++i) {
+            unsigned char c[3];
+            colors->GetTypedTuple(i, c);
+            vcgMesh.vert[i].C() = vcg::Color4b(c[0], c[1], c[2], 255);
+        }
+    }
+
+    // Transfer texture coordinates if available
+    vtkFloatArray* texCoords =
+        vtkFloatArray::SafeDownCast(polyData->GetPointData()->GetTCoords());
+    if (texCoords && texCoords->GetNumberOfComponents() >= 2 &&
+        texCoords->GetNumberOfTuples() == numPoints) {
+        for (vtkIdType i = 0; i < numPoints; ++i) {
+            float uv[2];
+            texCoords->GetTypedTuple(i, uv);
+            vcgMesh.vert[i].T() = vcg::TexCoord2f(uv[0], uv[1]);
+        }
+    }
+
+    // CRITICAL: Update topology and flags
+    vcg::tri::UpdateTopology<MyMesh>::VertexFace(vcgMesh);
+    vcg::tri::UpdateTopology<MyMesh>::FaceFace(vcgMesh);
+    vcg::tri::UpdateFlags<MyMesh>::VertexBorderFromNone(vcgMesh);
+    
+    // Update normals and bounding box
+    vcg::tri::UpdateNormal<MyMesh>::PerVertexNormalized(vcgMesh);
+    vcg::tri::UpdateBounding<MyMesh>::Box(vcgMesh);
+}
+
+void MainWindow::ConvertVCGToVTK(MyMesh& vcgMesh, vtkPolyData* polyData) {
+    if (!polyData) return;
+
+    // Ensure compact vertex/face arrays
+    vcg::tri::Allocator<MyMesh>::CompactVertexVector(vcgMesh);
+    vcg::tri::Allocator<MyMesh>::CompactFaceVector(vcgMesh);
+
+    auto points = vtkSmartPointer<vtkPoints>::New();
+    auto polys  = vtkSmartPointer<vtkCellArray>::New();
+
+    // Add vertices
+    points->SetNumberOfPoints(vcgMesh.vert.size());
+    for (size_t i = 0; i < vcgMesh.vert.size(); ++i) {
+        auto& v = vcgMesh.vert[i];
+        points->SetPoint(static_cast<vtkIdType>(i), v.P()[0], v.P()[1], v.P()[2]);
+    }
+
+    // Add faces
+    for (size_t i = 0; i < vcgMesh.face.size(); ++i) {
+        auto& f = vcgMesh.face[i];
+        vtkIdType pts[3] = {
+            static_cast<vtkIdType>(vcg::tri::Index(vcgMesh, f.V(0))),
+            static_cast<vtkIdType>(vcg::tri::Index(vcgMesh, f.V(1))),
+            static_cast<vtkIdType>(vcg::tri::Index(vcgMesh, f.V(2)))};
+
+        if (pts[0] < 0 || pts[1] < 0 || pts[2] < 0) continue; // skip invalid
+        polys->InsertNextCell(3, pts);
+    }
+
+    polyData->SetPoints(points);
+    polyData->SetPolys(polys);
+
+    // Create GroupIds array (per-cell)
+    auto groupIds = vtkSmartPointer<vtkFloatArray>::New();
+    groupIds->SetNumberOfComponents(1);
+    groupIds->SetName("GroupIds");
+    groupIds->SetNumberOfTuples(polyData->GetNumberOfCells());
+    for (vtkIdType i = 0; i < polyData->GetNumberOfCells(); ++i) {
+        groupIds->SetValue(i, 0.0f);
+    }
+    polyData->GetCellData()->AddArray(groupIds);
+    /*
+    // Normals
+    if (!vcgMesh.vert.empty() && vcgMesh.vert[0].IsNormalEnabled()) {
+        auto normals = vtkSmartPointer<vtkFloatArray>::New();
+        normals->SetNumberOfComponents(3);
+        normals->SetName("Normals");
+
+        for (size_t i = 0; i < vcgMesh.vert.size(); ++i) {
+            auto& n = vcgMesh.vert[i].N();
+            normals->InsertNextTuple3(n[0], n[1], n[2]);
+        }
+        polyData->GetPointData()->SetNormals(normals);
+    }
+
+    // Colors
+    if (!vcgMesh.vert.empty() && vcgMesh.vert[0].IsColorEnabled()) {
+        auto colors = vtkSmartPointer<vtkUnsignedCharArray>::New();
+        colors->SetNumberOfComponents(3);
+        colors->SetName("Colors");
+
+        for (size_t i = 0; i < vcgMesh.vert.size(); ++i) {
+            auto& c = vcgMesh.vert[i].C();
+            unsigned char rgb[3] = {c[0], c[1], c[2]};
+            colors->InsertNextTypedTuple(rgb);
+        }
+        polyData->GetPointData()->SetScalars(colors);
+    }
+
+    // Texture coordinates
+    if (!vcgMesh.vert.empty() && vcgMesh.vert[0].IsTexCoordEnabled()) {
+        auto texCoords = vtkSmartPointer<vtkFloatArray>::New();
+        texCoords->SetNumberOfComponents(2);
+        texCoords->SetName("TexCoords");
+
+        for (size_t i = 0; i < vcgMesh.vert.size(); ++i) {
+            auto& t = vcgMesh.vert[i].T();
+            texCoords->InsertNextTuple2(t.U(), t.V());
+        }
+        polyData->GetPointData()->SetTCoords(texCoords);
+    }*/
+   polyData->Modified();
 }
 
 void MainWindow::ExportCSV() {
@@ -1100,8 +1344,8 @@ void MainWindow::UpdateActiveData() {
                             ->parent()
                             ->text(0)
                             .toStdString();
-            auto branchName = m_treeWidget->selectedItems()[0]->text(0)
-                            .toStdString();
+            auto branchName =
+                m_treeWidget->selectedItems()[0]->text(0).toStdString();
             std::string dType = m_dataBase->GetGeometryType(name);
             if (dType == "Mesh") {
                 m_currentMesh = m_dataBase->GetPolyNode(name);
@@ -1112,7 +1356,8 @@ void MainWindow::UpdateActiveData() {
                 vtkPoints* fixedLM = m_dataBase->GetTypeI(name);
                 vtkPoints* curveLM = m_dataBase->GetCurveSliders(name);
                 vtkPoints* surfaceLM = m_dataBase->GetSurfaceSliders(name);
-                PlotLandmarks(fixedLM, curveLM, surfaceLM, m_currentMesh, branchName);
+                PlotLandmarks(fixedLM, curveLM, surfaceLM, m_currentMesh,
+                              branchName);
                 m_mainRenderer->ResetCamera();
                 m_mainRenderer->GetRenderWindow()->Render();
             }
@@ -1781,11 +2026,10 @@ void MainWindow::TemplateStatus(bool status) {
 
 void MainWindow::SetTemplateMesh(vtkPolyData* mesh) { m_templateMesh = mesh; }
 
-void MainWindow::SetTemplateMeshType(std::string type){
-    if(type == ""){
-        m_templateMeshType = "Mesh"; //handling legacy template files
-    }
-    else{
+void MainWindow::SetTemplateMeshType(std::string type) {
+    if (type == "") {
+        m_templateMeshType = "Mesh";  // handling legacy template files
+    } else {
         m_templateMeshType = type;
     }
 }
@@ -1907,16 +2151,19 @@ void MainWindow::PlotLandmarks(vtkPoints* fixedLandmarks,
         prop->SetInputData(mesh);
         prop->Update();
         const double area = prop->GetSurfaceArea();
-        const double diagonal = std::sqrt(area); // Approximate characteristic length
+        const double diagonal =
+            std::sqrt(area);  // Approximate characteristic length
         // Compute size factor based on application-specific parameters
         // Normalized between 0-1 range first, then scaled
-        double sizeFactor = (m_typeINOL * 0.03 + 
-                    m_surfaceNOS * 0.025 +
-                    m_surfacePatchNOP * m_surfacePatchUNOS * m_surfacePatchVNOS * 0.025 +
-                    m_curveNOS * m_curveNOC * 0.025);
+        double sizeFactor = (m_typeINOL * 0.03 + m_surfaceNOS * 0.025 +
+                             m_surfacePatchNOP * m_surfacePatchUNOS *
+                                 m_surfacePatchVNOS * 0.025 +
+                             m_curveNOS * m_curveNOC * 0.025);
 
         // Apply sigmoid function for smooth clamping
-        sizeFactor = 1.0 / (1.0 + std::exp(-0.1*(sizeFactor - 50.0))); // Sigmoid normalization
+        sizeFactor =
+            1.0 / (1.0 + std::exp(-0.1 * (sizeFactor -
+                                          50.0)));  // Sigmoid normalization
 
         // Map to reasonable visual range (1%-5% of characteristic length)
         const double minSize = 0.01 * diagonal;
@@ -2004,7 +2251,8 @@ void MainWindow::PlotLandmarks(vtkPoints* fixedLandmarks,
 
 void MainWindow::PlotLandmarks(vtkPoints* fixedLandmarks,
                                vtkPoints* curveLandmarks,
-                               vtkPoints* surfaceLandmarks, vtkPolyData* mesh, std::string landmarkType) {
+                               vtkPoints* surfaceLandmarks, vtkPolyData* mesh,
+                               std::string landmarkType) {
     if (fixedLandmarks->GetNumberOfPoints() > 0 ||
         curveLandmarks->GetNumberOfPoints() > 0 ||
         surfaceLandmarks->GetNumberOfPoints() > 0) {
@@ -2012,16 +2260,19 @@ void MainWindow::PlotLandmarks(vtkPoints* fixedLandmarks,
         prop->SetInputData(mesh);
         prop->Update();
         const double area = prop->GetSurfaceArea();
-        const double diagonal = std::sqrt(area); // Approximate characteristic length
+        const double diagonal =
+            std::sqrt(area);  // Approximate characteristic length
         // Compute size factor based on application-specific parameters
         // Normalized between 0-1 range first, then scaled
-        double sizeFactor = (m_typeINOL * 0.03 + 
-                    m_surfaceNOS * 0.025 +
-                    m_surfacePatchNOP * m_surfacePatchUNOS * m_surfacePatchVNOS * 0.025 +
-                    m_curveNOS * m_curveNOC * 0.025);
+        double sizeFactor = (m_typeINOL * 0.03 + m_surfaceNOS * 0.025 +
+                             m_surfacePatchNOP * m_surfacePatchUNOS *
+                                 m_surfacePatchVNOS * 0.025 +
+                             m_curveNOS * m_curveNOC * 0.025);
 
         // Apply sigmoid function for smooth clamping
-        sizeFactor = 1.0 / (1.0 + std::exp(-0.1*(sizeFactor - 50.0))); // Sigmoid normalization
+        sizeFactor =
+            1.0 / (1.0 + std::exp(-0.1 * (sizeFactor -
+                                          50.0)));  // Sigmoid normalization
 
         // Map to reasonable visual range (1%-5% of characteristic length)
         const double minSize = 0.01 * diagonal;
@@ -2081,37 +2332,34 @@ void MainWindow::PlotLandmarks(vtkPoints* fixedLandmarks,
             m_surfaceLmActor->SetMapper(surfacePointMapper);
             m_surfaceLmActor->Modified();
             m_mainRenderer->AddActor(m_surfaceLmActor);
-
         }
-        if(landmarkType == "Type I-II"){
+        if (landmarkType == "Type I-II") {
             m_fixedLmActor->GetProperty()->SetOpacity(1);
-            m_fixedLmActor->GetProperty()->SetDiffuse(0.3);    // Low diffuse glassy
+            m_fixedLmActor->GetProperty()->SetDiffuse(
+                0.3);  // Low diffuse glassy
             m_fixedLmActor->GetProperty()->SetSpecular(0.8);
             m_fixedLmActor->GetProperty()->SetSpecularPower(120);
-            m_curveLmActor->GetProperty()->SetOpacity(0.3);
-            m_surfaceLmActor->GetProperty()->SetOpacity(0.3);
+            m_curveLmActor->GetProperty()->SetOpacity(m_LmOpacity);
+            m_surfaceLmActor->GetProperty()->SetOpacity(m_LmOpacity);
             m_fixedLmActor->Modified();
             m_curveLmActor->Modified();
             m_surfaceLmActor->Modified();
-        }
-        else if(landmarkType == "Curve Slider"){
-            m_fixedLmActor->GetProperty()->SetOpacity(0.3);
+        } else if (landmarkType == "Curve Slider") {
+            m_fixedLmActor->GetProperty()->SetOpacity(m_LmOpacity);
             m_curveLmActor->GetProperty()->SetOpacity(1);
-            m_curveLmActor->GetProperty()->SetDiffuse(0.3);    
+            m_curveLmActor->GetProperty()->SetDiffuse(0.3);
             m_curveLmActor->GetProperty()->SetSpecular(0.8);
             m_curveLmActor->GetProperty()->SetSpecularPower(120);
-            m_surfaceLmActor->GetProperty()->SetOpacity(0.3);
+            m_surfaceLmActor->GetProperty()->SetOpacity(m_LmOpacity);
             m_fixedLmActor->Modified();
             m_curveLmActor->Modified();
             m_surfaceLmActor->Modified();
-                
-        }
-        else if(landmarkType == "Surface Slider"){
-            m_fixedLmActor->GetProperty()->SetOpacity(0.3);
-            m_curveLmActor->GetProperty()->SetOpacity(0.3);
+
+        } else if (landmarkType == "Surface Slider") {
+            m_fixedLmActor->GetProperty()->SetOpacity(m_LmOpacity);
+            m_curveLmActor->GetProperty()->SetOpacity(m_LmOpacity);
             m_surfaceLmActor->GetProperty()->SetOpacity(1);
-            m_surfaceLmActor->GetProperty()->SetOpacity(1);
-            m_surfaceLmActor->GetProperty()->SetDiffuse(0.3);    
+            m_surfaceLmActor->GetProperty()->SetDiffuse(0.3);
             m_surfaceLmActor->GetProperty()->SetSpecular(0.8);
             m_surfaceLmActor->GetProperty()->SetSpecularPower(120);
             m_fixedLmActor->Modified();
@@ -2204,9 +2452,10 @@ void MainWindow::PaintMesh(std::string name) {
 
 void MainWindow::ReadLMDataFromFile() {
     if (TemplateIsSet) {
-        QString csvFileName =
-            QFileDialog::getOpenFileName(this, "CSV Files", QDir::homePath(),
-                                         "CSV Files (*.csv);;All Files (*)", nullptr, QFileDialog::DontUseNativeDialog);
+        QString csvFileName = QFileDialog::getOpenFileName(
+            this, "CSV Files", QDir::homePath(),
+            "CSV Files (*.csv);;All Files (*)", nullptr,
+            QFileDialog::DontUseNativeDialog);
         if (csvFileName.isEmpty()) {
             // do nothing
             // return;
@@ -2305,7 +2554,7 @@ void MainWindow::SaveProject() {
             textItem += QString::fromStdString(name);
             data << textItem.join("") << ENDL;
             textItem.clear();
-            
+
             textItem += QString("Type") + ",";
             textItem += QString::fromStdString(type);
             data << textItem.join("") << ENDL;
@@ -2394,9 +2643,10 @@ void MainWindow::SaveProject() {
 
 void MainWindow::ReadProjectFromFile() {
     if (TemplateIsSet) {
-        QString atpFileName =
-            QFileDialog::getOpenFileName(this, "atp Files", QDir::homePath(),
-                                         "atp Files (*.atp);;All Files (*)", nullptr, QFileDialog::DontUseNativeDialog);
+        QString atpFileName = QFileDialog::getOpenFileName(
+            this, "atp Files", QDir::homePath(),
+            "atp Files (*.atp);;All Files (*)", nullptr,
+            QFileDialog::DontUseNativeDialog);
         if (atpFileName.isEmpty()) {
             // do nothing
             // return;

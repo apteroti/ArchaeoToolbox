@@ -175,7 +175,7 @@ SuperImposition::SuperImposition(DataBase *dataBase, MainWindow *parent,
     showPtsIdsLabel->setText(tr("Show Landmark ids"));
     mainToolbar->addWidget(showPtsIdsLabel);
     showPtsIdsBox = new QCheckBox();
-    showPtsIdsBox->setChecked(true);
+    showPtsIdsBox->setChecked(false);
     mainToolbar->addWidget(showPtsIdsBox);
     mainToolbar->addSeparator();
     connect(showPtsIdsBox, &QCheckBox::stateChanged, this,

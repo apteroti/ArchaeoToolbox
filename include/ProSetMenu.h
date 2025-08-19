@@ -87,7 +87,12 @@
 
 
 #include "MainWindow.fwd.h"
+#include "VCGDefinitions.h"
 #include "TemplateDigitiser.h"
+#include "DecimationDialog.h"
+#include "DecimateThread.h"
+#include "SpinnerDialog.h"
+
 #include <iostream>
 #include <string>
 
@@ -171,6 +176,9 @@ public:
     void Refresh(bool condition);
     void SetIgnorInternals(bool option);
     bool GetIgnorInternals();
+    void DecimateWithAnimatedDialog(MyMesh& m, float reductionRatio);
+    void ConvertVTKToVCG(vtkPolyData* polyData, MyMesh& vcgMesh);
+    void ConvertVCGToVTK(MyMesh& vcgMesh, vtkPolyData* polyData);
     ~ProSetMenu();
 
 protected:

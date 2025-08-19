@@ -145,6 +145,8 @@
 #include <vtkVertexGlyphFilter.h>
 #include <vtkWindowedSincPolyDataFilter.h>
 #include <vtkXMLStructuredGridWriter.h>
+#include <vtkKochanekSpline.h>
+#include <vtkGenericCell.h>
 
 #include <Eigen/Dense>
 #include <Eigen/Eigen>
@@ -187,16 +189,11 @@
 #include "Registration.h"
 #include "SlidingThread.h"
 #include "StatusReporterThread.h"
+#include "SpinnerDialog.h"
+#include "CuttingThread.h"
 
 class SpecimenDigitiser : public QMainWindow {
    private:
-    struct AStarNode {
-        vtkIdType vertexId;
-        double fScore;
-        bool operator>(const AStarNode &other) const {
-            return fScore > other.fScore;
-        }
-    };
     // Data
     bool m_ignoreInside = true;
     int m_typeINOL = 0;
@@ -212,6 +209,10 @@ class SpecimenDigitiser : public QMainWindow {
     bool m_dataDigitized = 0;
     bool m_surfaceChanged = 0;
     double m_sizeConstant = 0;
+    double m_splineTension = 0.5;  // Range: -1.0 to 1.0 (higher = flatter)
+    double m_diagonal = 0;
+    const double m_tubeRadRatio = 0.3 / 170.304;
+    const double m_arrowSizeRatio = 10 / 170.304;
     Registration *m_regPlot = nullptr;
     SlidingThread *m_slidingThread = nullptr;
     StatusReporterThread *m_slidingStatThread = nullptr;
@@ -219,6 +220,7 @@ class SpecimenDigitiser : public QMainWindow {
     vtkPolyData *m_meshData;
     vtkSmartPointer<vtkIntArray> m_fixedPtsIds;
     std::vector<std::vector<int> *> *m_surfacePtsIds = nullptr;
+    std::vector<std::vector<int> *> *m_curvePtsIds = nullptr;
     // Template data
     vtkSmartPointer<vtkPolyData> m_templateMesh = nullptr;
     vtkSmartPointer<vtkPoints> m_templateSurfaceSliders = nullptr;
@@ -341,8 +343,8 @@ class SpecimenDigitiser : public QMainWindow {
     // box
     QComboBox *curveSelectComboBox;
     QComboBox *surfaceSelectComboBox;
-    QComboBox *curvePickSourceComboBox;
-    QComboBox *surfacePickSourceComboBox;
+    QComboBox *fromSurfaceComboBox;
+    QComboBox *fromCurveComboBox;
     QSpinBox *pointSizeSpinBox;
     QSpinBox *lineSizeSpinBox;
     QCheckBox *showDiameterBox;
@@ -420,14 +422,6 @@ class SpecimenDigitiser : public QMainWindow {
     void FinalizeDigitization(Eigen::MatrixXd &Lndmrks, bool sendOffData);
     void CosmeticCurve(vtkPoints *ctrlPts, vtkPolyData *outputCurve);
     void MeshCutter(vtkPoints *pts);
-    void CutMeshWithCurve(vtkPolyData *inputMesh, vtkPoints *curvePoints,
-                          vtkPolyData *outputCutMesh);
-    void GetCutterCurve(vtkPolyData *Poly, vtkPoints *curvePts,
-                        vtkIdList *outCurveIds);
-    void DijkstraEdgeSearch(vtkPolyData *mesh, vtkPolyData *closedCurve,
-                            vtkIdList *edgePointIds);
-    void AStarEdgeSearch(vtkPolyData *mesh, vtkPolyData *closedCurve,
-                         vtkIdList *edgePointIds);
     void ChangePointSize(int index);
     void ChangeLineSize(int index);
     void OutlineIdFinder(int u, int v, std::vector<int> *output);
@@ -447,6 +441,8 @@ class SpecimenDigitiser : public QMainWindow {
     bool GetIgnorSetting();
     void GetPlaneBoundaryPoints(vtkPolyData *plane, vtkPoints *boundaryPoints);
     void InterpolateSurface();
+    void UpdateSurfaceDirection();
+    void ResetPatch();
     ~SpecimenDigitiser();
 
    public Q_SLOTS:

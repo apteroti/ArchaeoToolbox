@@ -223,7 +223,7 @@ void TemplateViewer::Plot() {
     prop->SetInputData(m_meshData);
     prop->Update();
     const double area = prop->GetSurfaceArea();
-    const double diagonal =
+    m_diagonal =
         std::sqrt(area);  // Approximate characteristic length
     // Compute size factor based on application-specific parameters
     // Normalized between 0-1 range first, then scaled
@@ -238,8 +238,8 @@ void TemplateViewer::Plot() {
         (1.0 + std::exp(-0.1 * (sizeFactor - 50.0)));  // Sigmoid normalization
 
     // Map to reasonable visual range (1%-5% of characteristic length)
-    const double minSize = 0.01 * diagonal;
-    const double maxSize = 0.05 * diagonal;
+    const double minSize = 0.01 * m_diagonal;
+    const double maxSize = 0.05 * m_diagonal;
     double landmarkSize = minSize + sizeFactor * (maxSize - minSize);
     // Apply to sphere source
     vtkNew<vtkSphereSource> sphereSource;
@@ -335,7 +335,7 @@ void TemplateViewer::Plot() {
     glyphCurveArrow->SetSourceData(curveArrow->GetOutput());
     glyphCurveArrow->SetVectorModeToUseVector();
     glyphCurveArrow->SetScaleModeToScaleByVector();
-    glyphCurveArrow->SetScaleFactor(10);
+    glyphCurveArrow->SetScaleFactor(m_arrowSizeRatio*m_diagonal);
     glyphCurveArrow->Update();
 
     vtkNew<vtkPolyDataMapper> glyph3DCurveMapper;
@@ -392,7 +392,7 @@ void TemplateViewer::Plot() {
     glyphSurfaceArrow->SetSourceData(curveArrow->GetOutput());
     glyphSurfaceArrow->SetVectorModeToUseVector();
     glyphSurfaceArrow->SetScaleModeToScaleByVector();
-    glyphSurfaceArrow->SetScaleFactor(10);
+    glyphSurfaceArrow->SetScaleFactor(m_arrowSizeRatio*m_diagonal);
     glyphSurfaceArrow->Update();
     vtkNew<vtkPolyDataMapper> glyph3DSurfaceMapper;
     glyph3DSurfaceMapper->SetInputData(glyphSurfaceArrow->GetOutput());

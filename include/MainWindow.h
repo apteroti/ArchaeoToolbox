@@ -130,6 +130,9 @@
 #include <vtkColorSeries.h>
 #include <vtkPLYReader.h>
 #include <vtkTriangleFilter.h>
+#include <vtkCellArray.h>
+#include <vtkSmartPointer.h>
+
 
 #include <Eigen/Eigen>
 #include <Eigen/Dense>
@@ -149,10 +152,16 @@
 #include "ImportThread.h"
 #include "ExportDialogue.h"
 #include "HelpBrowser.h"
+#include "DecimationDialog.h"
+
+#include "VCGDefinitions.h"
+#include "DecimateThread.h"
+#include "SpinnerDialog.h"
 
 #include <iostream>
 #include <tuple> 
 #include <thread>
+
 
 using std::string;
 
@@ -203,6 +212,7 @@ private:
     int m_curveNOC;
     int TableRowNum = 500;
     int TableColNum = 501;
+    double m_LmOpacity = 0.6;
     std::string m_templateMeshType = "";
     DataBase *m_dataBase;
     SpecimenDigitiser *m_meshPlot = nullptr;
@@ -355,6 +365,9 @@ public:
     bool GetIgnorSetting();
     QMutex* GetMutex();
     void SetLandmarkHeaders(QTableWidget* table);
+    void DecimateWithAnimatedDialog(MyMesh& m, float reductionRatio);
+    void ConvertVTKToVCG(vtkPolyData* polyData, MyMesh& vcgMesh);
+    void ConvertVCGToVTK(MyMesh& vcgMesh, vtkPolyData* polyData);
     ~MainWindow();
 protected:
     void closeEvent(QCloseEvent *event) override;

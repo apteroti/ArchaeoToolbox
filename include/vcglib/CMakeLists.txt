@@ -299,6 +299,10 @@ if (VCG_HEADER_ONLY)
 			target_link_libraries(vcglib INTERFACE OpenMP::OpenMP_CXX)
 		endif()
 
+		if (MSVC)
+			target_compile_options(vcglib INTERFACE "/bigobj")
+		endif()
+
 		#just to show headers in ide
 		add_custom_target(vcglib_ide SOURCES ${VCG_HEADERS})
 	else()
@@ -312,4 +316,5 @@ endif()
 if(VCG_BUILD_EXAMPLES)
 	#TODO make the list of samples to build
 	add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/apps)
+	add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/wrap)
 endif()
