@@ -11,6 +11,7 @@ If you wish to build from source, ensure the following libraries are available o
 - [Qt 5.15.2](https://doc.qt.io/qt-5.15/index.html) (Widgets, GUI, Help, Charts, Test modules)
 - [VTK 8.2+](https://vtk.org/)
 - [Eigen3](https://eigen.tuxfamily.org/)
+- [VCGLib](http://vcglib.net)
 - CMake 3.16 or newer
 - C++17 compatible compiler
 
@@ -35,7 +36,7 @@ If you wish to build from source, ensure the following libraries are available o
 - ArchaeoToolbox/
 - │
 - ├── src/                  # Source files
-- ├── include/              # Header files
+- ├── include/              # Header files and external header-only libraries
 - ├── Resources/            # Qt resource files (e.g., icons)
 - ├── Binaries/             # Precompiled installers (Windows & Linux)
 - ├── CMakeLists.txt        # Build configuration

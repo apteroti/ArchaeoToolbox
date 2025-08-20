@@ -47,7 +47,8 @@ if(WIN32)
 
     include_directories(
         ./include
-        "C:/Repo/eigen3"
+        ./include/vcglib
+        ./include/eigen3
         "C:/Program Files/VTK8/include/vtk-8.2"
         "C:/Qt/5.15.2/msvc2019_64/include"
     )
@@ -60,7 +61,7 @@ if(UNIX)
     include_directories(
         ./include
         ./include/vcglib
-        /usr/include/eigen3
+        ./include/eigen3
         /usr/local/include/vtk-8.2
     )
 endif()
