@@ -66,9 +66,9 @@
 
 ***********************************************************************************************/
 
-#include "../include/ProSetMenu.h"
+#include "include/ProSetMenu.h"
 
-#include "../include/MainWindow.h"
+#include "include/MainWindow.h"
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 #define ENDL Qt::endl

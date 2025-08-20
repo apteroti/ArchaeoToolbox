@@ -66,8 +66,8 @@
                       
 ***********************************************************************************************/
 
-#include "../include/ExportDialogue.h"
-#include "../include/MainWindow.h"
+#include "include/ExportDialogue.h"
+#include "include/MainWindow.h"
 
 ExportDialogue::ExportDialogue(MainWindow* parent) : m_parent(parent) {
     this->setWindowTitle("Attention!");

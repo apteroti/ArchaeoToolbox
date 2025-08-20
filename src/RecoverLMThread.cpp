@@ -66,9 +66,9 @@
                       
 ***********************************************************************************************/
 
-#include "../include/RecoverLMThread.h"
+#include "include/RecoverLMThread.h"
 
-#include "../include/MainWindow.h"
+#include "include/MainWindow.h"
 
 RecoverLMThread::RecoverLMThread(MainWindow* parent,
                                  std::vector<std::vector<std::string>>& content,

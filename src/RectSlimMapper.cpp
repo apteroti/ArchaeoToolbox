@@ -65,7 +65,7 @@
                .*%%%*                                                                     
                       
 ***********************************************************************************************/
-#include "../include/RectSlimMapper.h"
+#include "include/RectSlimMapper.h"
 
 // -------------------- Constructor --------------------
 RectSlimMapper::RectSlimMapper(vtkPolyData* maskMesh, vtkPoints* inputPts,

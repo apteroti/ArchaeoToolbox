@@ -15,6 +15,8 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+//Gadomski's CPD algorithm ported for Eigen + VTK
+
 #ifndef CPD_3D_H
 #define CPD_3D_H
 

@@ -66,7 +66,7 @@
                       
 ***********************************************************************************************/
 
-#include "../include/RegistrationThread.h"
+#include "include/RegistrationThread.h"
 
 RegistrationThread::RegistrationThread(vtkPolyData* templateMesh,
                                        vtkPolyData* sourceMesh,

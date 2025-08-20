@@ -66,7 +66,7 @@
                       
 ***********************************************************************************************/
 
-#include "../include/ExclusionPaint.h"
+#include "include/ExclusionPaint.h"
 
 ExclusionPaint::ExclusionPaint(vtkPolyData *data) : m_meshData(data) {
     this->setWindowTitle("Exclusion Paint");

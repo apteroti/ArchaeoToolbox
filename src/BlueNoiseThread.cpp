@@ -66,7 +66,7 @@
                       
 ***********************************************************************************************/
 
-#include "../include/BlueNoiseThread.h"
+#include "include/BlueNoiseThread.h"
 
 // Constructor for basic blue noise sampling without landmarks
 BlueNoiseThread::BlueNoiseThread(vtkPolyData* inputPoly, double area, int resol,

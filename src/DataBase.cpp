@@ -66,7 +66,7 @@
 
 ***********************************************************************************************/
 
-#include "../include/DataBase.h"
+#include "include/DataBase.h"
 
 DataBase::DataBase() : head(nullptr), curr(nullptr), temp(nullptr) {}
 

@@ -66,7 +66,7 @@
 
 ***********************************************************************************************/
 
-#include "../include/MainWindow.h"
+#include "include/MainWindow.h"
 
 #include <QtGlobal>
 

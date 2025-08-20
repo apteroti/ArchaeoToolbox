@@ -66,9 +66,9 @@
                       
 ***********************************************************************************************/
 
-#include "../include/TemplateViewer.h"
+#include "include/TemplateViewer.h"
 
-#include "../include/MainWindow.h"
+#include "include/MainWindow.h"
 
 TemplateViewer::TemplateViewer(MainWindow* parent) : m_parent(parent) {
     this->setWindowTitle("Template Viewer");

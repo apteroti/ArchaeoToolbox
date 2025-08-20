@@ -66,9 +66,9 @@
                       
 ***********************************************************************************************/
 
-#include "../include/SpecimenDigitiser.h"
+#include "include/SpecimenDigitiser.h"
 
-#include "../include/MainWindow.h"
+#include "include/MainWindow.h"
 
 SpecimenDigitiser::SpecimenDigitiser(vtkPolyData* data, MainWindow* parent)
     : m_meshData(data), m_parent(parent) {

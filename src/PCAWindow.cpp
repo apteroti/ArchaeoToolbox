@@ -66,7 +66,7 @@
                       
 ***********************************************************************************************/
 
-#include "../include/PCAWindow.h"
+#include "include/PCAWindow.h"
 
 PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
     std::vector<std::string> tempNameList = m_parentDataBase->GetNodeNames();

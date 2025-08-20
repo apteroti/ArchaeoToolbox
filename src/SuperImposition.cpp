@@ -66,9 +66,9 @@
                       
 ***********************************************************************************************/
 
-#include "../include/SuperImposition.h"
+#include "include/SuperImposition.h"
 
-#include "../include/MainWindow.h"
+#include "include/MainWindow.h"
 
 SuperImposition::SuperImposition(DataBase *dataBase, MainWindow *parent,
                                  QMutex *mutex)

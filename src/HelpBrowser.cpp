@@ -66,7 +66,7 @@
                       
 ***********************************************************************************************/
 
-#include "../include/HelpBrowser.h"
+#include "include/HelpBrowser.h"
 
 HelpBrowser::HelpBrowser(QHelpEngine* helpEngine, QWidget* parent)
     : QTextBrowser(parent), helpEngine(helpEngine) {}

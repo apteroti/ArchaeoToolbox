@@ -66,8 +66,8 @@
                       
 ***********************************************************************************************/
 
-#include "../include/StatusReporterThread.h"
-#include "../include/MainWindow.h"
+#include "include/StatusReporterThread.h"
+#include "include/MainWindow.h"
 
 StatusReporterThread::StatusReporterThread(QThread *parentThread)
     : m_parentThread(parentThread) {}

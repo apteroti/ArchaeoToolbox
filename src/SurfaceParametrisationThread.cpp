@@ -66,7 +66,7 @@
                       
 ***********************************************************************************************/
 
-#include "../include/SurfaceParametrisationThread.h"
+#include "include/SurfaceParametrisationThread.h"
 
 SurfaceParametrisationThread::SurfaceParametrisationThread(
     vtkPolyData* maskMesh, vtkPoints* inputPts, vtkPolyData* outputMesh,

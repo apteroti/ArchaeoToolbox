@@ -74,7 +74,7 @@
  * - Thin-plate spline (TPS): used for interpolation and regularization
  */
 
-#include "../include/SlidingThread.h"
+#include "include/SlidingThread.h"
 // Constructor initializes all data structures and performs initial alignment
 SlidingThread::SlidingThread(
     vtkPolyData* meshData, int typeINOL, int curveNOS, int curveNOC,

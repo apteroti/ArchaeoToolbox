@@ -66,7 +66,7 @@
                       
 ***********************************************************************************************/
 
-#include "../include/SuperImpositionThread.h"
+#include "include/SuperImpositionThread.h"
 /**
  * @class SuperImpositionThread
  * @brief A class for performing Procrustes superimposition (Generalized Procrustes Analysis) on 3D landmark data

@@ -66,9 +66,9 @@
                       
 ***********************************************************************************************/
 
-#include "../include/Registration.h"
+#include "include/Registration.h"
 
-#include "../include/SpecimenDigitiser.h"
+#include "include/SpecimenDigitiser.h"
 
 Registration::Registration(vtkPolyData* data, vtkPolyData* templateMesh,
                            vtkPoints* sliders, SpecimenDigitiser* parent)

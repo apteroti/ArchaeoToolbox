@@ -66,9 +66,9 @@
                       
 ***********************************************************************************************/
 
-#include "../include/TemplateDigitiser.h"
+#include "include/TemplateDigitiser.h"
 
-#include "../include/ProSetMenu.h"
+#include "include/ProSetMenu.h"
 
 TemplateDigitiser::TemplateDigitiser(ProSetMenu* parent) : m_parent(parent) {
     this->setWindowTitle("Template");

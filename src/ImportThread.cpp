@@ -66,9 +66,9 @@
                       
 ***********************************************************************************************/
 
-#include "../include/ImportThread.h"
+#include "include/ImportThread.h"
 
-#include "../include/MainWindow.h"
+#include "include/MainWindow.h"
 
 ImportThread::ImportThread(MainWindow* parent, QString& path, QMutex* mutex)
     : m_parent(parent), m_path(path), m_mutex(mutex) {
