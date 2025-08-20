@@ -1,68 +1,69 @@
 /***********************************************************************************************
+                                                                    
+************************************************************************************************                                                                                       
+* ArchaeoToolbox                                                                               *
+* Geometric Morphometrics Software                                                             *
+*                                                                                              *
+* Copyright(C) 2023                                                                            *
+* Kaveh Yousef Pouran                                                                          *
+* Laboratori d’Arqueozoologia, Universitat Autònoma de Barcelona                               *
+*                                                                                              *
+* All rights reserved.                                                                         *
+*                                                                                              *
+* This program is free software; you can redistribute it and/or modify                         *   
+* it under the terms of the GNU General Public License as published by                         *
+* the Free Software Foundation; either version 2 of the License, or                            *
+* (at your option) any later version.                                                          *
+*                                                                                              *
+* This program is distributed in the hope that it will be useful,                              *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of                               *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                                *
+* GNU General Public License (http://www.gnu.org/licenses/gpl.txt)                             *
+* for more details.                                                                            *
+*                                                                                              *
 
-************************************************************************************************
-* ArchaeoToolbox *
-* Geometric Morphometrics Software *
-* *
-* Copyright(C) 2023 *
-* Kaveh Yousef Pouran *
-* Laboratori d’Arqueozoologia, Universitat Autònoma de Barcelona *
-* *
-* All rights reserved. *
-* *
-* This program is free software; you can redistribute it and/or modify *
-* it under the terms of the GNU General Public License as published by *
-* the Free Software Foundation; either version 2 of the License, or *
-* (at your option) any later version. *
-* *
-* This program is distributed in the hope that it will be useful, *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of *
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the *
-* GNU General Public License (http://www.gnu.org/licenses/gpl.txt) *
-* for more details. *
-* *
-
- ***********************************************************************************************
-                                                                               .
-                                                  . =: # +*
-                                                 ## %@.
-                                                =@@ #@%
-                                               .@@* @@@:
-                                               %@@* #@@@=
-                                               =@@@#- .:+#@@@#
-                                                *@@@@@*=::.:=-=+*%%%+-=*%@@@@@@@=
-                                                 -%@@@@@@@@@@@@@@@@@@@@@@@@%#+-
-                                                   .-=+*#@@@@@@@@@@@@@@@@+.
-                                                       =@@@@@@@@@@@@@@@@@@@@*.
-                                                    .=%@@@@@@@@@@@@@@@@@@@@@@*
-                                              -****%@@@@@@@@@@@@@@@@@@@@@%@@@=
-                                             .@@@@@@@@@@@@@@@@@@@@@@@@@@%  -.
-                                              -@@@@@@@@@@@@@@@@@@@@@@@@@*.
-                                              %@@@@@@@@@@@@@@@@@@@@@@@@@@+
-                                            :%@@@@@@@@@@@@@@@@@@@@@@@@@@%
-                                    .:=*#%%%@@@@@@@@@@@@@@@@@@@@@@@@@%-=.
-                                -+%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
-                           .-+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
-                     .--=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
-                  :*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=
-                .#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+
-               :@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+
-               %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.
-               +@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
-                #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+.
-           .-+*@@@+:@@@@@@@@@@@@@@@%**+==-------===+@@@@@@@@@@@@@-
-         :#@@@%%%+ .@@@@@@@@@@@*-:                 +@@@@@@@@@@@@@@%+:
-       +%@@*.      -@@@@@@@@@=                    =@@@@**#*=--*%@@@@@@*
-       -*=.       :@@@@@@@@=                       @@@@         .-#@@@@.
-                 #@@@@@*@@@:                       *@@+            +@@%
-                 %@@@%  *%@@+                      @@@.            -@@@
-                 =@@@:    +@@%                    -@@@.            :@@@:
-                 *@@@      *@@%                   *@@@=            :@@@-
-                -@@@#      =@@@#                 :@@@@@            #@@@@.
-                #@@@@.     .###=                 .++++-           .*%%##:
-                %@@@@.
-               .*%%%*
-
+ ***********************************************************************************************                                                                                                                                                               
+                                                                               .          
+                                                  .                            =:         
+                                                  #                            +*         
+                                                 ##                            %@.        
+                                                =@@                            #@%        
+                                               .@@*                            @@@:       
+                                               %@@*                           #@@@=       
+                                               =@@@#-                     .:+#@@@#        
+                                                *@@@@@*=::.:=-=+*%%%+-=*%@@@@@@@=         
+                                                 -%@@@@@@@@@@@@@@@@@@@@@@@@%#+-           
+                                                   .-=+*#@@@@@@@@@@@@@@@@+.               
+                                                       =@@@@@@@@@@@@@@@@@@@@*.            
+                                                    .=%@@@@@@@@@@@@@@@@@@@@@@*            
+                                              -****%@@@@@@@@@@@@@@@@@@@@@%@@@=            
+                                             .@@@@@@@@@@@@@@@@@@@@@@@@@@%  -.             
+                                              -@@@@@@@@@@@@@@@@@@@@@@@@@*.                
+                                              %@@@@@@@@@@@@@@@@@@@@@@@@@@+                
+                                            :%@@@@@@@@@@@@@@@@@@@@@@@@@@%                 
+                                    .:=*#%%%@@@@@@@@@@@@@@@@@@@@@@@@@%-=.                 
+                                -+%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*                     
+                           .-+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                     
+                     .--=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                     
+                  :*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=                     
+                .#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+                     
+               :@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+                     
+               %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.                     
+               +@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                      
+                #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+.                       
+           .-+*@@@+:@@@@@@@@@@@@@@@%**+==-------===+@@@@@@@@@@@@@-                        
+         :#@@@%%%+ .@@@@@@@@@@@*-:                 +@@@@@@@@@@@@@@%+:                     
+       +%@@*.      -@@@@@@@@@=                    =@@@@**#*=--*%@@@@@@*                   
+       -*=.       :@@@@@@@@=                       @@@@         .-#@@@@.                  
+                 #@@@@@*@@@:                       *@@+            +@@%                   
+                 %@@@%  *%@@+                      @@@.            -@@@                   
+                 =@@@:    +@@%                    -@@@.            :@@@:                  
+                 *@@@      *@@%                   *@@@=            :@@@-                  
+                -@@@#      =@@@#                 :@@@@@            #@@@@.                 
+                #@@@@.     .###=                 .++++-           .*%%##:                 
+                %@@@@.                                                                    
+               .*%%%*                                                                     
+                      
 ***********************************************************************************************/
 
 #include "../include/TemplateDigitiser.h"
@@ -1620,18 +1621,53 @@ void TemplateDigitiser::ConstructSurfaceData(vtkPoints* pts,
 
 void TemplateDigitiser::MakeCage(vtkPoints* inputPts,
                                  vtkPolyData* outPlanePoly) {
-    outPlanePoly->Initialize();
-
-    // 1. Create initial plane from first 3 points of the curve
-    if (inputPts->GetNumberOfPoints() < 3) return;
-
-    // 2. Build RectSlimMapper and sample the grid
-    RectSlimMapper slim(m_surfaceMask, inputPts, outPlanePoly);
-
     int uRes = m_surfacePatchUNOS + 2;  // +2 because RectSlimMapper uses 0..1
     int vRes = m_surfacePatchVNOS + 2;
 
-    slim.Sample(uRes, vRes);
+    WaitDialog waitDialog(this);
+    waitDialog.setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+    waitDialog.setModal(true);
+    waitDialog.setFixedSize(140, 100);
+
+    QVBoxLayout layout(&waitDialog);
+
+    QLabel msg("Parametrisation...");
+    msg.setAlignment(Qt::AlignCenter);
+    SpinnerWidget spinner;
+    layout.addWidget(&msg);
+    layout.addWidget(&spinner, 0, Qt::AlignCenter);
+
+    // Spinner thread
+    SpinnerThread spinThread(&spinner);
+    QObject::connect(&spinThread, &SpinnerThread::updateAngle, &spinner,
+                     &SpinnerWidget::setAngle);
+
+    // Cutting thread
+    QThread parametrisationThread;
+    SurfaceParametrisationThread* worker = new SurfaceParametrisationThread(
+        m_surfaceMask, inputPts, outPlanePoly, uRes, vRes);
+    worker->moveToThread(&parametrisationThread);
+
+    QObject::connect(&parametrisationThread, &QThread::started, worker,
+                     &SurfaceParametrisationThread::run);
+    QObject::connect(worker, &SurfaceParametrisationThread::finished,
+                     &parametrisationThread, &QThread::quit);
+    QObject::connect(worker, &SurfaceParametrisationThread::finished,
+                     &spinThread, &QThread::quit);
+    QObject::connect(worker, &SurfaceParametrisationThread::finished,
+                     &waitDialog, &QDialog::accept);
+    QObject::connect(&parametrisationThread, &QThread::finished, worker,
+                     &QObject::deleteLater);
+
+    // Start both threads
+    spinThread.start();
+    parametrisationThread.start();
+
+    waitDialog.exec();  // Blocks UI
+
+    // Cleanup
+    spinThread.wait();
+    parametrisationThread.wait();
 
     ProjectOnMesh(outPlanePoly, m_surfaceMask);
 }

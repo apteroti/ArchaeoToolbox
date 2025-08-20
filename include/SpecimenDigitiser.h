@@ -191,6 +191,7 @@
 #include "StatusReporterThread.h"
 #include "SpinnerDialog.h"
 #include "CuttingThread.h"
+#include "SurfaceParametrisationThread.h"
 
 class SpecimenDigitiser : public QMainWindow {
    private:

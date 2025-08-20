@@ -218,7 +218,7 @@
 #include "ProSetMenu.fwd.h"
 #include "SpinnerDialog.h"
 #include "StatusReporterThread.h"
-#include "RectSlimMapper.h"
+#include "SurfaceParametrisationThread.h"
 
 class TemplateDigitiser : public QMainWindow {
    private:

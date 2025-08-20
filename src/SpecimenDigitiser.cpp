@@ -2599,151 +2599,55 @@ void SpecimenDigitiser::ConstructSurfaceData(vtkPoints* pts,
 
 void SpecimenDigitiser::MakeCage(vtkPoints* inputPts,
                                  vtkPolyData* outPlanePoly) {
-    outPlanePoly->Initialize();
-
-    // 1. Create and configure the spline
-    vtkNew<vtkParametricSpline> spline;
-    spline->SetPoints(inputPts);
-    spline->SetClosed(1);
-
-    // 2. Sample 3 initial points
-    vtkNew<vtkPoints> curveInit3Pts;
-    double delta = 1.0 / 3.0;
-    for (int i = 0; i < 3; i++) 
-    {
-        double u[3] = { delta * i, 0, 0 };
-        double pt[3];
-        spline->Evaluate(u, pt, nullptr);
-        curveInit3Pts->InsertNextPoint(pt);
-    }
-
-    // 3. Calculate curve length
-    vtkNew<vtkPolyData> curvePoly;
-    vtkNew<vtkCellArray> lines;
-    lines->InsertNextCell(inputPts->GetNumberOfPoints());
-    for (vtkIdType i = 0; i < inputPts->GetNumberOfPoints(); i++) 
-    {
-        lines->InsertCellPoint(i);
-    }
-    curvePoly->SetPoints(inputPts);
-    curvePoly->SetLines(lines);
-
-    vtkNew<vtkAppendArcLength> arcLengthFilter;
-    arcLengthFilter->SetInputData(curvePoly);
-    arcLengthFilter->Update();
-    double totalLength = arcLengthFilter->GetOutput()
-                             ->GetPointData()
-                             ->GetArray("arc_length")
-                             ->GetTuple1(inputPts->GetNumberOfPoints() - 1);
-
-    // 4. Determine resolution
-    int dynamicRes = static_cast<int>(std::sqrt(totalLength) * 0.5);
-    dynamicRes = (dynamicRes % 2 == 0) ? dynamicRes + 1 : dynamicRes;
-
-    // 5. Create initial plane
-    vtkNew<vtkPlaneSource> plane;
-    plane->SetXResolution(dynamicRes);
-    plane->SetYResolution(dynamicRes);
-    plane->SetOrigin(curveInit3Pts->GetPoint(0));
-    plane->SetPoint1(curveInit3Pts->GetPoint(1));
-    plane->SetPoint2(curveInit3Pts->GetPoint(2));
-    plane->Update();
-
-    // 6. Resample curve points
-    int resampleNumber = ((dynamicRes + 1) * 2) + ((dynamicRes - 1) * 2);
-    vtkNew<vtkPoints> curveResampledPts;
-    delta = 1.0 / resampleNumber;
-    for (int i = 0; i < resampleNumber; i++) 
-    {
-        double u[3] = { delta * i, 0, 0 };
-        double pt[3];
-        spline->Evaluate(u, pt, nullptr);
-        curveResampledPts->InsertNextPoint(pt);
-    }
-
-    // 7. Get plane boundary points in order
-    vtkNew<vtkPoints> planeBoundaryPts;
-    GetPlaneBoundaryPoints(plane->GetOutput(), planeBoundaryPts);
-
-    // 8. Apply Thin Plate Spline transform
-    vtkNew<vtkThinPlateSplineTransform> tps;
-    tps->SetSourceLandmarks(planeBoundaryPts);
-    tps->SetTargetLandmarks(curveResampledPts);
-    tps->SetBasisToR();
-    tps->SetSigma(1.0);
-
-    vtkNew<vtkTransformPolyDataFilter> transform;
-    transform->SetInputConnection(plane->GetOutputPort());
-    transform->SetTransform(tps);
-    transform->Update();
-
-    // 9. Apply windowed sinc smoothing
-    vtkNew<vtkWindowedSincPolyDataFilter> smoother;
-    smoother->SetInputConnection(transform->GetOutputPort());
-    smoother->SetNumberOfIterations(50);
-    smoother->SetPassBand(0.1);
-    smoother->SetFeatureEdgeSmoothing(1);
-    smoother->SetFeatureAngle(5);
-    smoother->SetBoundarySmoothing(0);
-    smoother->NormalizeCoordinatesOn();
-    smoother->Update();
-    vtkPolyData* temp = smoother->GetOutput();
-
-    // 10. Final projection and output
-    ProjectOnMesh(temp, m_surfaceMask);
-
-    vtkNew<vtkSmoothPolyDataFilter> repeller;
-    repeller->SetInputData(temp);
-    repeller->SetNumberOfIterations(200);
-    repeller->SetConvergence(0.05);
-    repeller->SetBoundarySmoothing(0);
-    repeller->Update();
-
-    // Create output grid
-    int uRes = m_surfacePatchUNOS + 2;
+    int uRes = m_surfacePatchUNOS + 2;  // +2 because RectSlimMapper uses 0..1
     int vRes = m_surfacePatchVNOS + 2;
 
-    vtkNew<vtkPoints> outputPoints;
-    vtkNew<vtkFloatArray> parametricCoords;
-    parametricCoords->SetNumberOfComponents(2);
+    WaitDialog waitDialog(this);
+    waitDialog.setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+    waitDialog.setModal(true);
+    waitDialog.setFixedSize(140, 100);
 
-    for (int v = 0; v < vRes; v++) 
-    {
-        for (int u = 0; u < uRes; u++) 
-        {
-            double uv[2] = { static_cast<double>(u) / (uRes - 1),
-                             static_cast<double>(v) / (vRes - 1) };
-            parametricCoords->InsertNextTuple(uv);
+    QVBoxLayout layout(&waitDialog);
 
-            // Map to deformed plane
-            int srcU = static_cast<int>(uv[0] * dynamicRes);
-            int srcV = static_cast<int>(uv[1] * dynamicRes);
-            int idx = srcV * (dynamicRes + 1) + srcU;
+    QLabel msg("Parametrisation...");
+    msg.setAlignment(Qt::AlignCenter);
+    SpinnerWidget spinner;
+    layout.addWidget(&msg);
+    layout.addWidget(&spinner, 0, Qt::AlignCenter);
 
-            double pt[3];
-            repeller->GetOutput()->GetPoint(idx, pt);
-            outputPoints->InsertNextPoint(pt);
-        }
-    }
+    // Spinner thread
+    SpinnerThread spinThread(&spinner);
+    QObject::connect(&spinThread, &SpinnerThread::updateAngle, &spinner,
+                     &SpinnerWidget::setAngle);
 
-    vtkNew<vtkPolyData> result;
-    result->SetPoints(outputPoints);
-    result->GetPointData()->SetTCoords(parametricCoords);
+    // Cutting thread
+    QThread parametrisationThread;
+    SurfaceParametrisationThread* worker = new SurfaceParametrisationThread(
+        m_surfaceMask, inputPts, outPlanePoly, uRes, vRes);
+    worker->moveToThread(&parametrisationThread);
 
-    // Create grid topology
-    vtkNew<vtkCellArray> polys;
-    for (int v = 0; v < vRes - 1; v++) 
-    {
-        for (int u = 0; u < uRes - 1; u++) 
-        {
-            vtkIdType pts[4] = { v * uRes + u, v * uRes + u + 1,
-                                 (v + 1) * uRes + u + 1, (v + 1) * uRes + u };
-            polys->InsertNextCell(4, pts);
-        }
-    }
-    result->SetPolys(polys);
+    QObject::connect(&parametrisationThread, &QThread::started, worker,
+                     &SurfaceParametrisationThread::run);
+    QObject::connect(worker, &SurfaceParametrisationThread::finished,
+                     &parametrisationThread, &QThread::quit);
+    QObject::connect(worker, &SurfaceParametrisationThread::finished,
+                     &spinThread, &QThread::quit);
+    QObject::connect(worker, &SurfaceParametrisationThread::finished,
+                     &waitDialog, &QDialog::accept);
+    QObject::connect(&parametrisationThread, &QThread::finished, worker,
+                     &QObject::deleteLater);
 
-    outPlanePoly->DeepCopy(result);
+    // Start both threads
+    spinThread.start();
+    parametrisationThread.start();
+
+    waitDialog.exec();  // Blocks UI
+
+    // Cleanup
+    spinThread.wait();
+    parametrisationThread.wait();
+
+    ProjectOnMesh(outPlanePoly, m_surfaceMask);
 }
 
 // Helper function to get ordered boundary points

@@ -1,15 +1,82 @@
-#include "RectSlimMapper.h"
+/***********************************************************************************************
+                                                                    
+************************************************************************************************                                                                                       
+* ArchaeoToolbox                                                                               *
+* Geometric Morphometrics Software                                                             *
+*                                                                                              *
+* Copyright(C) 2023                                                                            *
+* Kaveh Yousef Pouran                                                                          *
+* Laboratori d’Arqueozoologia, Universitat Autònoma de Barcelona                               *
+*                                                                                              *
+* All rights reserved.                                                                         *
+*                                                                                              *
+* This program is free software; you can redistribute it and/or modify                         *   
+* it under the terms of the GNU General Public License as published by                         *
+* the Free Software Foundation; either version 2 of the License, or                            *
+* (at your option) any later version.                                                          *
+*                                                                                              *
+* This program is distributed in the hope that it will be useful,                              *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of                               *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                                *
+* GNU General Public License (http://www.gnu.org/licenses/gpl.txt)                             *
+* for more details.                                                                            *
+*                                                                                              *
+
+ ***********************************************************************************************                                                                                                                                                               
+                                                                               .          
+                                                  .                            =:         
+                                                  #                            +*         
+                                                 ##                            %@.        
+                                                =@@                            #@%        
+                                               .@@*                            @@@:       
+                                               %@@*                           #@@@=       
+                                               =@@@#-                     .:+#@@@#        
+                                                *@@@@@*=::.:=-=+*%%%+-=*%@@@@@@@=         
+                                                 -%@@@@@@@@@@@@@@@@@@@@@@@@%#+-           
+                                                   .-=+*#@@@@@@@@@@@@@@@@+.               
+                                                       =@@@@@@@@@@@@@@@@@@@@*.            
+                                                    .=%@@@@@@@@@@@@@@@@@@@@@@*            
+                                              -****%@@@@@@@@@@@@@@@@@@@@@%@@@=            
+                                             .@@@@@@@@@@@@@@@@@@@@@@@@@@%  -.             
+                                              -@@@@@@@@@@@@@@@@@@@@@@@@@*.                
+                                              %@@@@@@@@@@@@@@@@@@@@@@@@@@+                
+                                            :%@@@@@@@@@@@@@@@@@@@@@@@@@@%                 
+                                    .:=*#%%%@@@@@@@@@@@@@@@@@@@@@@@@@%-=.                 
+                                -+%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*                     
+                           .-+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                     
+                     .--=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                     
+                  :*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=                     
+                .#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+                     
+               :@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+                     
+               %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.                     
+               +@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                      
+                #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+.                       
+           .-+*@@@+:@@@@@@@@@@@@@@@%**+==-------===+@@@@@@@@@@@@@-                        
+         :#@@@%%%+ .@@@@@@@@@@@*-:                 +@@@@@@@@@@@@@@%+:                     
+       +%@@*.      -@@@@@@@@@=                    =@@@@**#*=--*%@@@@@@*                   
+       -*=.       :@@@@@@@@=                       @@@@         .-#@@@@.                  
+                 #@@@@@*@@@:                       *@@+            +@@%                   
+                 %@@@%  *%@@+                      @@@.            -@@@                   
+                 =@@@:    +@@%                    -@@@.            :@@@:                  
+                 *@@@      *@@%                   *@@@=            :@@@-                  
+                -@@@#      =@@@#                 :@@@@@            #@@@@.                 
+                #@@@@.     .###=                 .++++-           .*%%##:                 
+                %@@@@.                                                                    
+               .*%%%*                                                                     
+                      
+***********************************************************************************************/
+#include "../include/RectSlimMapper.h"
 
 // -------------------- Constructor --------------------
 RectSlimMapper::RectSlimMapper(vtkPolyData* maskMesh, vtkPoints* inputPts,
                                vtkPolyData* outputMesh)
     : m_curvePts(inputPts), m_output(outputMesh) {
-    if (maskMesh->GetNumberOfPoints() == 0 || !m_curvePts || !m_output) {
-        std::cout << "RectSlimMapper: null input(s)" << std::endl;
+    if (maskMesh->GetNumberOfPoints() == 0 ||
+        m_curvePts->GetNumberOfPoints() == 0 || !m_output) {
+        std::cerr << "RectSlimMapper: null input(s)" << std::endl;
+        return;
     } else {
-        m_plane = vtkSmartPointer<vtkPlaneSource>::New();
         m_flatMask = vtkSmartPointer<vtkPolyData>::New();
-        m_meshBoundaryID = vtkSmartPointer<vtkIdList>::New();
         m_mask = vtkSmartPointer<vtkPolyData>::New();
         m_mask->DeepCopy(maskMesh);
         /**/
@@ -29,170 +96,21 @@ RectSlimMapper::RectSlimMapper(vtkPolyData* maskMesh, vtkPoints* inputPts,
         m_mask->Initialize();
         ConvertVCGToVTK(vcgMesh, m_mask);
         m_mask->Modified();
-
-        GetBoundaryDirection();
-        MakePlaneAndDeform();
-        ParameterizeToPlane();
+        ComputeHarmonicToPlane(m_mask, m_flatMask);
+        vtkIdType nPoints = m_flatMask->GetNumberOfPoints();
+        m_UV.assign((size_t)nPoints, Vector2d::Zero());
+        InitialUV(m_flatMask, m_UV);
     }
-}
-
-void RectSlimMapper::GetBoundaryDirection() {
-    if (m_mask->GetNumberOfPoints() > 0) {
-        vtkNew<vtkIdList> maskResamplePtIds;
-        vtkNew<vtkPointLocator> ptLocator;
-        ptLocator->SetDataSet(m_mask);
-        ptLocator->BuildLocator();
-
-        for (vtkIdType i = 0; i < m_curvePts->GetNumberOfPoints(); ++i) {
-            double queryPoint[3];
-            m_curvePts->GetPoint(i, queryPoint);
-
-            vtkIdType closestPointId = ptLocator->FindClosestPoint(queryPoint);
-            maskResamplePtIds->InsertNextId(closestPointId);
-        }
-        m_boundaryStartID = maskResamplePtIds->GetId(0);
-        m_boundaryDirectionID = maskResamplePtIds->GetId(1);
-    }
-}
-
-//---Making a Parametric Plane and Force m_mask into it
-void RectSlimMapper::MakePlaneAndDeform() {
-    // 1. Create and configure the spline
-    vtkNew<vtkParametricSpline> spline;
-    spline->SetPoints(m_curvePts);
-    spline->SetClosed(1);
-
-    // 2. Sample 3 initial points
-    vtkNew<vtkPoints> curveInit3Pts;
-    double delta = 1.0 / 3.0;
-    for (int i = 0; i < 3; i++) {
-        double u[3] = {delta * i, 0, 0};
-        double pt[3];
-        spline->Evaluate(u, pt, nullptr);
-        curveInit3Pts->InsertNextPoint(pt);
-    }
-    // 3. Calculate curve length
-    vtkNew<vtkPolyData> curvePoly;
-    vtkNew<vtkCellArray> lines;
-    lines->InsertNextCell(m_curvePts->GetNumberOfPoints());
-    for (vtkIdType i = 0; i < m_curvePts->GetNumberOfPoints(); i++) {
-        lines->InsertCellPoint(i);
-    }
-    curvePoly->SetPoints(m_curvePts);
-    curvePoly->SetLines(lines);
-
-    vtkNew<vtkAppendArcLength> arcLengthFilter;
-    arcLengthFilter->SetInputData(curvePoly);
-    arcLengthFilter->Update();
-    double totalLength = arcLengthFilter->GetOutput()
-                             ->GetPointData()
-                             ->GetArray("arc_length")
-                             ->GetTuple1(m_curvePts->GetNumberOfPoints() - 1);
-
-    // 4. Determine resolution
-    int dynamicRes = static_cast<int>(std::sqrt(totalLength) * 0.5);
-    dynamicRes = (dynamicRes % 2 == 0) ? dynamicRes + 1 : dynamicRes;
-    dynamicRes *= 4;
-
-    // 5. Create initial plane
-    m_plane->SetXResolution(dynamicRes);
-    m_plane->SetYResolution(dynamicRes);
-    m_plane->SetOrigin(curveInit3Pts->GetPoint(0));
-    m_plane->SetPoint1(curveInit3Pts->GetPoint(1));
-    m_plane->SetPoint2(curveInit3Pts->GetPoint(2));
-    m_plane->Update();
-
-    // 6. Resample curve points
-    int resampleNumber = ((dynamicRes + 1) * 2) + ((dynamicRes - 1) * 2);
-    vtkNew<vtkPoints> curveResampledPts;
-    delta = 1.0 / resampleNumber;
-    for (int i = 0; i < resampleNumber; i++) {
-        double u[3] = {delta * i, 0, 0};
-        double pt[3];
-        spline->Evaluate(u, pt, nullptr);
-        curveResampledPts->InsertNextPoint(pt);
-    }
-    // 6.5 Resample Mask points in the curve direction
-    vtkNew<vtkPoints> maskResamplePts;
-    vtkNew<vtkCellLocator> ptLocator;
-    ptLocator->SetDataSet(m_mask);
-    ptLocator->BuildLocator();
-
-    for (int i = 0; i < curveResampledPts->GetNumberOfPoints(); i++) {
-        double closestPoint[3];
-        vtkIdType closestCellId = -1;
-        int subId = -1;
-        double dist = -1;
-        ptLocator->FindClosestPoint(curveResampledPts->GetPoint(i),
-                                    closestPoint, closestCellId, subId, dist);
-        maskResamplePts->InsertNextPoint(closestPoint);
-    }
-    maskResamplePts->Modified();
-
-    // 7. Get plane boundary points in order
-    vtkNew<vtkPoints> planeBoundaryPts;
-    GetPlaneBoundaryPoints(m_plane->GetOutput(), planeBoundaryPts);
-
-    // 8. Apply Thin Plate Spline transform
-    vtkNew<vtkThinPlateSplineTransform> tps;
-    tps->SetSourceLandmarks(maskResamplePts);
-    tps->SetTargetLandmarks(planeBoundaryPts);
-    tps->SetBasisToR();
-    tps->SetSigma(0.01);
-
-    vtkNew<vtkTransformPolyDataFilter> transform;
-    transform->SetInputData(m_mask);
-    transform->SetTransform(tps);
-    transform->Update();
-
-    auto tempPoly = transform->GetOutput();
-    ProjectOnBoundary(tempPoly, m_plane->GetOutput());
-
-    // 9. Apply windowed sinc smoothing
-    vtkNew<vtkWindowedSincPolyDataFilter> smoother;
-    smoother->SetInputData(tempPoly);
-    smoother->SetNumberOfIterations(50);
-    smoother->SetPassBand(0.1);
-    smoother->SetFeatureEdgeSmoothing(1);
-    smoother->SetFeatureAngle(5);
-    smoother->SetBoundarySmoothing(0);
-    smoother->NormalizeCoordinatesOn();
-    smoother->Update();
-
-    m_flatMask->DeepCopy(smoother->GetOutput());
-    ProjectOnMesh(m_flatMask, m_plane->GetOutput());
-
-    // vtkNew<vtkPolyData> test;
-    // ComputeHarmonicToPlane(m_mask, test);
-
-    vtkNew<vtkXMLPolyDataWriter> writer1;
-    writer1->SetFileName("flatMesh.vtp");
-    writer1->SetInputData(m_flatMask);
-    writer1->Write();
-
-    vtkNew<vtkXMLPolyDataWriter> writer2;
-    writer2->SetFileName("plane.vtp");
-    writer2->SetInputData(m_plane->GetOutput());
-    writer2->Write();
-
-    vtkNew<vtkPolyData> test;
-    ComputeHarmonicToPlane(m_mask, test);
-
-    vtkSmartPointer<vtkXMLPolyDataWriter> writer =
-        vtkSmartPointer<vtkXMLPolyDataWriter>::New();
-    writer->SetFileName("Harmonicplane.vtp");
-    writer->SetInputData(test);
-    writer->Write();
 }
 
 void RectSlimMapper::ComputeHarmonicToPlane(vtkPolyData* mesh,
                                             vtkPolyData* outFlatMesh) {
     // 1) Extract ordered boundary loop
     std::vector<vtkIdType> boundaryLoop;
-    ExtractSingleBoundaryLoop(m_mask, boundaryLoop, m_boundaryStartID,
-                              m_boundaryStartID, m_boundaryDirectionID);
+    ExtractSingleBoundaryLoop(m_mask, m_curvePts, boundaryLoop);
     if (boundaryLoop.empty()) {
-        throw std::runtime_error("No boundary found for mask mesh.");
+        std::cerr << "No boundary found for mask mesh." << std::endl;
+        return;
     }
 
     const vtkIdType nPts = mesh->GetNumberOfPoints();
@@ -383,7 +301,8 @@ void RectSlimMapper::ComputeHarmonicToPlane(vtkPolyData* mesh,
     solver.compute(L);
 
     if (solver.info() != Eigen::Success) {
-        throw std::runtime_error("Laplacian matrix factorization failed");
+        std::cerr << "Laplacian matrix factorization failed" << std::endl;
+        return;
     }
 
     // Solve for U and V coordinates
@@ -423,178 +342,16 @@ void RectSlimMapper::ComputeHarmonicToPlane(vtkPolyData* mesh,
     loopPolyData->SetLines(lines);
 
     // Save to file
-    //vtkNew<vtkXMLPolyDataWriter> writer;
-    //writer->SetFileName("boundaryLoop.vtp");
-    //writer->SetInputData(loopPolyData);
-    //writer->Write();
+    // vtkNew<vtkXMLPolyDataWriter> writer;
+    // writer->SetFileName("boundaryLoop.vtp");
+    // writer->SetInputData(loopPolyData);
+    // writer->Write();
 }
-
-// Helper function to project a poly to a target poly
-void RectSlimMapper::ProjectOnMesh(vtkPolyData* Poly, vtkPolyData* target,
-                                   std::vector<int>* ids) {
-    // 1. Add null checks for critical inputs
-    if (!Poly || !target) {
-        std::cerr << "Error: Null input data" << std::endl;
-        return;
-    }
-
-    // 2. Handle empty template early
-    if (target->GetNumberOfCells() == 0) {
-        std::cerr << "Warning: Empty mask dataset" << std::endl;
-        return;
-    }
-
-    vtkNew<vtkCellLocator> ptLocator;
-    ptLocator->SetDataSet(target);
-    ptLocator->BuildLocator();
-
-    const int numPoints = Poly->GetNumberOfPoints();
-    vtkPoints* points = Poly->GetPoints();
-
-    // 3. Create exclusion set for efficient lookups
-    std::set<int> excludeSet;
-    if (ids && !ids->empty()) {
-        excludeSet = std::set<int>(ids->begin(), ids->end());
-    }
-
-    for (int i = 0; i < numPoints; i++) {
-        // 4. Skip excluded points
-        if (!excludeSet.empty() && (excludeSet.find(i) != excludeSet.end())) {
-            continue;
-        }
-
-        double x[3];
-        points->GetPoint(i, x);
-        double closestPoint[3] = {x[0], x[1],
-                                  x[2]};  // Initialize with original point
-        vtkIdType closestCellId = -1;
-        int subId = -1;
-        double dist2 = -1;
-
-        // 5. Find closest point (safe for empty mask due to early return)
-        ptLocator->FindClosestPoint(x, closestPoint, closestCellId, subId,
-                                    dist2);
-
-        // 6. Only update if valid cell found
-        if (closestCellId >= 0) {
-            points->SetPoint(i, closestPoint);
-        }
-    }
-}
-
-// Helper function to project flatMask boundray to the plane boundary
-void RectSlimMapper::ProjectOnBoundary(vtkPolyData* flatMask,
-                                       vtkPolyData* plane) {
-    // Part 1: Use Mask boundary
-    // ============================================
-
-    // Part 2: Process plane boundary
-    // ==============================
-
-    // Extract plane boundary (assuming single continuous boundary)
-    vtkNew<vtkFeatureEdges> planeBoundaryFilter;
-    planeBoundaryFilter->SetInputData(plane);
-    planeBoundaryFilter->BoundaryEdgesOn();
-    planeBoundaryFilter->FeatureEdgesOff();
-    planeBoundaryFilter->NonManifoldEdgesOff();
-    planeBoundaryFilter->ManifoldEdgesOff();
-    planeBoundaryFilter->Update();
-
-    // Build locator for plane boundary
-    vtkNew<vtkCellLocator> boundaryLocator;
-    boundaryLocator->SetDataSet(planeBoundaryFilter->GetOutput());
-    boundaryLocator->BuildLocator();
-    // Part 3: Project boundary points
-    // ===============================
-    vtkPoints* flatMaskPoints = flatMask->GetPoints();
-
-    for (vtkIdType i = 0; i < m_meshBoundaryID->GetNumberOfIds(); ++i) {
-        vtkIdType ptId = m_meshBoundaryID->GetId(i);
-        double point[3];
-        flatMaskPoints->GetPoint(ptId, point);
-
-        // Find closest point on plane boundary
-        double closestPoint[3];
-        double dist2;
-        vtkIdType cellId;
-        int subId;
-        boundaryLocator->FindClosestPoint(point, closestPoint, cellId, subId,
-                                          dist2);
-
-        // Project to closest location
-        flatMaskPoints->SetPoint(ptId, closestPoint);
-    }
-    flatMaskPoints->Modified();
-    flatMask->Modified();
-}
-
-// Helper function to get ordered boundary points
-void RectSlimMapper::GetPlaneBoundaryPoints(vtkPolyData* plane,
-                                            vtkPoints* boundaryPoints) {
-    int dim = static_cast<int>(std::sqrt(plane->GetNumberOfPoints()));
-    boundaryPoints->Reset();  // Clear any existing points
-
-    // Top edge (left to right, all points)
-    for (int i = 0; i < dim; i++) {
-        boundaryPoints->InsertNextPoint(plane->GetPoint(i));
-    }
-
-    // Right edge (top to bottom, excluding top-right corner)
-    for (int i = 1; i < dim; i++) {
-        int idx = i * dim + (dim - 1);
-        boundaryPoints->InsertNextPoint(plane->GetPoint(idx));
-    }
-
-    // Bottom edge (right to left, excluding bottom-right corner)
-    for (int i = dim - 2; i >= 0; i--) {
-        int idx = (dim - 1) * dim + i;
-        boundaryPoints->InsertNextPoint(plane->GetPoint(idx));
-    }
-
-    // Left edge (bottom to top, excluding bottom/top corners)
-    for (int i = dim - 2; i >= 1; i--) {
-        int idx = i * dim;
-        boundaryPoints->InsertNextPoint(plane->GetPoint(idx));
-    }
-}
-
-// -------------------- Parameterization --------------------
-void RectSlimMapper::ParameterizeToPlane() {
-    vtkIdType nPoints = m_flatMask->GetNumberOfPoints();
-    m_UV.assign((size_t)nPoints, Vector2d::Zero());
-    m_isBoundary.assign((size_t)nPoints, 0);
-
-    // Extract boundary loop
-    m_boundaryLoop.clear();
-    if (!ExtractSingleBoundaryLoop(m_mask, m_boundaryLoop,
-                                   m_boundaryStartID, m_boundaryStartID,
-                                   m_boundaryDirectionID)) {
-        return;
-    }
-
-    for (auto vid : m_boundaryLoop) m_isBoundary[(size_t)vid] = 1;
-
-    // Get input plane coordinates
-    double origin[3], p1[3], p2[3];
-    m_plane->GetOrigin(origin);
-    m_plane->GetPoint1(p1);
-    m_plane->GetPoint2(p2);
-
-    // Project all mask points onto input plane
-    std::vector<Vector2d> UVinit;
-    InitialUVFromPlane(m_flatMask, origin, p1, p2, UVinit);
-
-    // Assign projected UVs
-    for (vtkIdType i = 0; i < nPoints; ++i) m_UV[(size_t)i] = UVinit[(size_t)i];
-}
-
 
 // -------------------- Extract boundary --------------------
 bool RectSlimMapper::ExtractSingleBoundaryLoop(vtkPolyData* mesh,
-                                               std::vector<vtkIdType>& loop,
-                                               vtkIdType startVertex,
-                                               vtkIdType dirStartVertex,
-                                               vtkIdType dirEndVertex) {
+                                               vtkPoints* curvePts,
+                                               std::vector<vtkIdType>& loop) {
     if (!mesh || mesh->GetNumberOfPoints() == 0 ||
         mesh->GetNumberOfCells() == 0)
         return false;
@@ -614,8 +371,6 @@ bool RectSlimMapper::ExtractSingleBoundaryLoop(vtkPolyData* mesh,
     maskBoundaryFilter->NonManifoldEdgesOff();
     maskBoundaryFilter->ManifoldEdgesOff();
     maskBoundaryFilter->Update();
-
-    
 
     // Step 3: Split boundaries into connected pieces
     vtkNew<vtkConnectivityFilter> conn;
@@ -662,13 +417,6 @@ bool RectSlimMapper::ExtractSingleBoundaryLoop(vtkPolyData* mesh,
     vtkDataArray* originalIds =
         meshBoundary->GetPointData()->GetArray("OriginalIds");
 
-    // Create set of boundary point IDs
-    m_meshBoundaryID->Initialize();
-    for (vtkIdType i = 0; i < meshBoundary->GetNumberOfPoints(); ++i) {
-        m_meshBoundaryID->InsertNextId(
-            static_cast<vtkIdType>(originalIds->GetTuple1(i)));
-    }
-
     // Build adjacency list
     std::unordered_map<vtkIdType, std::vector<vtkIdType>> adj;
     vtkIdType nCells = meshBoundary->GetNumberOfCells();
@@ -682,6 +430,22 @@ bool RectSlimMapper::ExtractSingleBoundaryLoop(vtkPolyData* mesh,
     }
 
     if (adj.empty()) return false;
+
+    vtkNew<vtkIdList> maskResamplePtIds;
+    vtkNew<vtkPointLocator> ptLocator;
+    ptLocator->SetDataSet(meshBoundary);
+    ptLocator->BuildLocator();
+
+    for (vtkIdType i = 0; i < curvePts->GetNumberOfPoints(); ++i) {
+        double queryPoint[3];
+        curvePts->GetPoint(i, queryPoint);
+
+        vtkIdType closestPointId = ptLocator->FindClosestPoint(queryPoint);
+        maskResamplePtIds->InsertNextId(closestPointId);
+    }
+    auto startVertex = maskResamplePtIds->GetId(0);
+    auto dirStartVertex = maskResamplePtIds->GetId(0);
+    auto dirEndVertex = maskResamplePtIds->GetId(1);
 
     // Determine start vertex
     vtkIdType start = startVertex;
@@ -776,7 +540,7 @@ bool RectSlimMapper::ExtractSingleBoundaryLoop(vtkPolyData* mesh,
         loop.clear();
         return false;
     }
-    
+
     if (!originalIds) {
         loop.clear();
         return false;
@@ -788,33 +552,21 @@ bool RectSlimMapper::ExtractSingleBoundaryLoop(vtkPolyData* mesh,
     return true;
 }
 
-// -------------------- Project points onto plane --------------------
-void RectSlimMapper::InitialUVFromPlane(vtkPolyData* mesh,
-                                        const double origin[3],
-                                        const double p1[3], const double p2[3],
-                                        std::vector<Vector2d>& UV) {
-    Vector3d O(origin[0], origin[1], origin[2]);
-    Vector3d E1(p1[0] - origin[0], p1[1] - origin[1], p1[2] - origin[2]);
-    Vector3d E2(p2[0] - origin[0], p2[1] - origin[1], p2[2] - origin[2]);
-    if (E1.norm() > 0) E1.normalize();
-    if (E2.norm() > 0) E2.normalize();
-
-    vtkIdType n = mesh->GetNumberOfPoints();
-    UV.resize((size_t)n);
+void RectSlimMapper::InitialUV(vtkPolyData* flatMesh,
+                               std::vector<Vector2d>& UV) {
+    vtkIdType n = flatMesh->GetNumberOfPoints();
+    UV.resize(static_cast<size_t>(n));
 
     for (vtkIdType i = 0; i < n; ++i) {
         double P[3];
-        mesh->GetPoint(i, P);
-        Vector3d r(P[0] - O.x(), P[1] - O.y(), P[2] - O.z());
-        double u = r.dot(E1);
-        double v = r.dot(E2);
-        UV[(size_t)i] = Vector2d(u, v);
+        flatMesh->GetPoint(i, P);  // P[0] = U, P[1] = V, P[2] = 0
+        UV[static_cast<size_t>(i)] = Vector2d(P[0], P[1]);
     }
 }
 
 // -------------------- Sample flattened mesh --------------------
 void RectSlimMapper::Sample(int uRes, int vRes) {
-    if (!m_mask || m_flatMask->GetNumberOfPoints() == 0 || !m_output ||
+    if (m_mask->GetNumberOfPoints() == 0 || m_flatMask->GetNumberOfPoints() == 0 || !m_output ||
         m_UV.empty()) {
         return;
     }
@@ -898,42 +650,11 @@ void RectSlimMapper::DebugMesh(const std::string& folder) {
         writer->Write();
     }
 
-    // 2. Save input plane
-    {
-        vtkNew<vtkXMLPolyDataWriter> writer;
-        writer->SetFileName((f + "inputPlane.vtp").c_str());
-        writer->SetInputData(m_plane->GetOutput());
-        writer->Write();
-    }
-
-    // 3. Save flattened mask
-    vtkNew<vtkPoints> flatPts;
-    vtkNew<vtkPolyData> flatPoly;
-    flatPoly->DeepCopy(m_mask);  // copy topology
-
-    vtkIdType n = m_mask->GetNumberOfPoints();
-    for (vtkIdType i = 0; i < n; ++i) {
-        double origin[3], p1[3], p2[3];
-        m_plane->GetOrigin(origin);
-        m_plane->GetPoint1(p1);
-        m_plane->GetPoint2(p2);
-
-        Eigen::Vector3d O(origin[0], origin[1], origin[2]);
-        Eigen::Vector3d E1(p1[0] - origin[0], p1[1] - origin[1],
-                           p1[2] - origin[2]);
-        Eigen::Vector3d E2(p2[0] - origin[0], p2[1] - origin[1],
-                           p2[2] - origin[2]);
-
-        Eigen::Vector2d uv = m_UV[(size_t)i];
-        Eigen::Vector3d pt = O + E1 * uv.x() + E2 * uv.y();
-        flatPts->InsertNextPoint(pt.data());
-    }
-
-    flatPoly->SetPoints(flatPts);
+    // 2. Save flattened mask
 
     vtkNew<vtkXMLPolyDataWriter> writer;
     writer->SetFileName((f + "flattenedMask.vtp").c_str());
-    writer->SetInputData(flatPoly);
+    writer->SetInputData(m_flatMask);
     writer->Write();
 }
 
