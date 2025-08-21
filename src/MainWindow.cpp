@@ -356,7 +356,7 @@ MainWindow::MainWindow() {
                            "Principal Component Analysis");
     pcaToolbarAction->setEnabled(0);
     templatePlotToolbarAction = toolbar->addAction(
-        QIcon(":/icons/graphics/icons/template.svg"), "Plot Template");
+        QIcon(":/icons/graphics/icons/template_plot.png"), "Plot Template");
     templatePlotToolbarAction->setEnabled(0);
 
     helpToolbarAction =
@@ -479,7 +479,7 @@ void MainWindow::about() {
            "Anton Barceló, 2023. Biomechanics, behaviour dynamics and "
            "archaeology: Integrative attempts to study animal domestication "
            "and husbandry. Universitat Autònoma de Barcelona. <br> "
-           "Copyright (c) Kaveh Yousef Poran <br> 2023"));
+           "Copyright (c) Kaveh Yousef Poran <br> 2025"));
 }
 
 void MainWindow::LoadMesh() {

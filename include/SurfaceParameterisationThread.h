@@ -66,32 +66,36 @@
                       
 ***********************************************************************************************/
 
-#include "include/SurfaceParametrisationThread.h"
+#ifndef SURFACE_PARAMETERISATION_THREAD
+#define SURFACE_PARAMETERISATION_THREAD
 
-SurfaceParametrisationThread::SurfaceParametrisationThread(
-    vtkPolyData* maskMesh, vtkPoints* inputPts, vtkPolyData* outputMesh,
-    int uRes, int vRes, QObject* parent)
-    : QThread(parent),
-      m_mesh(maskMesh),
-      m_inputPts(inputPts),
-      m_output(outputMesh),
-      m_uRes(uRes),
-      m_vRes(vRes) {}
+#include <vtkPoints.h>
+#include <vtkPolyData.h>
 
-void SurfaceParametrisationThread::run() {
-    m_output->Initialize();
+#include <QThread>
 
-    // 1. Create initial plane from first 3 points of the curve
-    if (m_inputPts->GetNumberOfPoints() < 3) {
-        return;
-    }
+#include "HarmonicParameteriser.h"
 
-    // 2. Build RectSlimMapper and sample the grid
-    RectSlimMapper slim(m_mesh, m_inputPts, m_output);
-    slim.Sample(m_uRes, m_vRes);
-    emit finished();
-}
+class SurfaceParameterisationThread : public QThread {
+    Q_OBJECT
+   private:
+    vtkPolyData* m_mesh;
+    vtkPolyData* m_output;
+    vtkPoints* m_inputPts;
+    int m_uRes = 0;
+    int m_vRes = 0;
 
-SurfaceParametrisationThread::~SurfaceParametrisationThread() {
-    wait();
-}
+   public:
+    SurfaceParameterisationThread(vtkPolyData* maskMesh, vtkPoints* inputPts,
+                                 vtkPolyData* outputMesh, int uRes, int vRes,
+                                 QObject* parent = nullptr);
+    ~SurfaceParameterisationThread();
+    void run() override;
+
+   signals:
+    void finished();
+};
+
+
+
+#endif

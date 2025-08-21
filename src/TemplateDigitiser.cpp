@@ -385,27 +385,27 @@ TemplateDigitiser::TemplateDigitiser(ProSetMenu* parent) : m_parent(parent) {
     connect(surfaceLockButton, &QPushButton::clicked, this,
             &TemplateDigitiser::ChangeSurfaceLock);
 
-    surfaceIronButton = new QPushButton();
-    surfaceIronButton->setCheckable(true);
-    surfaceIronButton->setIcon(QIcon(":/icons/graphics/icons/ironOff.svg"));
-    surfaceIronButton->setToolTip("Iron Out Sliders");
-    surfaceIronButton->setEnabled(0);
-    surfacePatchToolbar->addWidget(surfaceIronButton);
+    surfaceGrabButton = new QPushButton();
+    surfaceGrabButton->setCheckable(true);
+    surfaceGrabButton->setIcon(QIcon(":/icons/graphics/icons/openHand.svg"));
+    surfaceGrabButton->setToolTip("Grab and Move Sliders");
+    surfaceGrabButton->setEnabled(0);
+    surfacePatchToolbar->addWidget(surfaceGrabButton);
     surfacePatchToolbar->addSeparator();
-    connect(surfaceIronButton, &QPushButton::clicked, this,
+    connect(surfaceGrabButton, &QPushButton::clicked, this,
             &TemplateDigitiser::DrapeToSurface);
     // Create opacity effect
     QGraphicsOpacityEffect* effectForIron =
-        new QGraphicsOpacityEffect(surfaceIronButton);
-    surfaceIronButton->setGraphicsEffect(effectForIron);
+        new QGraphicsOpacityEffect(surfaceGrabButton);
+    surfaceGrabButton->setGraphicsEffect(effectForIron);
     // Create animation
-    m_ironAnimation = new QPropertyAnimation(effectForIron, "opacity");
-    m_ironAnimation->setDuration(1000);   // 1 second cycle
-    m_ironAnimation->setStartValue(1.0);  // Fully visible
-    m_ironAnimation->setEndValue(0.2);    // Almost transparent
-    m_ironAnimation->setEasingCurve(QEasingCurve::InOutQuad);
-    m_ironAnimation->setLoopCount(-1);  // Infinite loop
-    m_ironAnimation->stop();
+    m_grabAnimation = new QPropertyAnimation(effectForIron, "opacity");
+    m_grabAnimation->setDuration(1000);   // 1 second cycle
+    m_grabAnimation->setStartValue(1.0);  // Fully visible
+    m_grabAnimation->setEndValue(0.2);    // Almost transparent
+    m_grabAnimation->setEasingCurve(QEasingCurve::InOutQuad);
+    m_grabAnimation->setLoopCount(-1);  // Infinite loop
+    m_grabAnimation->stop();
 
     surfaceInterpolateButton = new QPushButton();
     surfaceInterpolateButton->setToolTip("Place Pre-Sliders");
@@ -663,9 +663,9 @@ void TemplateDigitiser::AddSurface() {
     surfaceAddButton->setEnabled(0);
     if (m_surfaceCurveCtrlBlock->GetNumberOfBlocks() < m_surfacePatchNOP) {
         m_surfacePtsIds->push_back(new std::vector<int>);
-        surfaceIronButton->setEnabled(0);
-        surfaceIronButton->setChecked(0);
-        m_ironAnimation->stop();
+        surfaceGrabButton->setEnabled(0);
+        surfaceGrabButton->setChecked(0);
+        m_grabAnimation->stop();
         DrapeToSurface();
         surfaceInterpolateButton->setEnabled(0);
         m_interpolationAnimation->stop();
@@ -778,9 +778,9 @@ void TemplateDigitiser::ChangeSurfaceSource(int index) {
         m_surfaceCurveCtrlVertexFilter->Update();
         m_surfaceCurveCtrlVertexFilter->Modified();
         if (m_surfaceCurveHighlightCtrlPoints->GetNumberOfPoints() > 2) {
-            surfaceIronButton->setEnabled(0);
-            surfaceIronButton->setChecked(0);
-            m_ironAnimation->stop();
+            surfaceGrabButton->setEnabled(0);
+            surfaceGrabButton->setChecked(0);
+            m_grabAnimation->stop();
             vtkNew<vtkPolyData> tempCtrlPoly;
             tempCtrlPoly->DeepCopy(m_surfaceCurveCtrlPointsPoly);
             m_surfaceCurveCtrlBlock->SetBlock(m_currentSurfaceId, tempCtrlPoly);
@@ -1087,9 +1087,9 @@ void TemplateDigitiser::ClearSurface() {
         m_surfacePatchNOP - (m_surfaceBlock->GetNumberOfBlocks());
     surfaceLineEditNOP->setText(
         QString::fromStdString(std::to_string(numOfPatches)));
-    surfaceIronButton->setEnabled(0);
-    surfaceIronButton->setChecked(0);
-    m_ironAnimation->stop();
+    surfaceGrabButton->setEnabled(0);
+    surfaceGrabButton->setChecked(0);
+    m_grabAnimation->stop();
     DrapeToSurface();
     surfaceInterpolateButton->setEnabled(0);
     m_interpolationAnimation->stop();
@@ -1110,19 +1110,19 @@ void TemplateDigitiser::ClearSurface() {
 }
 
 void TemplateDigitiser::DrapeToSurface() {
-    if (surfaceIronButton->isChecked()) {
+    if (surfaceGrabButton->isChecked()) {
         // Set opacity to 1.0 immediately
         QGraphicsOpacityEffect* effect = qobject_cast<QGraphicsOpacityEffect*>(
-            surfaceIronButton->graphicsEffect());
+            surfaceGrabButton->graphicsEffect());
         if (effect) {
             effect->setOpacity(1.0);
         }
-        m_ironAnimation->stop();
-        surfaceIronButton->setIcon(QIcon(":/icons/graphics/icons/ironOn.svg"));
+        m_grabAnimation->stop();
+        surfaceGrabButton->setIcon(QIcon(":/icons/graphics/icons/grabbedHand.svg"));
     }
-    if (!surfaceIronButton->isChecked()) {
-        m_ironAnimation->stop();
-        surfaceIronButton->setIcon(QIcon(":/icons/graphics/icons/ironOff.svg"));
+    if (!surfaceGrabButton->isChecked()) {
+        m_grabAnimation->stop();
+        surfaceGrabButton->setIcon(QIcon(":/icons/graphics/icons/openHand.svg"));
         surfaceLockButton->setChecked(1);
         ChangeSurfaceLock();
     }
@@ -1257,9 +1257,9 @@ void TemplateDigitiser::UpdateSurfaceScene(int id) {
             if (pd->GetNumberOfPoints() > 0) {
                 surfaceLockButton->setChecked(1);
                 ChangeSurfaceLock();
-                surfaceIronButton->setEnabled(0);
-                surfaceIronButton->setChecked(0);
-                m_ironAnimation->stop();
+                surfaceGrabButton->setEnabled(0);
+                surfaceGrabButton->setChecked(0);
+                m_grabAnimation->stop();
                 DrapeToSurface();
                 for (int j = 0; j < pd->GetNumberOfPoints(); j++) {
                     m_surfaceCurveHighlightCtrlPoints->InsertNextPoint(
@@ -1631,7 +1631,7 @@ void TemplateDigitiser::MakeCage(vtkPoints* inputPts,
 
     QVBoxLayout layout(&waitDialog);
 
-    QLabel msg("Parametrisation...");
+    QLabel msg("Parameterisation...");
     msg.setAlignment(Qt::AlignCenter);
     SpinnerWidget spinner;
     layout.addWidget(&msg);
@@ -1643,31 +1643,31 @@ void TemplateDigitiser::MakeCage(vtkPoints* inputPts,
                      &SpinnerWidget::setAngle);
 
     // Cutting thread
-    QThread parametrisationThread;
-    SurfaceParametrisationThread* worker = new SurfaceParametrisationThread(
+    QThread parameterisationThread;
+    SurfaceParameterisationThread* worker = new SurfaceParameterisationThread(
         m_surfaceMask, inputPts, outPlanePoly, uRes, vRes);
-    worker->moveToThread(&parametrisationThread);
+    worker->moveToThread(&parameterisationThread);
 
-    QObject::connect(&parametrisationThread, &QThread::started, worker,
-                     &SurfaceParametrisationThread::run);
-    QObject::connect(worker, &SurfaceParametrisationThread::finished,
-                     &parametrisationThread, &QThread::quit);
-    QObject::connect(worker, &SurfaceParametrisationThread::finished,
+    QObject::connect(&parameterisationThread, &QThread::started, worker,
+                     &SurfaceParameterisationThread::run);
+    QObject::connect(worker, &SurfaceParameterisationThread::finished,
+                     &parameterisationThread, &QThread::quit);
+    QObject::connect(worker, &SurfaceParameterisationThread::finished,
                      &spinThread, &QThread::quit);
-    QObject::connect(worker, &SurfaceParametrisationThread::finished,
+    QObject::connect(worker, &SurfaceParameterisationThread::finished,
                      &waitDialog, &QDialog::accept);
-    QObject::connect(&parametrisationThread, &QThread::finished, worker,
+    QObject::connect(&parameterisationThread, &QThread::finished, worker,
                      &QObject::deleteLater);
 
     // Start both threads
     spinThread.start();
-    parametrisationThread.start();
+    parameterisationThread.start();
 
     waitDialog.exec();  // Blocks UI
 
     // Cleanup
     spinThread.wait();
-    parametrisationThread.wait();
+    parameterisationThread.wait();
 
     ProjectOnMesh(outPlanePoly, m_surfaceMask);
 }
@@ -2574,7 +2574,7 @@ void TemplateDigitiser::UpdateSurfaceDirection() {
 
 void TemplateDigitiser::ResetPatch() {
     if (m_surfacePatchLandmarks->GetNumberOfPoints() > 0 &&
-        !surfaceIronButton->isChecked()) {
+        !surfaceGrabButton->isChecked() && m_editableSurface == 1) {
         m_surfacePatchLandmarks->Initialize();
         m_surfaceCtrlPointsPoly->Initialize();
         vtkNew<vtkPolyData> emptyPoly;
@@ -3050,7 +3050,7 @@ void TemplateDigitiser::PickFunc(vtkObject* caller, long unsigned int eventId,
                 m_fixedVertexFilter->Update();
                 m_fixedVertexFilter->Modified();
                 if (tempList.empty()) {
-                    std::cout << "it's empty \n";
+                    std::cerr << "Picker returned empty \n";
                 }
             }
         }
@@ -3226,7 +3226,7 @@ void TemplateDigitiser::PickFunc(vtkObject* caller, long unsigned int eventId,
         }
     } else if (surfaceSliderButton->isChecked()) {
         if (m_iren->GetControlKey() && m_editableSurface == 1 &&
-            !surfaceIronButton->isChecked()) {
+            !surfaceGrabButton->isChecked()) {
             m_iren->SetInteractorStyle(m_2Dstyle);
             m_iren->Modified();
             m_meshActor->SetPickable(1);
@@ -3270,7 +3270,7 @@ void TemplateDigitiser::PickFunc(vtkObject* caller, long unsigned int eventId,
             }
         }
         if (m_iren->GetShiftKey() && m_editableSurface == 1 &&
-            !surfaceIronButton->isChecked()) {
+            !surfaceGrabButton->isChecked()) {
             m_meshActor->SetPickable(0);
             m_meshActor->Modified();
             m_fixedPointActor->SetPickable(0);
@@ -3469,7 +3469,7 @@ void TemplateDigitiser::NeighborFinder(int initId, int brushSize,
                     }
                 }
             } else {
-                std::cout << "Cell Id is out of bound, Debug!" << std::endl;
+                std::cerr << "Cell Id is out of bound, Debug!" << std::endl;
             }
         }
         for (int i = 0; i < tempList->GetNumberOfIds(); i++) {
@@ -3506,7 +3506,7 @@ void TemplateDigitiser::MoveFunc(vtkObject* caller, long unsigned int eventId,
             m_fixedPointActor->SetPickable(1);
             m_fixedPointActor->Modified();
         } else if (surfaceSliderButton->isChecked()) {
-            if (surfaceIronButton->isChecked()) {
+            if (surfaceGrabButton->isChecked()) {
                 m_surfaceCurveCtrlPointActor->SetPickable(0);
                 m_surfaceCurveCtrlPointActor->Modified();
                 m_surfaceCtrlPointActor->SetPickable(1);
@@ -3580,7 +3580,7 @@ void TemplateDigitiser::CoordinateFunc(vtkObject* caller,
             m_fixedVertexFilter->Modified();
             m_renderer->GetRenderWindow()->Render();
         } else if (surfaceSliderButton->isChecked() && m_editableSurface == 1) {
-            if (m_surfaceNOS == 0 && !surfaceIronButton->isChecked()) {
+            if (m_surfaceNOS == 0 && !surfaceGrabButton->isChecked()) {
                 auto* innerVecPtr = m_surfacePtsIds->at(m_currentSurfaceId);
                 if (!innerVecPtr) {
                     return;
@@ -3621,7 +3621,7 @@ void TemplateDigitiser::CoordinateFunc(vtkObject* caller,
                     m_surfaceCurveTubeFilter->Modified();
                     m_renderer->GetRenderWindow()->Render();
                 }
-            } else if (m_surfaceNOS == 0 && surfaceIronButton->isChecked()) {
+            } else if (m_surfaceNOS == 0 && surfaceGrabButton->isChecked()) {
                 std::vector<int>* outlineIds = new std::vector<int>();
                 OutlineIdFinder(m_surfacePatchUNOS, m_surfacePatchVNOS,
                                 outlineIds);
@@ -3841,7 +3841,7 @@ void TemplateDigitiser::closeEvent(QCloseEvent* event) {
 void TemplateDigitiser::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Control || event->key() == Qt::Key_Shift) {
         if (surfaceSliderButton->isChecked()) {
-            if (m_editableSurface == 1 && !surfaceIronButton->isChecked()) {
+            if (m_editableSurface == 1 && !surfaceGrabButton->isChecked()) {
                 m_surfaceChanged = 0;
                 vtkNew<vtkPolyData> epmptyPoly;
                 m_surfaceTubeFilter->SetInputData(epmptyPoly);
@@ -3871,9 +3871,9 @@ void TemplateDigitiser::keyReleaseEvent(QKeyEvent* event) {
                 if (m_surfaceCurveHighlightCtrlPoints->GetNumberOfPoints() >
                         2 &&
                     m_surfaceChanged == 1) {
-                    surfaceIronButton->setEnabled(0);
-                    surfaceIronButton->setChecked(0);
-                    m_ironAnimation->stop();
+                    surfaceGrabButton->setEnabled(0);
+                    surfaceGrabButton->setChecked(0);
+                    m_grabAnimation->stop();
                     vtkNew<vtkPolyData> tempCtrlPoly;
                     tempCtrlPoly->DeepCopy(m_surfaceCurveCtrlPointsPoly);
                     m_surfaceCurveCtrlBlock->SetBlock(m_currentSurfaceId,
@@ -4003,7 +4003,7 @@ void TemplateDigitiser::DrawDiameter(vtkPoints* meshPoints) {
         m_renderer->AddActor(m_largestDiamTubeActor);
         m_renderer->GetRenderWindow()->Render();
     } else {
-        std::cout << "Mesh is corrupted? Debug!" << std::endl;
+        std::cerr << "Mesh is corrupted? Debug!" << std::endl;
     }
 }
 
@@ -4086,9 +4086,9 @@ void TemplateDigitiser::InterpolateSurface() {
     ConstructSurfaceData(m_surfaceCurveHighlightCtrlPoints,
                          m_surfacePatchLandmarks, m_surfaceCtrlPointsPoly);
     if (m_surfaceCtrlPointsPoly->GetNumberOfPoints() > 0) {
-        surfaceIronButton->setEnabled(1);
-        surfaceIronButton->setChecked(0);
-        m_ironAnimation->start();
+        surfaceGrabButton->setEnabled(1);
+        surfaceGrabButton->setChecked(0);
+        m_grabAnimation->start();
         m_surfacePatchLandmarks->Modified();
         m_surfaceCtrlPointsPoly->Modified();
         m_surfaceCtrlVertexFilter->SetInputData(m_surfaceCtrlPointsPoly);

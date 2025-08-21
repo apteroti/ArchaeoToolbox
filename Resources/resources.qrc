@@ -7,24 +7,18 @@
     <file>graphics/icons/surfaceLandmarks.svg</file>
     <file>graphics/icons/landmarks.svg</file>
     <file>graphics/icons/DICOMPlot.png</file>
-    <file>graphics/icons/help.png</file>
     <file>graphics/icons/hide.svg</file>
     <file>graphics/icons/hourglass.png</file>
-    <file>graphics/icons/ironOff.svg</file>
-    <file>graphics/icons/ironOn.svg</file>
     <file>graphics/icons/locked.svg</file>
     <file>graphics/icons/unlocked.svg</file>
     <file>graphics/icons/minus.png</file>
     <file>graphics/icons/plus.png</file>
-    <file>graphics/icons/plot.png</file>
-    <file>graphics/icons/template.svg</file>
+    <file>graphics/icons/template_plot.png</file>
     <file>graphics/icons/update.png</file>
     <file>graphics/icons/yes.png</file>
     <file>graphics/icons/busy.svg</file>
     <file>graphics/icons/vBusy.svg</file>
     <file>graphics/icons/idle.svg</file>
-    <file>graphics/icons/anchorOn.svg</file>
-    <file>graphics/icons/anchorOff.svg</file>
     <file>graphics/icons/no.png</file>
     <file>graphics/icons/sliding.svg</file>
     <file>graphics/icons/sliding2.svg</file>
@@ -33,7 +27,6 @@
     <file>graphics/icons/slideCurveLandmarksOn.svg</file>
     <file>graphics/icons/slideCurveLandmarksOff.svg</file>
     <file>graphics/icons/superimposition.svg</file>
-    <file>graphics/icons/superimposition.png</file>
     <file>graphics/icons/Quim.png</file>
     <file>graphics/icons/mainIcon.png</file>
     <file>graphics/icons/brush.svg</file>
@@ -41,5 +34,7 @@
     <file>graphics/icons/Help.svg</file>
     <file>graphics/icons/save.svg</file>
     <file>graphics/icons/Bspline.png</file>
+    <file>graphics/icons/openHand.svg</file>
+    <file>graphics/icons/grabbedHand.svg</file>
 </qresource>
 </RCC>

@@ -20,8 +20,8 @@ set(SOURCE_FILES
     src/SlidingThread.cpp src/StatusReporterThread.cpp src/PCAWindow.cpp
     src/RecoverLMThread.cpp src/ExportDialogue.cpp src/RegistrationThread.cpp
     src/BlueNoiseThread.cpp src/HelpBrowser.cpp src/ImportThread.cpp src/ExclusionPaint.cpp 
-    src/CPD3D.cpp src/DecimationDialog.cpp src/CuttingThread.cpp src/RectSlimMapper.cpp
-    src/SurfaceParametrisationThread.cpp
+    src/CPD3D.cpp src/DecimationDialog.cpp src/CuttingThread.cpp src/HarmonicParameteriser.cpp
+    src/SurfaceParameterisationThread.cpp
 
     include/MainWindow.h include/SpecimenDigitiser.h include/DataBase.h
     include/MainWindow.fwd.h include/ProSetMenu.h include/ProSetMenu.fwd.h
@@ -32,8 +32,8 @@ set(SOURCE_FILES
     include/ExportDialogue.h include/RegistrationThread.h include/BlueNoiseThread.h
     include/HelpBrowser.h include/ImportThread.h include/ExclusionPaint.h include/CPD3D.h
     include/DecimationDialog.h include/VCGDefinitions.h include/DecimateThread.h
-    include/SpinnerDialog.h include/CuttingThread.h include/RectSlimMapper.h
-    include/SurfaceParametrisationThread.h
+    include/SpinnerDialog.h include/CuttingThread.h include/HarmonicParameteriser.h
+    include/SurfaceParameterisationThread.h
 
     Resources/resources.qrc
 )

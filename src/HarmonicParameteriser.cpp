@@ -65,15 +65,15 @@
                .*%%%*                                                                     
                       
 ***********************************************************************************************/
-#include "include/RectSlimMapper.h"
+#include "include/HarmonicParameteriser.h"
 
 // -------------------- Constructor --------------------
-RectSlimMapper::RectSlimMapper(vtkPolyData* maskMesh, vtkPoints* inputPts,
+HarmonicParameteriser::HarmonicParameteriser(vtkPolyData* maskMesh, vtkPoints* inputPts,
                                vtkPolyData* outputMesh)
     : m_curvePts(inputPts), m_output(outputMesh) {
     if (maskMesh->GetNumberOfPoints() == 0 ||
         m_curvePts->GetNumberOfPoints() == 0 || !m_output) {
-        std::cerr << "RectSlimMapper: null input(s)" << std::endl;
+        std::cerr << "HarmonicParameteriser: null input(s)" << std::endl;
         return;
     } else {
         m_flatMask = vtkSmartPointer<vtkPolyData>::New();
@@ -103,7 +103,7 @@ RectSlimMapper::RectSlimMapper(vtkPolyData* maskMesh, vtkPoints* inputPts,
     }
 }
 
-void RectSlimMapper::ComputeHarmonicToPlane(vtkPolyData* mesh,
+void HarmonicParameteriser::ComputeHarmonicToPlane(vtkPolyData* mesh,
                                             vtkPolyData* outFlatMesh) {
     // 1) Extract ordered boundary loop
     std::vector<vtkIdType> boundaryLoop;
@@ -349,7 +349,7 @@ void RectSlimMapper::ComputeHarmonicToPlane(vtkPolyData* mesh,
 }
 
 // -------------------- Extract boundary --------------------
-bool RectSlimMapper::ExtractSingleBoundaryLoop(vtkPolyData* mesh,
+bool HarmonicParameteriser::ExtractSingleBoundaryLoop(vtkPolyData* mesh,
                                                vtkPoints* curvePts,
                                                std::vector<vtkIdType>& loop) {
     if (!mesh || mesh->GetNumberOfPoints() == 0 ||
@@ -552,7 +552,7 @@ bool RectSlimMapper::ExtractSingleBoundaryLoop(vtkPolyData* mesh,
     return true;
 }
 
-void RectSlimMapper::InitialUV(vtkPolyData* flatMesh,
+void HarmonicParameteriser::InitialUV(vtkPolyData* flatMesh,
                                std::vector<Vector2d>& UV) {
     vtkIdType n = flatMesh->GetNumberOfPoints();
     UV.resize(static_cast<size_t>(n));
@@ -565,7 +565,7 @@ void RectSlimMapper::InitialUV(vtkPolyData* flatMesh,
 }
 
 // -------------------- Sample flattened mesh --------------------
-void RectSlimMapper::Sample(int uRes, int vRes) {
+void HarmonicParameteriser::Sample(int uRes, int vRes) {
     if (m_mask->GetNumberOfPoints() == 0 || m_flatMask->GetNumberOfPoints() == 0 || !m_output ||
         m_UV.empty()) {
         return;
@@ -637,7 +637,7 @@ void RectSlimMapper::Sample(int uRes, int vRes) {
     m_output->DeepCopy(result);
 }
 
-void RectSlimMapper::DebugMesh(const std::string& folder) {
+void HarmonicParameteriser::DebugMesh(const std::string& folder) {
     // Ensure folder string ends with "/" or "\"
     std::string f = folder;
     if (!f.empty() && f.back() != '/' && f.back() != '\\') f += "/";
@@ -658,7 +658,7 @@ void RectSlimMapper::DebugMesh(const std::string& folder) {
     writer->Write();
 }
 
-void RectSlimMapper::ConvertVTKToVCG(vtkPolyData* polyData, MyMesh& vcgMesh) {
+void HarmonicParameteriser::ConvertVTKToVCG(vtkPolyData* polyData, MyMesh& vcgMesh) {
     // Clear existing mesh
     vcgMesh.Clear();
 
@@ -739,7 +739,7 @@ void RectSlimMapper::ConvertVTKToVCG(vtkPolyData* polyData, MyMesh& vcgMesh) {
     vcg::tri::UpdateBounding<MyMesh>::Box(vcgMesh);
 }
 
-void RectSlimMapper::ConvertVCGToVTK(MyMesh& vcgMesh, vtkPolyData* polyData) {
+void HarmonicParameteriser::ConvertVCGToVTK(MyMesh& vcgMesh, vtkPolyData* polyData) {
     if (!polyData) return;
 
     // Ensure compact vertex/face arrays

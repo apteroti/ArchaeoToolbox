@@ -1,7 +1,7 @@
 
 
-#ifndef RECT_SLIM_MAPPER_H
-#define RECT_SLIM_MAPPER_H
+#ifndef HARMONIC_PARAMETERISER_H
+#define HARMONIC_PARAMETERISER_H
 
 #include <vtkAppendArcLength.h>
 #include <vtkCell.h>
@@ -41,9 +41,9 @@
 using Eigen::Vector2d;
 using Eigen::Vector3d;
 
-class RectSlimMapper {
+class HarmonicParameteriser {
    public:
-    RectSlimMapper(vtkPolyData* maskMesh, vtkPoints* inputPts,
+    HarmonicParameteriser(vtkPolyData* maskMesh, vtkPoints* inputPts,
                    vtkPolyData* outputMesh);
 
     // Sample the flattened mesh to a regular grid

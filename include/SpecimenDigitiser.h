@@ -191,7 +191,7 @@
 #include "StatusReporterThread.h"
 #include "SpinnerDialog.h"
 #include "CuttingThread.h"
-#include "SurfaceParametrisationThread.h"
+#include "SurfaceParameterisationThread.h"
 
 class SpecimenDigitiser : public QMainWindow {
    private:
@@ -360,11 +360,11 @@ class SpecimenDigitiser : public QMainWindow {
     QPushButton *surfaceAddButton;
     QPushButton *surfaceLockButton;
     QPushButton *surfaceClearButton;
-    QPushButton *surfaceIronButton;
+    QPushButton *surfaceGrabButton;
     QPushButton *slidingButton;
     QPushButton *surfaceInterpolateButton;
     QPropertyAnimation *m_interpolationAnimation;
-    QPropertyAnimation *m_ironAnimation;
+    QPropertyAnimation *m_grabAnimation;
     QPropertyAnimation *m_slidingAnimation;
     // Functions
     void TypeITool();

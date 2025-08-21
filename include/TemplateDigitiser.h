@@ -218,7 +218,7 @@
 #include "ProSetMenu.fwd.h"
 #include "SpinnerDialog.h"
 #include "StatusReporterThread.h"
-#include "SurfaceParametrisationThread.h"
+#include "SurfaceParameterisationThread.h"
 
 class TemplateDigitiser : public QMainWindow {
    private:
@@ -381,13 +381,12 @@ class TemplateDigitiser : public QMainWindow {
     QPushButton *surfaceAddButton;
     QPushButton *surfaceLockButton;
     QPushButton *surfaceClearButton;
-    QPushButton *surfaceIronButton;
-    QPushButton *surfaceAnchorButton;
+    QPushButton *surfaceGrabButton;
     QPushButton *surfacePaintButton;
     QPushButton *surfaceResampleButton;
     QPushButton *surfaceInterpolateButton;
     QPropertyAnimation *m_interpolationAnimation;
-    QPropertyAnimation *m_ironAnimation;
+    QPropertyAnimation *m_grabAnimation;
     // Functions
     void TypeITool();
     void SurfaceTool();
