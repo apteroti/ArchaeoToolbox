@@ -403,8 +403,8 @@ void BlueNoiseThread::run() {
     }
     // 4.2. Error handling (debugging only).
     else {
-        std::cout << "Problem in Blue Noise Thread, Debug" << std::endl;
-        std::cout << "Expected: " << m_initRes << ", Found: " << count
+        std::cerr << "Problem in Blue Noise Thread, Debug" << std::endl;
+        std::cerr << "Expected: " << m_initRes << ", Found: " << count
                   << std::endl;
     }
 

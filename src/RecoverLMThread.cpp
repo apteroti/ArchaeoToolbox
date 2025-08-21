@@ -131,18 +131,18 @@ void RecoverLMThread::run() {
                                         std::stod(m_content[i][j + 2].c_str());
                                     fixedPts->InsertNextPoint(x, y, z);
                                 } else {
-                                    std::cout << "Non-digit "
+                                    std::cerr << "Non-digit "
                                                  "fixed row"
                                               << std::endl;
                                     break;
                                 }
                             } else {
-                                std::cout << "Corrupted row" << std::endl;
+                                std::cerr << "Corrupted row" << std::endl;
                                 break;
                             }
                         }
                     } else {
-                        std::cout << "fixed length missmatch" << std::endl;
+                        std::cerr << "fixed length missmatch" << std::endl;
                         break;
                     }
                     startPoint = endPoint;
@@ -163,18 +163,18 @@ void RecoverLMThread::run() {
                                         std::stod(m_content[i][j + 2].c_str());
                                     curvePts->InsertNextPoint(x, y, z);
                                 } else {
-                                    std::cout << "Non-digit "
+                                    std::cerr << "Non-digit "
                                                  "curve row"
                                               << std::endl;
                                     break;
                                 }
                             } else {
-                                std::cout << "Corrupted curve row" << std::endl;
+                                std::cerr << "Corrupted curve row" << std::endl;
                                 break;
                             }
                         }
                     } else {
-                        std::cout << "Curve length missmatch" << std::endl;
+                        std::cerr << "Curve length missmatch" << std::endl;
                         break;
                     }
                     startPoint = endPoint;
@@ -198,21 +198,21 @@ void RecoverLMThread::run() {
                                         surfacePts->InsertNextPoint(x, y,
                                                                          z);
                                     } else {
-                                        std::cout << "Non-digit "
+                                        std::cerr << "Non-digit "
                                                      "surface-patch "
                                                      "row"
                                                   << std::endl;
                                         break;
                                     }
                                 } else {
-                                    std::cout << "Corrupted "
+                                    std::cerr << "Corrupted "
                                                  "Surface-patch row"
                                               << std::endl;
                                     break;
                                 }
                             }
                         } else {
-                            std::cout << "Surface row missmatch" << std::endl;
+                            std::cerr << "Surface row missmatch" << std::endl;
                             break;
                         }
                     }
@@ -236,21 +236,21 @@ void RecoverLMThread::run() {
                                         surfacePatchPts->InsertNextPoint(x, y,
                                                                          z);
                                     } else {
-                                        std::cout << "Non-digit "
+                                        std::cerr << "Non-digit "
                                                      "surface-patch "
                                                      "row"
                                                   << std::endl;
                                         break;
                                     }
                                 } else {
-                                    std::cout << "Corrupted "
+                                    std::cerr << "Corrupted "
                                                  "Surface-patch row"
                                               << std::endl;
                                     break;
                                 }
                             }
                         } else {
-                            std::cout << "Surface row missmatch" << std::endl;
+                            std::cerr << "Surface row missmatch" << std::endl;
                             break;
                         }
                     }
@@ -275,20 +275,20 @@ void RecoverLMThread::run() {
                         emit TreeObjectChanged(sampleName);
                         emit DataBaseChanged(sampleName);
                     } else {
-                        std::cout << fixedPts->GetNumberOfPoints() << std::endl;
-                        std::cout << curvePts->GetNumberOfPoints() << std::endl;
-                        std::cout << surfacePatchPts->GetNumberOfPoints()
+                        std::cerr << fixedPts->GetNumberOfPoints() << std::endl;
+                        std::cerr << curvePts->GetNumberOfPoints() << std::endl;
+                        std::cerr << surfacePatchPts->GetNumberOfPoints()
                                   << std::endl;
-                        std::cout << sampleName << std::endl;
-                        std::cout << "doesn't match the template" << std::endl;
-                        std::cout << "Template has" << std::endl;
-                        std::cout << numSurfPatchSlider << std::endl;
-                        std::cout << "Surface Sliders" << std::endl;
+                        std::cerr << sampleName << std::endl;
+                        std::cerr << "doesn't match the template" << std::endl;
+                        std::cerr << "Template has" << std::endl;
+                        std::cerr << numSurfPatchSlider << std::endl;
+                        std::cerr << "Surface Sliders" << std::endl;
                     }
                 }
                 else{
-                    std::cout<< "Couldn't find Mesh File:"<<std::endl;
-                    std::cout<< meshName<<std::endl;
+                    std::cerr<< "Couldn't find Mesh File:"<<std::endl;
+                    std::cerr<< meshName<<std::endl;
                     break;
                 }
             } 

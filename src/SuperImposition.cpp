@@ -521,7 +521,7 @@ void SuperImposition::MakeImposed() {
             m_impositionThread->start();
 
         } else {
-            std::cout << "SuperImposing Error" << std::endl;
+            std::cerr << "SuperImposing Error" << std::endl;
         }
     }
 }
@@ -543,7 +543,7 @@ void SuperImposition::OnCoordinateChanged(std::string name) {
     progressLineEdit->setText(QString::fromUtf8(msg.c_str()));
 }
 void SuperImposition::OnCoordinateNotChanged(std::string name) {
-    std::cout << name << std::endl;
+    std::cerr << name << std::endl;
     std::string errMsg =
         "Specimen " + name +
         " is throwing an exception. \n the superimposition process is Aborted";

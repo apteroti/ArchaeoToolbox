@@ -205,7 +205,7 @@ void SuperImpositionThread::run() {
                                     scaleOrNot);
             transMatrix->Modified();
         } catch (std::bad_alloc e) {
-            std::cout << "Sample " + name + " is throwing exception"
+            std::cerr << "Sample " + name + " is throwing exception"
                       << std::endl;
             emit CoordinateNotChanged(name);
             break;

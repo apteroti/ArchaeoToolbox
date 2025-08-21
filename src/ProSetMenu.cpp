@@ -569,7 +569,7 @@ void ProSetMenu::ImportTemplate() {
                     content.push_back(row);
                 }
             } else {
-                std::cout << "Could not open the file\n";
+                std::cerr << "Could not open the file\n";
             }
 
             for (int i = 0; i < content.size(); i++) {

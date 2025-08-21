@@ -145,7 +145,7 @@ void ImportThread::run() {
                                                        std::stod(row[3]));
                             tempFixed->Modified();
                         } else {
-                            std::cout << "Non numerical value, debug!"
+                            std::cerr << "Non numerical value, debug!"
                                       << std::endl;
                             ImportIsDone();
                             return;
@@ -164,7 +164,7 @@ void ImportThread::run() {
                                                        std::stod(row[3]));
                             tempCurve->Modified();
                         } else {
-                            std::cout << "Non numerical value, debug!"
+                            std::cerr << "Non numerical value, debug!"
                                       << std::endl;
                             ImportIsDone();
                             return;
@@ -183,7 +183,7 @@ void ImportThread::run() {
                                                          std::stod(row[3]));
                             tempSurface->Modified();
                         } else {
-                            std::cout << "Non numerical value, debug!"
+                            std::cerr << "Non numerical value, debug!"
                                       << std::endl;
                             ImportIsDone();
                             return;
@@ -202,7 +202,7 @@ void ImportThread::run() {
                                                         std::stod(row[3]));
                             tempVertex->Modified();
                         } else {
-                            std::cout << "Non numerical value, debug!"
+                            std::cerr << "Non numerical value, debug!"
                                       << std::endl;
                             ImportIsDone();
                             return;
@@ -218,7 +218,7 @@ void ImportThread::run() {
                         if (IsNumber(row[1])) {
                             dim = std::stoi(row[1]);
                         } else {
-                            std::cout << "Non numerical value, debug!"
+                            std::cerr << "Non numerical value, debug!"
                                       << std::endl;
                             ImportIsDone();
                             return;
@@ -230,7 +230,7 @@ void ImportThread::run() {
                                 tempCell->GetPointIds()->SetId(
                                     i, std::stoi(row[2 + i]));
                             } else {
-                                std::cout << "Non numerical value, debug!"
+                                std::cerr << "Non numerical value, debug!"
                                           << std::endl;
                                 ImportIsDone();
                                 return;
@@ -266,30 +266,28 @@ void ImportThread::run() {
                                     m_mutex->unlock();
                                 }
                                 else{
-                                    //std::cout<< "No landmarks to register"<<std::endl;
+                                    std::cerr<< "No landmarks to register"<<std::endl;
                                 }
 
                                 emit TreeObjectChanged(name);
                                 emit DataBaseChanged(name);
                             } else {
-                                std::cout << "Geometry is corrputed!"
+                                std::cerr << "Geometry is corrputed!"
                                           << std::endl;
                             }
                         } else {
-                            std::cout << "Geometry is Empty!" << std::endl;
+                            std::cerr << "Geometry is Empty!" << std::endl;
                         }
-                        // std::cout << "Updating the database" << std::endl;
                     }
                 }
             }
 
         } else {
-            std::cout << "Could not open the .atp file\n";
+            std::cerr << "Could not open the .atp file\n";
         }
     } else {
-        std::cout << "Template is not set!\n";
+        std::cerr << "Template is not set!\n";
     }
-    // std::cout<< "Done!"<<std::endl;
     ImportIsDone();
 }
 

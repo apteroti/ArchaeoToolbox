@@ -664,7 +664,7 @@ void HarmonicParameteriser::ConvertVTKToVCG(vtkPolyData* polyData, MyMesh& vcgMe
 
     // Validate input
     if (!polyData || !polyData->GetPoints()) {
-        std::cout << "Invalid VTK polydata input" << std::endl;
+        std::cerr << "Invalid VTK polydata input" << std::endl;
         return;
     }
 

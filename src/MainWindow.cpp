@@ -356,7 +356,7 @@ MainWindow::MainWindow() {
                            "Principal Component Analysis");
     pcaToolbarAction->setEnabled(0);
     templatePlotToolbarAction = toolbar->addAction(
-        QIcon(":/icons/graphics/icons/template_plot.png"), "Plot Template");
+        QIcon(":/icons/graphics/icons/template_plot.png"), "Plot the Template");
     templatePlotToolbarAction->setEnabled(0);
 
     helpToolbarAction =
@@ -1032,10 +1032,10 @@ void MainWindow::DoExport() {
                         }
                     }
                 } else {
-                    std::cout << "Number of coordinates are not devisible by "
+                    std::cerr << "Number of coordinates are not devisible by "
                                  "3; Debug!"
                               << std::endl;
-                    std::cout << doubleList->size() << std::endl;
+                    std::cerr << doubleList->size() << std::endl;
                 }
 
                 data << textItem.join("") << ENDL;
@@ -1498,7 +1498,7 @@ void MainWindow::DeleteDataBranch() {
             // Update rendering stuff
             ResetLMData(nodeName);
         } else {
-            std::cout << "This shouldn't happen" << std::endl;
+            std::cerr << "This shouldn't happen during the delete" << std::endl;
         }
     }
 }
@@ -2476,7 +2476,7 @@ void MainWindow::ReadLMDataFromFile() {
                         content.push_back(row);
                     }
                 } else {
-                    std::cout << "Could not open the .csv file\n";
+                    std::cerr << "Could not open the .csv file\n";
                 }
                 QString geomDir = QFileDialog::getExistingDirectory(
                     this, tr("Open Mesh Directory"), QDir::homePath(),

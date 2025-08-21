@@ -124,7 +124,7 @@ void ExportDialogue::ChangeExport(int index){
         pm = 1;
     }
     else{
-        std::cout<< "Error! Debug"<<std::endl;
+        std::cerr<< "Exporting Error! Debug"<<std::endl;
     }
 }
 

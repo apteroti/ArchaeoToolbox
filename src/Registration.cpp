@@ -970,7 +970,7 @@ void Registration::MorphTool() {
         m_regThread->start();
         RegistrationStatus();
     } else {
-        std::cout << "Problem, Debug MorphTool" << std::endl;
+        std::cerr << "Problem, Debug MorphTool" << std::endl;
     }
 }
 
@@ -1099,7 +1099,7 @@ void Registration::SI() {
             GetKabschTransformation(templateLM, specimenLM, transMatrix, 1);
             transMatrix->Modified();
         } catch (std::bad_alloc e) {
-            std::cout << "Sample is throwing exception" << std::endl;
+            std::cerr << "Sample is throwing exception" << std::endl;
         }
         vtkNew<vtkTransformPolyDataFilter> transform;
         transform->SetInputData(m_meshData);

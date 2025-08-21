@@ -354,7 +354,7 @@ void ExclusionPaint::NeighborFinder(int initId, int brushSize,
                     }
                 }
             } else {
-                std::cout << "Cell Id is out of bound, Debug!" << std::endl;
+                std::cerr << "Cell Id is out of bound, Debug!" << std::endl;
             }
         }
         for (int i = 0; i < tempList->GetNumberOfIds(); i++) {
