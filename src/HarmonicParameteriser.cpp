@@ -91,7 +91,7 @@ HarmonicParameteriser::HarmonicParameteriser(vtkPolyData* maskMesh, vtkPoints* i
         params.maxSurfDist = 0.0;
         params.adapt = false;
         params.SetTargetLen(cellSize);
-        params.iter = 10;
+        params.iter = 1;
         vcg::tri::IsotropicRemeshing<MyMesh>::Do(vcgMesh, params);
         m_mask->Initialize();
         ConvertVCGToVTK(vcgMesh, m_mask);
@@ -635,6 +635,7 @@ void HarmonicParameteriser::Sample(int uRes, int vRes) {
         }
     result->SetPolys(polys);
     m_output->DeepCopy(result);
+    DebugMesh("/home/kaveh/Shared");
 }
 
 void HarmonicParameteriser::DebugMesh(const std::string& folder) {

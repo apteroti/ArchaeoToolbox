@@ -303,7 +303,7 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
             colors->GetColor3d("SlateGray").GetData());
 
         m_meshRenWin->Render();
-        m_meshIren->Start();
+        m_meshIren->Initialize();
 
         m_graphRenderWidget->show();
         m_scatterChartView->Render();

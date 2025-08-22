@@ -965,7 +965,7 @@ void SpecimenDigitiser::Plot() {
                                    &SpecimenDigitiser::CoordinateFunc, 1);
 
     m_renWin->Render();
-    m_iren->Start();
+    m_iren->Initialize();
 }
 
 void SpecimenDigitiser::TypeITool() {
@@ -2605,7 +2605,7 @@ void SpecimenDigitiser::MakeCage(vtkPoints* inputPts,
     WaitDialog waitDialog(this);
     waitDialog.setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     waitDialog.setModal(true);
-    waitDialog.setFixedSize(140, 100);
+    waitDialog.setFixedSize(160, 100);
 
     QVBoxLayout layout(&waitDialog);
 
@@ -3781,7 +3781,6 @@ void SpecimenDigitiser::closeEvent(QCloseEvent* event) {
                 if (!m_slidingThread->isRunning()) {
                     m_parent->SetStatus(STATUS::neutral);
                     m_parent->UpdateDataBase();
-                    CleanUp();
                     event->accept();
                 }
             }
@@ -3797,34 +3796,9 @@ void SpecimenDigitiser::closeEvent(QCloseEvent* event) {
                                       QMessageBox::Yes | QMessageBox::No)) {
                 m_parent->SetStatus(STATUS::neutral);
                 m_parent->UpdateDataBase();
-                CleanUp();
                 event->accept();
             }
         }
-    }
-}
-
-void SpecimenDigitiser::CleanUp() {
-    if (m_curveType) {
-        delete m_curveType;
-        m_curveType = nullptr;
-    }
-    if (m_surfacePtsIds) {
-        for (int i = 0; i < m_surfacePtsIds->size(); i++) {
-            delete m_surfacePtsIds->at(i);
-        }
-        delete m_surfacePtsIds;
-        m_surfacePtsIds = nullptr;
-    }
-    if (m_curvePtsIds) {
-        for (int i = 0; i < m_curvePtsIds->size(); i++) {
-            delete m_curvePtsIds->at(i);
-        }
-        delete m_curvePtsIds;
-    }
-    if (m_regPlot) {
-        delete m_regPlot;
-        m_regPlot = nullptr;
     }
 }
 
@@ -4231,5 +4205,22 @@ void SpecimenDigitiser::UpdateSurfaceDirection() {
 SpecimenDigitiser::~SpecimenDigitiser() {
     delete m_vtkRenderWidget;
     delete m_exclusionPainter;
-    CleanUp();
+    if (m_curveType) {
+        delete m_curveType;
+    }
+    if (m_surfacePtsIds) {
+        for (int i = 0; i < m_surfacePtsIds->size(); i++) {
+            delete m_surfacePtsIds->at(i);
+        }
+        delete m_surfacePtsIds;
+    }
+    if (m_curvePtsIds) {
+        for (int i = 0; i < m_curvePtsIds->size(); i++) {
+            delete m_curvePtsIds->at(i);
+        }
+        delete m_curvePtsIds;
+    }
+    if (m_regPlot) {
+        delete m_regPlot;
+    }
 }

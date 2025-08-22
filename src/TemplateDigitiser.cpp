@@ -1627,7 +1627,7 @@ void TemplateDigitiser::MakeCage(vtkPoints* inputPts,
     WaitDialog waitDialog(this);
     waitDialog.setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     waitDialog.setModal(true);
-    waitDialog.setFixedSize(140, 100);
+    waitDialog.setFixedSize(160, 100);
 
     QVBoxLayout layout(&waitDialog);
 
@@ -2085,7 +2085,7 @@ void TemplateDigitiser::Plot() {
     //--------------------------------------------------------------------
 
     m_renWin->Render();
-    m_iren->Start();
+    m_iren->Initialize();
 }
 
 void TemplateDigitiser::PaintMouseClicked() {

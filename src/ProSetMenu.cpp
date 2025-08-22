@@ -150,12 +150,21 @@ ProSetMenu::ProSetMenu(MainWindow* parent) : m_parent(parent) {
     curveLineEditNOC->setPlaceholderText("1");
     curveLineEditNOC->setValidator(new QIntValidator(1, 10000, this));
     //--------------------------------------------------------------------
-    QGroupBox* maskGroup = new QGroupBox(tr("Mask"));
-    maskGroup->setStyleSheet(style);
-    QLabel* maskLabel = new QLabel(tr("Number of Masks:"));
-    maskLineEdit = new QLineEdit;
-    maskLineEdit->setPlaceholderText("Not implemented");
-    maskLineEdit->setReadOnly(1);
+    QGroupBox* cpuGroup = new QGroupBox(tr("CPU"));
+    cpuGroup->setStyleSheet(style);
+    QLabel* cpuLabel = new QLabel(tr("Number of CPU Cores:"));
+    cpuComboBox = new QComboBox(this);
+    int numCores = QThread::idealThreadCount();
+    if (numCores < 1){
+        numCores = 1; // fallback
+    }
+    for (int i = 1; i <= numCores; ++i) {
+        cpuComboBox->addItem(QString::number(i), i); 
+    }
+
+    // Select maximum by default
+    cpuComboBox->setCurrentIndex(numCores - 1);
+    
     //--------------------------------------------------------------------
     QGroupBox* registerGroup = new QGroupBox();
     registerGroup->setStyleSheet(style);
@@ -193,10 +202,10 @@ ProSetMenu::ProSetMenu(MainWindow* parent) : m_parent(parent) {
     curveLayout->addWidget(curveLineEditNOC, 1, 1);
     curveGroup->setLayout(curveLayout);
 
-    QGridLayout* maskLayout = new QGridLayout();
-    maskLayout->addWidget(maskLabel, 0, 0);
-    maskLayout->addWidget(maskLineEdit, 0, 1);
-    maskGroup->setLayout(maskLayout);
+    QGridLayout* cpuLayout = new QGridLayout();
+    cpuLayout->addWidget(cpuLabel, 0, 0);
+    cpuLayout->addWidget(cpuComboBox, 0, 1);
+    cpuGroup->setLayout(cpuLayout);
 
     QGridLayout* registerLayout = new QGridLayout();
     registerLayout->addWidget(loadTemplateButton, 0, 0);
@@ -229,11 +238,12 @@ ProSetMenu::ProSetMenu(MainWindow* parent) : m_parent(parent) {
             &ProSetMenu::ImportTemplate);
     void (QComboBox ::*fp)(int) = &QComboBox::currentIndexChanged;
     connect(surfaceComboBox, fp, this, &ProSetMenu::ChangeSurfaceMode);
+    connect(cpuComboBox, fp, this, &ProSetMenu::SetCPUCores);
 
     layout->addWidget(curveGroup, 0, 0);
     layout->addWidget(surfaceGroup, 0, 1);
     layout->addWidget(typeIGroup, 1, 0);
-    layout->addWidget(maskGroup, 1, 1);
+    layout->addWidget(cpuGroup, 1, 1);
     layout->addWidget(registerGroup, 2, 0, 1, 2);
 
     this->setWindowTitle("Project Setting");
@@ -788,6 +798,10 @@ void ProSetMenu::ImportTemplate() {
             errorDialogue.exec();
         }
     }
+}
+
+void ProSetMenu::SetCPUCores(int index){
+    m_parent->SetNumberOfCPUCores(index);
 }
 
 void ProSetMenu::ChangeSurfaceMode(int index) {

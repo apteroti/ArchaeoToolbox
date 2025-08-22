@@ -580,7 +580,7 @@ void Registration::SetTemplateScene() {
         vtkCommand::MouseMoveEvent, this, &Registration::TemplateCoordinateFunc,
         1);
     m_templateRenWin->Render();
-    m_templateIren->Start();
+    m_templateIren->Initialize();
 }
 
 void Registration::TemplatePickFunc(vtkObject* caller,
@@ -771,7 +771,7 @@ void Registration::SetTargetScene() {
                                          &Registration::TargetCoordinateFunc,
                                          1);
     m_targetRenWin->Render();
-    m_targetIren->Start();
+    m_targetIren->Initialize();
 }
 
 void Registration::TargetPickFunc(vtkObject* caller, long unsigned int eventId,
@@ -948,7 +948,7 @@ void Registration::SetOverlayScene() {
 
     m_overlayRenderer->ResetCamera();
     m_overlayRenWin->Render();
-    iren->Start();
+    iren->Initialize();
 }
 
 void Registration::MorphTool() {

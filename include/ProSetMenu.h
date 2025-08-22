@@ -76,6 +76,8 @@
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
+#include <QtCore/QThread>
+
 #include <vtkPoints.h>
 #include <vtkOBJReader.h>
 #include <vtkPolyData.h>
@@ -101,7 +103,7 @@ class ProSetMenu:public QWidget
 {
 private:
     bool m_ignoreInside = true;
-    TemplateDigitiser* m_templatePlot;
+    TemplateDigitiser* m_templatePlot = nullptr;
     int typeINOL = 0;
     int surfaceNOS = 0;
     //int surfacePatchNOS = 0;
@@ -123,7 +125,7 @@ private:
     QLineEdit *surfaceLineEditPatchNOP;
     QLineEdit *curveLineEditNOS;
     QLineEdit *curveLineEditNOC;
-    QLineEdit *maskLineEdit;
+    QComboBox *cpuComboBox;
     QLineEdit *registerLineEdit;
     QGroupBox *resolutionGroup;
     
@@ -157,6 +159,7 @@ public:
     void SaveTemplate();
     void ImportTemplate();
     void ChangeSurfaceMode(int index);
+    void SetCPUCores(int index);
     void LoadTemplate();
     void SetSurfaceNOS();
     int GetSurfaceNOS();

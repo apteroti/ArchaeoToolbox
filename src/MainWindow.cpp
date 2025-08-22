@@ -250,7 +250,7 @@ MainWindow::MainWindow() {
     m_mainRenderer->GetActiveCamera()->Zoom(0.5);
 
     mainRenWin->Render();
-    mainIRen->Start();
+    mainIRen->Initialize();
     //--------------
     m_pcaWindow = nullptr;
     //--------------
@@ -1584,8 +1584,6 @@ void MainWindow::UpdateDataBase() {
         m_mainMeshActor->Modified();
         PlotLandmarks(fixedLM, curveLM, surfaceLM, tempMesh);
         m_mainRenderer->GetRenderWindow()->Render();
-        /* delete m_meshPlot;
-        m_meshPlot = nullptr; */
     }
     if (m_status == STATUS::neutral) {
         if (m_treeWidget->selectedItems()[0]->parent()) {
@@ -2841,6 +2839,10 @@ void MainWindow::SetLandmarkHeaders(QTableWidget* table) {
 
     table->setColumnCount(headers.size());  // Ensure table has enough columns
     table->setHorizontalHeaderLabels(headers);
+}
+
+void MainWindow::SetNumberOfCPUCores(int num){
+    omp_set_num_threads(num);
 }
 
 MainWindow::~MainWindow() {

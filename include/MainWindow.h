@@ -133,7 +133,6 @@
 #include <vtkCellArray.h>
 #include <vtkSmartPointer.h>
 
-
 #include <Eigen/Eigen>
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -161,6 +160,7 @@
 #include <iostream>
 #include <tuple> 
 #include <thread>
+#include <omp.h>
 
 
 using std::string;
@@ -314,6 +314,7 @@ public:
     //void SetTypeI(vtkPoints* pts, std::string name);
     void SetSliders(vtkPoints* fixedPts, vtkPoints* curveSliderPts, vtkPoints* surfaceSliderPts);
     void SetSliders(vtkPoints* fixedPts, vtkPoints* curveSliderPts, vtkPoints* surfaceSliderPts, std::string name);
+    void SetNumberOfCPUCores(int num);
     void ResetLandmarks();
     //void ArrangeLandmarks(vtkPoints* input, std::string name);
     void TemplateStatus(bool status);

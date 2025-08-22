@@ -431,7 +431,6 @@ class SpecimenDigitiser : public QMainWindow {
     void ShowLargestDiameter();
     void DrawDiameter(vtkPoints *meshPoints);
     void PickFromBoundaries();
-    void CleanUp();
     void SetSurfaceSlider(vtkPoints *pts);
     void FlipSurfaceButton();
     int GetTemplateNOL();

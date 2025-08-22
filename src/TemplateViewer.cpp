@@ -109,7 +109,7 @@ TemplateViewer::TemplateViewer(MainWindow* parent) : m_parent(parent) {
     // Ambient properties
     m_renderer->SetBackground(colors->GetColor3d("SlateGray").GetData());
     m_renWin->Render();
-    m_iren->Start();
+    m_iren->Initialize();
 
     this->setCentralWidget(m_vtkRenderWidget);
     QToolBar* mainToolbar = this->addToolBar("Main Toolbar");

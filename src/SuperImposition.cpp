@@ -99,15 +99,15 @@ SuperImposition::SuperImposition(DataBase *dataBase, MainWindow *parent,
     vtkNew<vtkNamedColors> colors;
     m_renderer->SetBackground(colors->GetColor3d("SlateGray").GetData());
     m_renWin->Render();
-    m_iren->Start();
+    m_iren->Initialize();
 
     this->setCentralWidget(m_vtkRenderWidget);
 
     auto landmarkListDockedWidg = new QDockWidget(tr("Landmarks"));
-    addDockWidget(Qt::LeftDockWidgetArea, landmarkListDockedWidg);
+    this->addDockWidget(Qt::LeftDockWidgetArea, landmarkListDockedWidg);
 
     auto nameListDockedWidg = new QDockWidget(tr("Specimens"));
-    addDockWidget(Qt::LeftDockWidgetArea, nameListDockedWidg);
+    this->addDockWidget(Qt::LeftDockWidgetArea, nameListDockedWidg);
 
     //---------------
     lmList = new QListWidget;
@@ -455,7 +455,7 @@ void SuperImposition::Plot() {
     m_labelActor->GetProperty()->SetColor(
         colors->GetColor3d("Black").GetData());
     m_labelActor->SetPickable(0);
-    m_renderer->AddActor(m_labelActor);
+    
 
     m_renderer->ResetCamera();
     m_renderer->GetRenderWindow()->Render();
