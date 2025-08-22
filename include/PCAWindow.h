@@ -259,19 +259,18 @@ private:
 public:
     PCAWindow(DataBase* parentDB);
     void Calculate(Eigen::MatrixXd &data, bool standardise = 0);
-    //void UpdateAxis(int x, int y);
-    void Update1stPC(int PC1);
-    void Update2ndPC(int PC2);
     void UpdateScatter(int x, int y);
     void UpdateContribution(int pc);
     template <typename M>
     M LoadCSV(const std::string &path); //For debugging
     void DebugPrintMatrix(Eigen::MatrixXd matrix); //For debugging
-    void ShowPtsIds();
-    //void ShowSpecimenIds();
-    void Export2Csv();
     void InterpolateTPSContributionToMesh(vtkDoubleArray* scalars);
     ~PCAWindow();
+public slots:
+    void Export2Csv();
+    void Update1stPC(int PC1);
+    void Update2ndPC(int PC2);
+    void ShowPtsIds();
 protected:
     //void closeEvent(QCloseEvent *event) override;
 };

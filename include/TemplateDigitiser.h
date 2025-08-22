@@ -279,7 +279,6 @@ class TemplateDigitiser : public QMainWindow {
     vtkSmartPointer<vtkInteractorStyleImage> m_2Dstyle;
     vtkSmartPointer<vtkPointPicker> m_grabPicker;
     vtkSmartPointer<vtkActor> m_largestDiamTubeActor;
-
     vtkSmartPointer<vtkPolyData> m_cosmeticCurvePoly;
     //------
     vtkSmartPointer<vtkActor> m_cutMeshActor;
@@ -388,9 +387,6 @@ class TemplateDigitiser : public QMainWindow {
     QPropertyAnimation *m_interpolationAnimation;
     QPropertyAnimation *m_grabAnimation;
     // Functions
-    void TypeITool();
-    void SurfaceTool();
-    void CurveTool();
     // Interaction
     void PickFunc(vtkObject *caller, long unsigned int eventId, void *callData);
     void resetLeftClck(vtkObject *caller, long unsigned int eventId,
@@ -411,18 +407,7 @@ class TemplateDigitiser : public QMainWindow {
     void SetPoly(vtkPolyData *poly);
     void ResetCurveScene();
     void ResetSurfaceScene();
-    void AddCurve();
-    void AddSurface();
-    void ChangeCurve(int index);
-    void ChangeCurveSource(int index);
-    void ChangeSurfaceSource(int index);
-    void ChangeSurface(int index);
-    void ChangeCurveType();
     void ChangeCurveTypeAuto();
-    void ChangeSurfaceLock();
-    void ClearCurve();
-    void ClearSurface();
-    void DrapeToSurface();
     void UpdateCurveScene(int id);
     void UpdateSurfaceScene(int id);
     void FinalizeCurveScene();
@@ -434,7 +419,6 @@ class TemplateDigitiser : public QMainWindow {
     void ConstructSurfaceData(vtkPolyData *CtrlPtsPoly,
                               vtkPoints *outputSliders);
     void Plot();
-    void Resample(int resolution, vtkPolyData *mesh);
     double GetMeshCellArea(std::vector<double> *probab,
                            vtkPolyData *inputMresh);
     void RandomChoice(vtkPolyData *mesh, int outputSize,
@@ -456,32 +440,48 @@ class TemplateDigitiser : public QMainWindow {
     void ChangePointSize(int index);
     void ChangeLineSize(int index);
     void OutlineIdFinder(int u, int v, std::vector<int> *output);
-    void ShowLargestDiameter();
     void DrawDiameter(vtkPoints *meshPoints);
     void PDist(vtkPoints *points, Eigen::MatrixXd &output);
     void DebugPrintMatrix(Eigen::MatrixXd matrix);
-    void PickFromBoundaries();
-    void BrushTool();
-    void ChangeBrushSize(int index);
     void PaintMouseClicked();
     void PaintMouseReleased();
-    void SelectAll();
-    void DeSelectAll();
-    void IgnoreInternalStat();
     void PoissonDisk(vtkPolyData *inputPoly, vtkPoints *fixedLm,
                      vtkPoints *curveSliders, double area, int resol,
                      vtkPoints *outPutPts);
-    void OnSamplingIsDone();
     void PrepareBNSampling(bool stat);
     void RunStatThread(QThread *thread);
-    void OnStatusChanged(int status);
     void PrepareClosing(QCloseEvent *event);
     void GetPlaneBoundaryPoints(vtkPolyData *plane, vtkPoints *boundaryPoints);
-    void InterpolateSurface();
     void UpdateSurfaceDirection();
     void ResetPatch();
-    
     ~TemplateDigitiser();
+
+  public slots:
+    void TypeITool();
+    void SurfaceTool();
+    void CurveTool();
+    void ShowLargestDiameter();
+    void AddCurve();
+    void AddSurface();
+    void ChangeCurveType();
+    void ChangeCurve(int index);
+    void ChangeCurveSource(int index);
+    void ChangeSurfaceSource(int index);
+    void ChangeSurface(int index);
+    void PickFromBoundaries();
+    void ClearCurve();
+    void ClearSurface();
+    void BrushTool();
+    void ChangeBrushSize(int index);
+    void Resample(int resolution, vtkPolyData *mesh);
+    void IgnoreInternalStat();
+    void ChangeSurfaceLock();
+    void DrapeToSurface();
+    void InterpolateSurface();
+    void SelectAll();
+    void DeSelectAll();
+    void OnSamplingIsDone();
+    void OnStatusChanged(int status);
 
    protected:
     void closeEvent(QCloseEvent *event) override;

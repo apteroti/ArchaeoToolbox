@@ -155,21 +155,22 @@ private:
     vtkSmartPointer<vtkActor2D> m_surfaceLabelActor;
     vtkSmartPointer<vtkActor> m_surfaceArrowActor;
     vtkSmartPointer<vtkActor> m_curveArrowActor;
-
     vtkSmartPointer<vtkActor2D> m_totalLabelActor;
-
     // 
     QCheckBox *showPtsIdsBox;
     QAction *screenCapAction;
 public:
     TemplateViewer(MainWindow* parent);
     void SetPloyData(vtkPolyData* data);
-    void CaptureScreen();
     void Plot();
     void Initialize();
-    void ShowIds();
     void MakeArrow(vtkPolyData* inputMesh, vtkMultiBlockDataSet* inputCurveBlock,int liftScale, vtkPolyData* output);
     ~TemplateViewer();
+public slots:
+    void ShowIds();
+    void CaptureScreen();
+
+
 };
 
 

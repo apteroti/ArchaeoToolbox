@@ -152,29 +152,15 @@ private:
     QGridLayout *resolutionLayout;
 public:
     ProSetMenu(MainWindow* parent);
-    void SetTypeINOL();
     int GetTypeINOL();
-    void Reset();
-    void Register();
-    void SaveTemplate();
-    void ImportTemplate();
-    void ChangeSurfaceMode(int index);
-    void SetCPUCores(int index);
-    void LoadTemplate();
-    void SetSurfaceNOS();
     int GetSurfaceNOS();
     void SetTemplateTypeI(vtkPoints* fixedPts);
     void SetTemplateCurveSliders(vtkMultiBlockDataSet* sliderPtsPolyBlock, vtkMultiBlockDataSet* curvePtsPolyBlock);
     void SetTemplateSurfaceSliders(vtkPoints* points);
     void SetTemplatePatchSurfaceSliders(vtkMultiBlockDataSet* surfaceptsPolyBlock, vtkMultiBlockDataSet* surfacePatchCurve);
-    void SetSurfacePatchUNOS();
-    void SetSurfacePatchVNOS();
     std::tuple<int, int> GetSurfacePatchResolution();
-    void SetSurfacePatchNOP();
     int GetSurfacePatchNOP();
-    void SetCurveNOS();
     int GetCurveNOS();
-    void SetCurveNOC();
     int GetCurveNOC();
     void Refresh(bool condition);
     void SetIgnorInternals(bool option);
@@ -183,6 +169,21 @@ public:
     void ConvertVTKToVCG(vtkPolyData* polyData, MyMesh& vcgMesh);
     void ConvertVCGToVTK(MyMesh& vcgMesh, vtkPolyData* polyData);
     ~ProSetMenu();
+public slots:
+    void SetTypeINOL();
+    void LoadTemplate();
+    void SetSurfaceNOS();
+    void SetSurfacePatchUNOS();
+    void SetSurfacePatchVNOS();
+    void SetSurfacePatchNOP();
+    void SetCurveNOS();
+    void SetCurveNOC();
+    void Reset();
+    void Register();
+    void SaveTemplate();
+    void ImportTemplate();
+    void ChangeSurfaceMode(int index);
+    void SetCPUCores(int index);
 
 protected:
 

@@ -229,22 +229,22 @@ class SuperImposition : public QMainWindow {
 
    public:
     SuperImposition(DataBase* dataBase, MainWindow* parent, QMutex* mutex);
+    void Populate();
+    void Plot();
+    void ImposingStatus();
+    ~SuperImposition();
+   public slots:
+    void OnCoordinateChanged(std::string name);
+    void OnCoordinateNotChanged(std::string name);
+    void OnStatusChanged(int status);
     void SelectAll();
     void DeSelectAll();
     void MoveToAnchor();
     void MoveToSource();
     void OnSourceSelected();
     void OnAnchorSelected();
-    void Populate();
-    void Plot();
     void ShowIds();
     void MakeImposed();
-    void ImposingStatus();
-    ~SuperImposition();
-   public Q_SLOTS:
-    void OnCoordinateChanged(std::string name);
-    void OnCoordinateNotChanged(std::string name);
-    void OnStatusChanged(int status);
     void ChangeImposeMethod(int index);
 
    protected:

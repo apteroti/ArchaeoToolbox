@@ -635,7 +635,7 @@ void HarmonicParameteriser::Sample(int uRes, int vRes) {
         }
     result->SetPolys(polys);
     m_output->DeepCopy(result);
-    DebugMesh("/home/kaveh/Shared");
+    //DebugMesh("/home/kaveh/Shared/Debug");
 }
 
 void HarmonicParameteriser::DebugMesh(const std::string& folder) {

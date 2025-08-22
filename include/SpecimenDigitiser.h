@@ -367,13 +367,8 @@ class SpecimenDigitiser : public QMainWindow {
     QPropertyAnimation *m_grabAnimation;
     QPropertyAnimation *m_slidingAnimation;
     // Functions
-    void TypeITool();
-    void SurfaceTool();
-    void CurveTool();
+    
     void PrepareSliding();
-    void DrapeToSurface();
-    void MakeSlide();
-
     // Interaction
     void PickFunc(vtkObject *caller, long unsigned int eventId, void *callData);
     void resetLeftClck(vtkObject *caller, long unsigned int eventId,
@@ -389,16 +384,6 @@ class SpecimenDigitiser : public QMainWindow {
     SpecimenDigitiser(vtkPolyData *data, MainWindow *parent);
     void ResetCurveScene();
     void ResetSurfaceScene();
-    void AddCurve();
-    void AddSurface();
-    void ChangeCurve(int index);
-    void ChangeCurveSource(int index);
-    void ChangeSurface(int index);
-    void ChangeSurfaceSource(int index);
-    void ChangeCurveType();
-    void ChangeSurfaceLock();
-    void ClearCurve();
-    void ClearSurface();
     void UpdateCurveScene(int id);
     void UpdateSurfaceScene(int id);
     void FinalizeCurveScene();
@@ -423,14 +408,10 @@ class SpecimenDigitiser : public QMainWindow {
     void FinalizeDigitization(Eigen::MatrixXd &Lndmrks, bool sendOffData);
     void CosmeticCurve(vtkPoints *ctrlPts, vtkPolyData *outputCurve);
     void MeshCutter(vtkPoints *pts);
-    void ChangePointSize(int index);
-    void ChangeLineSize(int index);
     void OutlineIdFinder(int u, int v, std::vector<int> *output);
     void MakeCage(vtkPoints *pts, vtkPolyData *outPlanePoly);
     void SlidingStatus();
-    void ShowLargestDiameter();
     void DrawDiameter(vtkPoints *meshPoints);
-    void PickFromBoundaries();
     void SetSurfaceSlider(vtkPoints *pts);
     void FlipSurfaceButton();
     int GetTemplateNOL();
@@ -440,15 +421,34 @@ class SpecimenDigitiser : public QMainWindow {
     void GetCurveSliders(vtkPoints *Output);
     bool GetIgnorSetting();
     void GetPlaneBoundaryPoints(vtkPolyData *plane, vtkPoints *boundaryPoints);
-    void InterpolateSurface();
     void UpdateSurfaceDirection();
     void ResetPatch();
     ~SpecimenDigitiser();
 
-   public Q_SLOTS:
+   public slots:
     void OnCoordinateChanged(Eigen::MatrixXd sendOffData);
     void OnCoordinateNotChanged(Eigen::MatrixXd sendOffData);
     void OnStatusChanged(int status);
+    void TypeITool();
+    void SurfaceTool();
+    void CurveTool();
+    void ShowLargestDiameter();
+    void AddCurve();
+    void AddSurface();
+    void ChangeCurveType();
+    void ChangeSurfaceLock();
+    void ChangeCurve(int index);
+    void PickFromBoundaries();
+    void ClearCurve();
+    void ClearSurface();
+    void MakeSlide();
+    void DrapeToSurface();
+    void InterpolateSurface();
+    void ChangeSurface(int index);
+    void ChangeCurveSource(int index);
+    void ChangeSurfaceSource(int index);
+    void ChangePointSize(int index);
+    void ChangeLineSize(int index);
 
    protected:
     void keyReleaseEvent(QKeyEvent *event) override;
