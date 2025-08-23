@@ -3441,8 +3441,10 @@ void TemplateDigitiser::PaintFunc(vtkObject* caller, long unsigned int eventId,
 void TemplateDigitiser::BrushTool() {
     if (surfacePaintButton->isChecked()) {
         surfaceResampleButton->setEnabled(0);
+        surfaceResampleButton->setToolTip("First, uncheck the Paint Button!");
     } else {
         surfaceResampleButton->setEnabled(1);
+        surfaceResampleButton->setToolTip("Sample Pre-Sliders");
     }
 }
 

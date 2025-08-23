@@ -706,6 +706,7 @@ void Registration::SetTargetScene() {
     vtkDataArray* maskedArray = m_meshData->GetCellData()->GetArray("Masked");
     if (maskedArray && vtkIntArray::SafeDownCast(maskedArray)) {
         m_targetMapper->SetInputData(m_meshData);
+        m_targetMapper->SetScalarVisibility(1);
         m_targetMapper->SetResolveCoincidentTopologyToOff();
         m_targetMapper->SetScalarModeToUseCellFieldData();
         m_targetMapper->SelectColorArray("Masked");
@@ -714,6 +715,7 @@ void Registration::SetTargetScene() {
         m_targetMeshActor->SetMapper(m_targetMapper);
         m_targetMeshActor->GetProperty()->SetOpacity(1);
     } else {
+        m_targetMapper->SetScalarVisibility(0);
         m_targetMapper->SetInputData(m_meshData);
         m_targetMeshActor->SetMapper(m_targetMapper);
         m_targetMeshActor->GetProperty()->SetColor(1, 0.992, 0.815);
