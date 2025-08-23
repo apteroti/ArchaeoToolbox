@@ -212,9 +212,30 @@ void TemplateViewer::SetPloyData(vtkPolyData* data) {
 void TemplateViewer::Plot() {
     vtkNew<vtkNamedColors> colors;
     // Mesh properties and color etc
+    vtkNew<vtkNamedColors> nc;
+    nc->SetColor("Bone", 1, 0.992, 0.815);
+    nc->Modified();
+    vtkNew<vtkColorSeries> maskColorsSeries;
+    maskColorsSeries->SetColorSchemeByName("myMaskColors");
+    maskColorsSeries->AddColor(nc->GetColor3ub("Bone"));
+    maskColorsSeries->AddColor(nc->GetColor3ub("Gray"));
+    maskColorsSeries->Modified();
+    vtkNew<vtkLookupTable> lut;
+    maskColorsSeries->BuildLookupTable(lut, maskColorsSeries->ORDINAL);
+    lut->Modified();
     vtkNew<vtkDataSetMapper> mapper;
     mapper->SetInputData(m_meshData);
-    mapper->ScalarVisibilityOff();  // <- disables scalar-based coloring
+    mapper->SetResolveCoincidentTopologyToOff();
+    vtkDataArray* maskedArray = m_meshData->GetCellData()->GetArray("Masked");
+    if (maskedArray && vtkIntArray::SafeDownCast(maskedArray)){
+        mapper->SetScalarVisibility(1);
+        mapper->SetScalarModeToUseCellFieldData();
+        mapper->SelectColorArray("Masked");
+        mapper->SetLookupTable(lut);
+    }
+    else{
+        mapper->SetScalarVisibility(0);
+    }
     m_meshActor->SetMapper(mapper);
     m_meshActor->GetProperty()->SetColor(1, 0.992, 0.815);
     m_renderer->AddActor(m_meshActor);
