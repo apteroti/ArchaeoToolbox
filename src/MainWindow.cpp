@@ -113,7 +113,6 @@ MainWindow::MainWindow() {
     mainTable = new QTableWidget();
     supImposedTable = new QTableWidget();
     procResTable = new QTableWidget();
-    LBOTable = new QTableWidget();
     mainTabWidget = new QTabWidget();
     mainTabWidget->tabBar()->setDocumentMode(0);
     mainTabWidget->tabBar()->setExpanding(0);
@@ -143,7 +142,7 @@ MainWindow::MainWindow() {
     m_templateCurveSliders = vtkSmartPointer<vtkMultiBlockDataSet>::New();
     m_templateCurvePointsPoly = vtkSmartPointer<vtkMultiBlockDataSet>::New();
     setWindowTitle("ArchaeoToolbox");
-    resize(860, 500);
+    resize(800, 500);
 
     //--------------
     vtkNew<vtkNamedColors> colors;
@@ -277,36 +276,11 @@ MainWindow::MainWindow() {
     procResTable->setFocusPolicy(Qt::NoFocus);
     procResTable->setSelectionMode(QAbstractItemView::NoSelection);
 
-    LBOTable->setRowCount(TableRowNum);
-    LBOTable->setColumnCount(TableColNum);
-    SetLandmarkHeaders(LBOTable);
-    LBOTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    LBOTable->setFocusPolicy(Qt::NoFocus);
-    LBOTable->setSelectionMode(QAbstractItemView::NoSelection);
-
-    // Container for LBO tab
-    QWidget* lboContainer = new QWidget();
-    QVBoxLayout* lboLayout = new QVBoxLayout(lboContainer);
-    // --- Top row: combo + spacer ---
-    QHBoxLayout* topRow = new QHBoxLayout();
-    QComboBox* eigenCombo = new QComboBox(lboContainer);
-    for (int i = 1; i <= 50; ++i){
-        eigenCombo->addItem(QString("φ%1").arg(i));}
-    // Add combo to the left, spacer pushes it
-    topRow->addWidget(eigenCombo);
-    topRow->addStretch();   // <--- makes combo box stay short on the left
-    lboLayout->addLayout(topRow);
-    // --- Table below ---
-    lboLayout->addWidget(LBOTable);
-    lboContainer->setLayout(lboLayout);
-
     mainTabWidget->addTab(mainRenderWindowWidget, tr("Renderer"));
     mainTabWidget->addTab(mainTable, tr("Digitised"));
     mainTabWidget->addTab(supImposedTable, tr("SuperImposed"));
     mainTabWidget->addTab(procResTable, tr("Procrustes Residual"));
-    mainTabWidget->addTab(lboContainer, tr("Laplace-Beltrami"));
-
-
+   
     setCentralWidget(mainTabWidget);
     // Setting up File menu
     fileMenu = menuBar()->addMenu("&File");
@@ -432,8 +406,6 @@ MainWindow::MainWindow() {
     connect(pcaToolbarAction, &QAction::triggered, this, &MainWindow::PCA);
     connect(helpToolbarAction, &QAction::triggered, this,
             &MainWindow::PrintHelp);
-    connect(eigenCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-        this, &MainWindow::SelectPhi);
     //-----------------------------------------------------------
     ContentTree(dockedToolbar);
 }
@@ -1176,10 +1148,6 @@ void MainWindow::ResetImposition() {
     procResTable->setColumnCount(TableColNum);
     procResTable->setRowCount(TableRowNum);
     SetLandmarkHeaders(procResTable);
-    LBOTable->clear();
-    LBOTable->setColumnCount(TableColNum);
-    LBOTable->setRowCount(TableRowNum);
-    SetLandmarkHeaders(LBOTable);
 }
 
 void MainWindow::FinaliseImposition() {
@@ -2874,10 +2842,6 @@ void MainWindow::SetLandmarkHeaders(QTableWidget* table) {
 
 void MainWindow::SetNumberOfCPUCores(int num){
     omp_set_num_threads(num);
-}
-
-void MainWindow::SelectPhi(int index){
-    
 }
 
 MainWindow::~MainWindow() {

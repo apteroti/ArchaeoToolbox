@@ -187,8 +187,6 @@ private:
     QVTKOpenGLWidget *mainRenderWindowWidget;
     QTableWidget *supImposedTable;
     QTableWidget *procResTable;
-    QTableWidget *LBOTable;
-    QWidget *LBOTab;
     QTabWidget *mainTabWidget;
     std::string m_oldName;
     std::string m_newName;
@@ -348,7 +346,6 @@ public:
     ~MainWindow();
 public slots:
     void about();
-    void SelectPhi(int index);
     void PrintHelp();
     void LoadMesh();
     void ExportCSV();
