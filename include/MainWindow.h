@@ -217,7 +217,8 @@ private:
     DataBase *m_dataBase;
     SpecimenDigitiser *m_meshPlot = nullptr;
     SuperImposition *m_SIMP = nullptr;
-    TemplateViewer *m_templateView;
+    TemplateViewer *m_templateView = nullptr;
+    std::string m_lastSpecimenName = "";
     vtkSmartPointer<vtkPolyData> m_currentMesh;
     vtkSmartPointer<vtkStructuredGrid> m_currentGrid;
     STATUS m_status = STATUS::neutral;

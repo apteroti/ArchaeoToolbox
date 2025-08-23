@@ -1153,7 +1153,7 @@ void ProSetMenu::ConvertVCGToVTK(MyMesh& vcgMesh, vtkPolyData* polyData) {
         groupIds->SetValue(i, 0.0f);
     }
     polyData->GetCellData()->AddArray(groupIds);
-    /*
+    
     // Normals
     if (!vcgMesh.vert.empty() && vcgMesh.vert[0].IsNormalEnabled()) {
         auto normals = vtkSmartPointer<vtkFloatArray>::New();
@@ -1192,7 +1192,7 @@ void ProSetMenu::ConvertVCGToVTK(MyMesh& vcgMesh, vtkPolyData* polyData) {
             texCoords->InsertNextTuple2(t.U(), t.V());
         }
         polyData->GetPointData()->SetTCoords(texCoords);
-    }*/
+    }
    polyData->Modified();
 }
 

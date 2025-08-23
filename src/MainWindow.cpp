@@ -176,7 +176,7 @@ MainWindow::MainWindow() {
     extrude->SetScaleFactor(0.5);
     extrude->Update();
     m_mainMeshMapper->SetInputData(extrude->GetOutput());
-    m_mainMeshMapper->ScalarVisibilityOn();
+    m_mainMeshMapper->ScalarVisibilityOff();
     m_mainMeshActor->SetMapper(m_mainMeshMapper);
     m_mainMeshActor->GetProperty()->SetColor(1, 0.992, 0.815);
     m_mainRenderer->AddActor(m_mainMeshActor);
@@ -755,7 +755,6 @@ void MainWindow::ConvertVCGToVTK(MyMesh& vcgMesh, vtkPolyData* polyData) {
         groupIds->SetValue(i, 0.0f);
     }
     polyData->GetCellData()->AddArray(groupIds);
-    /*
     // Normals
     if (!vcgMesh.vert.empty() && vcgMesh.vert[0].IsNormalEnabled()) {
         auto normals = vtkSmartPointer<vtkFloatArray>::New();
@@ -794,7 +793,7 @@ void MainWindow::ConvertVCGToVTK(MyMesh& vcgMesh, vtkPolyData* polyData) {
             texCoords->InsertNextTuple2(t.U(), t.V());
         }
         polyData->GetPointData()->SetTCoords(texCoords);
-    }*/
+    }
    polyData->Modified();
 }
 
@@ -1317,9 +1316,11 @@ void MainWindow::UpdateActiveData() {
     if (m_treeWidget->selectedItems().empty()) {
         m_currentMesh->Initialize();
         m_currentGrid->Initialize();
+        m_lastSpecimenName = "";
     } else {
         if (!m_treeWidget->selectedItems()[0]->parent()) {
             auto name = m_treeWidget->selectedItems()[0]->text(0).toStdString();
+            m_lastSpecimenName = name;
             std::string dType = m_dataBase->GetGeometryType(name);
             if (dType == "Mesh") {
                 m_currentMesh = m_dataBase->GetPolyNode(name);
@@ -1357,7 +1358,10 @@ void MainWindow::UpdateActiveData() {
                 vtkPoints* surfaceLM = m_dataBase->GetSurfaceSliders(name);
                 PlotLandmarks(fixedLM, curveLM, surfaceLM, m_currentMesh,
                               branchName);
-                m_mainRenderer->ResetCamera();
+                if(m_lastSpecimenName != name){
+                    m_lastSpecimenName = name;
+                    m_mainRenderer->ResetCamera();
+                }
                 m_mainRenderer->GetRenderWindow()->Render();
             }
             if (dType == "DICOM") {
@@ -2017,6 +2021,8 @@ void MainWindow::TemplateStatus(bool status) {
         m_templatePatchSurfaceCurve->Initialize();
         m_templateCurveSliders->Initialize();
         m_templateCurvePointsPoly->Initialize();
+        m_mainMeshMapper->ScalarVisibilityOff();
+        m_mainMeshMapper->Modified();
         ResetLandmarks();
     }
 }
@@ -2402,10 +2408,12 @@ void MainWindow::PCA() {
 void MainWindow::PaintMesh(std::string name) {
     vtkDoubleArray* tempDataArr = m_dataBase->GetProcDistance(name);
     vtkPolyData* tempMesh = m_dataBase->GetPolyNode(name);
-
     m_mainMeshMapper->SetInputData(tempMesh);
     m_mainRenderer->RemoveActor(m_scalarBar);
     if (tempDataArr->GetNumberOfTuples() > 0) {
+        m_mainMeshMapper->ScalarVisibilityOn();
+        m_mainMeshMapper->SetScalarModeToUsePointData(); 
+        m_mainMeshMapper->SelectColorArray("ProcrustesResidualMagnitude");
         auto scalarRange = tempMesh->GetPointData()
                                ->GetArray("ProcrustesResidualMagnitude")
                                ->GetRange();
@@ -2441,6 +2449,9 @@ void MainWindow::PaintMesh(std::string name) {
         m_scalarBar->Modified();
         m_mainRenderer->AddActor(m_scalarBar);
     } else {
+        if(m_mainMeshMapper->GetScalarVisibility() != 0){
+            m_mainMeshMapper->ScalarVisibilityOff();
+        }
         m_mainRenderer->RemoveActor(m_scalarBar);
     }
     m_mainMeshMapper->Update();
@@ -2701,12 +2712,10 @@ void MainWindow::OnSuperImpositionIsDone() {
                        ->text(0)
                        .toStdString();
         }
-
         vtkPoints* fixedLandmarks = m_dataBase->GetTypeI(name);
         vtkPoints* curveLandmarks = m_dataBase->GetCurveSliders(name);
         vtkPoints* surfaceLandmarks = m_dataBase->GetSurfaceSliders(name);
         vtkPolyData* tempMesh = m_dataBase->GetPolyNode(name);
-
         PaintMesh(name);
         PlotLandmarks(fixedLandmarks, curveLandmarks, surfaceLandmarks,
                       tempMesh);
