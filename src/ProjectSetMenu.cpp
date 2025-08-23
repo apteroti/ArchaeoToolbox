@@ -86,7 +86,6 @@ ProjectSetMenu::ProjectSetMenu(MainWindow* parent) : m_parent(parent) {
     m_templatePatchSurfaceCurve = vtkSmartPointer<vtkMultiBlockDataSet>::New();
     m_templateCurvePtsPoly = vtkSmartPointer<vtkMultiBlockDataSet>::New();
     m_templatePlot = new TemplateDigitiser(this);
-    m_templatePlot->hide();
     layout = new QGridLayout();
     QString style =
         "QGroupBox {"

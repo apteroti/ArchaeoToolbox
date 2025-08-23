@@ -141,7 +141,7 @@ ExclusionPaint::ExclusionPaint(vtkPolyData *data) : m_meshData(data) {
             &ExclusionPaint::HandleCloseButton);
 
     Plot();
-    this->show();
+    this->hide();
 }
 
 void ExclusionPaint::Plot() {

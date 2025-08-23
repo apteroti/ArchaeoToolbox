@@ -240,7 +240,7 @@ Registration::Registration(vtkPolyData* data, vtkPolyData* templateMesh,
     SetTargetScene();
     Register();
 
-    this->show();
+    this->hide();
 }
 
 void Registration::Register() {

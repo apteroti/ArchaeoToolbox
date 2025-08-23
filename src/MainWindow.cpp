@@ -1117,6 +1117,7 @@ void MainWindow::SuperImpose() {
                 QPixmap(":/icons/graphics/icons/vBusy.svg"));
             delete m_SIMP;
             m_SIMP = new SuperImposition(m_dataBase, this, m_mutex);
+            m_SIMP->show();
         } else {
             auto errorDialogue = QMessageBox(this);
             errorDialogue.setIcon(QMessageBox::Critical);
@@ -1292,6 +1293,7 @@ void MainWindow::meshPlot() {
                     QPixmap(":/icons/graphics/icons/vBusy.svg"));
                 delete m_meshPlot;
                 m_meshPlot = new SpecimenDigitiser(m_currentMesh, this);
+                m_meshPlot->show();
             }
         } else {
             if (m_treeWidget->topLevelItemCount() > 0) {
@@ -2384,6 +2386,7 @@ void MainWindow::PCA() {
         if (m_dataBase->GetNodeNames().size() >= 3) {
             delete m_pcaWindow;
             m_pcaWindow = new PCAWindow(m_dataBase);
+            m_pcaWindow->show();
         } else {
             auto errorDialogue = QMessageBox(this);
             errorDialogue.setIcon(QMessageBox::Critical);

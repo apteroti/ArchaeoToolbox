@@ -354,7 +354,7 @@ public slots:
     void SaveProject();
     void RecoverDigitisedLM();
     void RecoverProject();
-    void DICOMPlot();
+    void DICOMPlot();//Not implemented
     void SuperImpose();
     void TemplatePlot();
     void meshPlot();

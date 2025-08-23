@@ -567,7 +567,7 @@ SpecimenDigitiser::SpecimenDigitiser(vtkPolyData* data, MainWindow* parent)
         m_curveType->push_back(1);
     }
     Plot();
-    this->show();
+    this->hide();
 }
 
 void SpecimenDigitiser::Plot() {
@@ -1060,6 +1060,7 @@ void SpecimenDigitiser::SurfaceTool() {
                             this->hide();
                             delete m_exclusionPainter;
                             m_exclusionPainter = new ExclusionPaint(m_meshData);
+                            m_exclusionPainter->show();
                             // Create an event loop to block here until the
                             // window is closed
                             QEventLoop loop;
@@ -1076,6 +1077,7 @@ void SpecimenDigitiser::SurfaceTool() {
                     m_regPlot =
                         new Registration(m_meshData, m_templateMesh,
                                          m_templateSurfaceSliders, this);
+                    m_regPlot->show();
                 } else {
                     surfaceSliderButton->setChecked(false);
                     SurfaceTool();
@@ -1122,6 +1124,7 @@ void SpecimenDigitiser::SurfaceTool() {
                         this->hide();
                         delete m_exclusionPainter;
                         m_exclusionPainter = new ExclusionPaint(m_meshData);
+                        m_exclusionPainter->show();
                         // Create an event loop to block here until the window
                         // is closed
                         QEventLoop loop;
@@ -1137,6 +1140,7 @@ void SpecimenDigitiser::SurfaceTool() {
                 delete m_regPlot;
                 m_regPlot = new Registration(m_meshData, m_templateMesh,
                                              m_templateSurfaceSliders, this);
+                m_regPlot->show();
                 m_regPlot->SetAnchors(totalSource, totalTamplate);
                 if (m_typeINOL == 0 && m_curveNOS == 0) {
                     m_regPlot->SetAccuracy(0);

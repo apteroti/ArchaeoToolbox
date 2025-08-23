@@ -215,7 +215,7 @@ SuperImposition::SuperImposition(DataBase *dataBase, MainWindow *parent,
     Populate();
     Plot();
 
-    this->show();
+    this->hide();
     if (m_nameList.size() == 0) {
         auto errorDialogue = QMessageBox(this);
         errorDialogue.setIcon(QMessageBox::Critical);

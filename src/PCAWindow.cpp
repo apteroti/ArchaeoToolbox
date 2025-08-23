@@ -308,7 +308,7 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         m_graphRenderWidget->show();
         m_scatterChartView->Render();
 
-        this->show();
+        this->hide();
     } else {
         auto errorDialogue = QMessageBox(this);
         errorDialogue.setIcon(QMessageBox::Critical);

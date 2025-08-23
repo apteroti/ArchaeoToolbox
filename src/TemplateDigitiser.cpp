@@ -515,6 +515,8 @@ TemplateDigitiser::TemplateDigitiser(ProjectSetMenu* parent) : m_parent(parent) 
     counterLayout->addStretch(1);
     counterGroup->setLayout(counterLayout);
     counterGroup->setContentsMargins(3, 3, 3, 1);
+
+    this->hide();
 }
 
 void TemplateDigitiser::IgnoreInternalStat() {
