@@ -215,7 +215,7 @@
 
 #include "BlueNoiseThread.h"
 #include "CuttingThread.h"
-#include "ProSetMenu.fwd.h"
+#include "ProjectSetMenu.fwd.h"
 #include "SpinnerDialog.h"
 #include "StatusReporterThread.h"
 #include "SurfaceParameterisationThread.h"
@@ -252,7 +252,7 @@ class TemplateDigitiser : public QMainWindow {
     BlueNoiseThread *m_BlueNoiseThread = nullptr;
     StatusReporterThread *m_statThread = nullptr;
 
-    ProSetMenu *m_parent;
+    ProjectSetMenu *m_parent;
     //
     QLineEdit *typeILineEdit;
     QLineEdit *curveLineEditNOC;
@@ -403,7 +403,7 @@ class TemplateDigitiser : public QMainWindow {
     void NeighborFinder(int initId, int brushSize, std::vector<int> &outList);
 
    public:
-    TemplateDigitiser(ProSetMenu *parent);
+    TemplateDigitiser(ProjectSetMenu *parent);
     void SetPoly(vtkPolyData *poly);
     void ResetCurveScene();
     void ResetSurfaceScene();

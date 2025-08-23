@@ -66,7 +66,7 @@
 
 ***********************************************************************************************/
 
-#include "include/ProSetMenu.h"
+#include "include/ProjectSetMenu.h"
 
 #include "include/MainWindow.h"
 
@@ -76,7 +76,7 @@
 #define ENDL endl
 #endif
 
-ProSetMenu::ProSetMenu(MainWindow* parent) : m_parent(parent) {
+ProjectSetMenu::ProjectSetMenu(MainWindow* parent) : m_parent(parent) {
     m_templateSurfaceSliders = vtkSmartPointer<vtkPoints>::New();
     m_templateTypeI = vtkSmartPointer<vtkPoints>::New();
     m_templatePoly = vtkSmartPointer<vtkPolyData>::New();
@@ -154,16 +154,16 @@ ProSetMenu::ProSetMenu(MainWindow* parent) : m_parent(parent) {
     cpuGroup->setStyleSheet(style);
     QLabel* cpuLabel = new QLabel(tr("Number of CPU Cores:"));
     cpuComboBox = new QComboBox(this);
-    int numCores = QThread::idealThreadCount();
-    if (numCores < 1){
-        numCores = 1; // fallback
+    m_numCores = QThread::idealThreadCount();
+    if (m_numCores < 1){
+        m_numCores = 1; // fallback
     }
-    for (int i = 1; i <= numCores; ++i) {
+    for (int i = 1; i <= m_numCores; ++i) {
         cpuComboBox->addItem(QString::number(i), i); 
     }
 
     // Select maximum by default
-    cpuComboBox->setCurrentIndex(numCores - 1);
+    cpuComboBox->setCurrentIndex(m_numCores - 1);
     
     //--------------------------------------------------------------------
     QGroupBox* registerGroup = new QGroupBox();
@@ -176,6 +176,18 @@ ProSetMenu::ProSetMenu(MainWindow* parent) : m_parent(parent) {
     saveButton->setEnabled(false);
     importButton = new QPushButton("Import Template");
     resetButton = new QPushButton("Reset");
+    // Create opacity effect
+    QGraphicsOpacityEffect* effectForReset =
+        new QGraphicsOpacityEffect(resetButton);
+    resetButton->setGraphicsEffect(effectForReset);
+    // Create animation
+    m_resetAnimation = new QPropertyAnimation(effectForReset, "opacity");
+    m_resetAnimation->setDuration(1000);   // 1 second cycle
+    m_resetAnimation->setStartValue(1.0);  // Fully visible
+    m_resetAnimation->setEndValue(0.2);    // Almost transparent
+    m_resetAnimation->setEasingCurve(QEasingCurve::InOutQuad);
+    m_resetAnimation->setLoopCount(-1);  // Infinite loop
+    m_resetAnimation->stop();
     //--------------------------------------------------------------------
 
     QGridLayout* typeILayout = new QGridLayout();
@@ -216,29 +228,29 @@ ProSetMenu::ProSetMenu(MainWindow* parent) : m_parent(parent) {
     registerGroup->setLayout(registerLayout);
 
     connect(typeILineEdit, &QLineEdit::textChanged, this,
-            &ProSetMenu::SetTypeINOL);
+            &ProjectSetMenu::SetTypeINOL);
     connect(loadTemplateButton, &QPushButton::clicked, this,
-            &ProSetMenu::LoadTemplate);
+            &ProjectSetMenu::LoadTemplate);
     connect(surfaceLineEditNOS, &QLineEdit::textChanged, this,
-            &ProSetMenu::SetSurfaceNOS);
+            &ProjectSetMenu::SetSurfaceNOS);
     connect(surfaceLineEditPatchUNOS, &QLineEdit::textChanged, this,
-            &ProSetMenu::SetSurfacePatchUNOS);
+            &ProjectSetMenu::SetSurfacePatchUNOS);
     connect(surfaceLineEditPatchVNOS, &QLineEdit::textChanged, this,
-            &ProSetMenu::SetSurfacePatchVNOS);
+            &ProjectSetMenu::SetSurfacePatchVNOS);
     connect(surfaceLineEditPatchNOP, &QLineEdit::textChanged, this,
-            &ProSetMenu::SetSurfacePatchNOP);
+            &ProjectSetMenu::SetSurfacePatchNOP);
     connect(curveLineEditNOS, &QLineEdit::textChanged, this,
-            &ProSetMenu::SetCurveNOS);
+            &ProjectSetMenu::SetCurveNOS);
     connect(curveLineEditNOC, &QLineEdit::textChanged, this,
-            &ProSetMenu::SetCurveNOC);
-    connect(resetButton, &QPushButton::clicked, this, &ProSetMenu::Reset);
-    connect(registerButton, &QPushButton::clicked, this, &ProSetMenu::Register);
-    connect(saveButton, &QPushButton::clicked, this, &ProSetMenu::SaveTemplate);
+            &ProjectSetMenu::SetCurveNOC);
+    connect(resetButton, &QPushButton::clicked, this, &ProjectSetMenu::Reset);
+    connect(registerButton, &QPushButton::clicked, this, &ProjectSetMenu::Register);
+    connect(saveButton, &QPushButton::clicked, this, &ProjectSetMenu::SaveTemplate);
     connect(importButton, &QPushButton::clicked, this,
-            &ProSetMenu::ImportTemplate);
+            &ProjectSetMenu::ImportTemplate);
     void (QComboBox ::*fp)(int) = &QComboBox::currentIndexChanged;
-    connect(surfaceComboBox, fp, this, &ProSetMenu::ChangeSurfaceMode);
-    connect(cpuComboBox, fp, this, &ProSetMenu::SetCPUCores);
+    connect(surfaceComboBox, fp, this, &ProjectSetMenu::ChangeSurfaceMode);
+    connect(cpuComboBox, fp, this, &ProjectSetMenu::SetCPUCores);
 
     layout->addWidget(curveGroup, 0, 0);
     layout->addWidget(surfaceGroup, 0, 1);
@@ -250,7 +262,7 @@ ProSetMenu::ProSetMenu(MainWindow* parent) : m_parent(parent) {
     this->setLayout(layout);
 }
 
-void ProSetMenu::SetTypeINOL() {
+void ProjectSetMenu::SetTypeINOL() {
     auto textNum = typeILineEdit->text().toStdString();
     int num = -1;
     try {
@@ -267,18 +279,19 @@ void ProSetMenu::SetTypeINOL() {
     }
 }
 
-int ProSetMenu::GetTypeINOL() { return typeINOL; }
+int ProjectSetMenu::GetTypeINOL() { return typeINOL; }
 
-void ProSetMenu::SetTemplateTypeI(vtkPoints* fixedPts) {
+void ProjectSetMenu::SetTemplateTypeI(vtkPoints* fixedPts) {
     m_templateTypeI = fixedPts;
 }
 
-void ProSetMenu::Reset() {
+void ProjectSetMenu::Reset() {
     if (QMessageBox::Yes ==
         QMessageBox::question(this, "Reset Confirmation",
                               "This will erase all of the landmarks in your "
                               "project! \n Do you want to continue?",
                               QMessageBox::Yes | QMessageBox::No)) {
+        m_resetAnimation->stop();
         m_geometryType = "";
         surfaceLineEditNOS->clear();
         surfaceLineEditNOS->setReadOnly(false);
@@ -320,13 +333,15 @@ void ProSetMenu::Reset() {
         m_templatePatchSurfaceCurve->Initialize();
         m_templatePoly->Initialize();
 
+        cpuComboBox->setCurrentIndex(m_numCores - 1);
+
         delete m_templatePlot;
         m_templatePlot = new TemplateDigitiser(this);
         m_parent->TemplateStatus(0);
     }
 }
 
-void ProSetMenu::Register() {
+void ProjectSetMenu::Register() {
     m_parent->SetTemplateMeshType(m_geometryType);
     m_parent->SetTemplateMesh(m_templatePoly);
     m_parent->SetTemplateTypeI(m_templateTypeI);
@@ -343,7 +358,7 @@ void ProSetMenu::Register() {
     importButton->setEnabled(false);
 }
 
-void ProSetMenu::SaveTemplate() {
+void ProjectSetMenu::SaveTemplate() {
     vtkNew<vtkPoints> allPts;
     for (int i = 0; i < typeINOL; i++) {
         allPts->InsertNextPoint(m_templateTypeI->GetPoint(i));
@@ -546,7 +561,7 @@ void ProSetMenu::SaveTemplate() {
     }
 }
 
-void ProSetMenu::ImportTemplate() {
+void ProjectSetMenu::ImportTemplate() {
     QString fileName = QFileDialog::getOpenFileName(
         this, "ToolBox Template Files", QDir::homePath(),
         "ATT Files (*.att);;All Files (*)", nullptr, QFileDialog::DontUseNativeDialog);
@@ -800,11 +815,11 @@ void ProSetMenu::ImportTemplate() {
     }
 }
 
-void ProSetMenu::SetCPUCores(int index){
+void ProjectSetMenu::SetCPUCores(int index){
     m_parent->SetNumberOfCPUCores(index);
 }
 
-void ProSetMenu::ChangeSurfaceMode(int index) {
+void ProjectSetMenu::ChangeSurfaceMode(int index) {
     switch (index) {
         case 0:
             surfaceLayout->removeWidget(surfacePatchLabel);
@@ -846,7 +861,7 @@ void ProSetMenu::ChangeSurfaceMode(int index) {
     }
 }
 
-void ProSetMenu::LoadTemplate() {
+void ProjectSetMenu::LoadTemplate() {
     if (surfaceNOS == 0 && typeINOL == 0 && curveNOS == 0 &&
         surfacePatchUNOS == 0 && surfacePatchVNOS == 0) {
         auto errorDialogue = QMessageBox(this);
@@ -986,7 +1001,7 @@ void ProSetMenu::LoadTemplate() {
     }
 }
 
-void ProSetMenu::DecimateWithAnimatedDialog(MyMesh& m, float reductionRatio) {
+void ProjectSetMenu::DecimateWithAnimatedDialog(MyMesh& m, float reductionRatio) {
     // Modal dialog
     WaitDialog waitDialog(this);
     waitDialog.setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
@@ -1029,7 +1044,7 @@ void ProSetMenu::DecimateWithAnimatedDialog(MyMesh& m, float reductionRatio) {
     decThread.wait();
 }
 
-void ProSetMenu::ConvertVTKToVCG(vtkPolyData* polyData, MyMesh& vcgMesh) {
+void ProjectSetMenu::ConvertVTKToVCG(vtkPolyData* polyData, MyMesh& vcgMesh) {
     // Clear existing mesh
     vcgMesh.Clear();
 
@@ -1112,7 +1127,7 @@ void ProSetMenu::ConvertVTKToVCG(vtkPolyData* polyData, MyMesh& vcgMesh) {
     vcg::tri::UpdateBounding<MyMesh>::Box(vcgMesh);
 }
 
-void ProSetMenu::ConvertVCGToVTK(MyMesh& vcgMesh, vtkPolyData* polyData) {
+void ProjectSetMenu::ConvertVCGToVTK(MyMesh& vcgMesh, vtkPolyData* polyData) {
     if (!polyData) return;
 
     // Ensure compact vertex/face arrays
@@ -1196,7 +1211,7 @@ void ProSetMenu::ConvertVCGToVTK(MyMesh& vcgMesh, vtkPolyData* polyData) {
    polyData->Modified();
 }
 
-void ProSetMenu::SetSurfaceNOS() {
+void ProjectSetMenu::SetSurfaceNOS() {
     auto textNum = surfaceLineEditNOS->text().toStdString();
     int num = -1;
     try {
@@ -1222,9 +1237,9 @@ void ProSetMenu::SetSurfaceNOS() {
     }
 }
 
-int ProSetMenu::GetSurfaceNOS() { return surfaceNOS; }
+int ProjectSetMenu::GetSurfaceNOS() { return surfaceNOS; }
 
-void ProSetMenu::SetSurfacePatchUNOS() {
+void ProjectSetMenu::SetSurfacePatchUNOS() {
     auto textNum = surfaceLineEditPatchUNOS->text().toStdString();
     int num = -1;
     try {
@@ -1244,7 +1259,7 @@ void ProSetMenu::SetSurfacePatchUNOS() {
     }
 }
 
-void ProSetMenu::SetSurfacePatchVNOS() {
+void ProjectSetMenu::SetSurfacePatchVNOS() {
     auto textNum = surfaceLineEditPatchVNOS->text().toStdString();
     int num = -1;
     try {
@@ -1264,11 +1279,11 @@ void ProSetMenu::SetSurfacePatchVNOS() {
     }
 }
 
-std::tuple<int, int> ProSetMenu::GetSurfacePatchResolution() {
+std::tuple<int, int> ProjectSetMenu::GetSurfacePatchResolution() {
     return std::make_tuple(surfacePatchUNOS, surfacePatchVNOS);
 }
 
-void ProSetMenu::SetSurfacePatchNOP() {
+void ProjectSetMenu::SetSurfacePatchNOP() {
     auto textNum = surfaceLineEditPatchNOP->text().toStdString();
     int num = -1;
     try {
@@ -1288,9 +1303,9 @@ void ProSetMenu::SetSurfacePatchNOP() {
     }
 }
 
-int ProSetMenu::GetSurfacePatchNOP() { return surfacePatchNOP; }
+int ProjectSetMenu::GetSurfacePatchNOP() { return surfacePatchNOP; }
 
-void ProSetMenu::SetCurveNOS() {
+void ProjectSetMenu::SetCurveNOS() {
     std::string textNum = curveLineEditNOS->text().toStdString();
     int num = -1;
     try {
@@ -1307,7 +1322,7 @@ void ProSetMenu::SetCurveNOS() {
     }
 }
 
-void ProSetMenu::SetCurveNOC() {
+void ProjectSetMenu::SetCurveNOC() {
     std::string textNum = curveLineEditNOC->text().toStdString();
     int num = -1;
     try {
@@ -1324,41 +1339,44 @@ void ProSetMenu::SetCurveNOC() {
     }
 }
 
-int ProSetMenu::GetCurveNOS() { return curveNOS; }
+int ProjectSetMenu::GetCurveNOS() { return curveNOS; }
 
-int ProSetMenu::GetCurveNOC() { return curveNOC; }
+int ProjectSetMenu::GetCurveNOC() { return curveNOC; }
 
-void ProSetMenu::SetTemplateCurveSliders(
+void ProjectSetMenu::SetTemplateCurveSliders(
     vtkMultiBlockDataSet* sliderPtsPolyBlock,
     vtkMultiBlockDataSet* curvePtsPolyBlock) {
     m_templateCurveSliders = sliderPtsPolyBlock;
     m_templateCurvePtsPoly = curvePtsPolyBlock;
 }
 
-void ProSetMenu::SetTemplateSurfaceSliders(vtkPoints* points) {
+void ProjectSetMenu::SetTemplateSurfaceSliders(vtkPoints* points) {
     m_templateSurfaceSliders = points;
 }
 
-void ProSetMenu::SetTemplatePatchSurfaceSliders(
+void ProjectSetMenu::SetTemplatePatchSurfaceSliders(
     vtkMultiBlockDataSet* surfaceptsPolyBlock,
     vtkMultiBlockDataSet* surfacePatchCurve) {
     m_templatePatchSurfaceSliders = surfaceptsPolyBlock;
     m_templatePatchSurfaceCurve = surfacePatchCurve;
 }
 
-void ProSetMenu::Refresh(bool condition) {
+void ProjectSetMenu::Refresh(bool condition) {
     if (condition == 1) {
         registerButton->setEnabled(true);
         saveButton->setEnabled(true);
     }
+    else{
+        m_resetAnimation->start();
+    }
     resetButton->setEnabled(true);
 }
 
-void ProSetMenu::SetIgnorInternals(bool option) { m_ignoreInside = option; }
+void ProjectSetMenu::SetIgnorInternals(bool option) { m_ignoreInside = option; }
 
-bool ProSetMenu::GetIgnorInternals() { return m_ignoreInside; }
+bool ProjectSetMenu::GetIgnorInternals() { return m_ignoreInside; }
 
-ProSetMenu::~ProSetMenu() {
+ProjectSetMenu::~ProjectSetMenu() {
     delete layout;
     delete m_templatePlot;
 }

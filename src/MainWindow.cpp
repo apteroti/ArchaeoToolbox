@@ -364,7 +364,7 @@ MainWindow::MainWindow() {
 
     m_templateView = new TemplateViewer(this);
     m_templateView->hide();
-    projectSettings = new ProSetMenu(this);
+    projectSettings = new ProjectSetMenu(this);
     projectSettings->hide();
 
     statusLabel = new QLabel(this);

@@ -66,8 +66,8 @@
                       
 ***********************************************************************************************/
 
-#ifndef PROSETMENU_H
-#define PROSETMENU_H
+#ifndef PROJECTSETMENU_H
+#define PROJECTSETMENU_H
 
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QComboBox>
@@ -77,6 +77,7 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
 #include <QtCore/QThread>
+#include <QtCore/QPropertyAnimation>
 
 #include <vtkPoints.h>
 #include <vtkOBJReader.h>
@@ -99,7 +100,7 @@
 #include <string>
 
 
-class ProSetMenu:public QWidget
+class ProjectSetMenu:public QWidget
 {
 private:
     bool m_ignoreInside = true;
@@ -116,6 +117,7 @@ private:
     int surfaceSliderLimit = 25;
     int surfaceResolutionLimit = 5;
     int curveSliderLimit = 10;
+    int m_numCores = 1;
     std::string m_geometryType = "";
     QGridLayout *layout;
     QLineEdit *typeILineEdit;
@@ -144,6 +146,7 @@ private:
     //Buttons
     QPushButton *loadTemplateButton;
     QPushButton *resetButton;
+    QPropertyAnimation *m_resetAnimation;
     QPushButton *saveButton;
     QPushButton *importButton;
     QPushButton *registerButton;
@@ -151,7 +154,7 @@ private:
     QGridLayout *surfaceLayout;
     QGridLayout *resolutionLayout;
 public:
-    ProSetMenu(MainWindow* parent);
+    ProjectSetMenu(MainWindow* parent);
     int GetTypeINOL();
     int GetSurfaceNOS();
     void SetTemplateTypeI(vtkPoints* fixedPts);
@@ -168,7 +171,7 @@ public:
     void DecimateWithAnimatedDialog(MyMesh& m, float reductionRatio);
     void ConvertVTKToVCG(vtkPolyData* polyData, MyMesh& vcgMesh);
     void ConvertVCGToVTK(MyMesh& vcgMesh, vtkPolyData* polyData);
-    ~ProSetMenu();
+    ~ProjectSetMenu();
 public slots:
     void SetTypeINOL();
     void LoadTemplate();

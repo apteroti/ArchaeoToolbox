@@ -142,7 +142,7 @@
 #include "SpecimenDigitiser.h"
 #include "TemplateViewer.h"
 #include "DataBase.h"
-#include "ProSetMenu.h"
+#include "ProjectSetMenu.h"
 #include "SuperImpositionThread.h"
 #include "SuperImposition.h"
 #include "StatusReporterThread.h"
@@ -240,7 +240,7 @@ private:
     QMenu *helpMenu;
     QMenu nodePopUpMenu;
     QMenu branchPopUpMenu;
-    ProSetMenu *projectSettings;
+    ProjectSetMenu *projectSettings;
     //Actions
     QAction *quitAction;
     QAction *aboutAction;

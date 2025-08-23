@@ -14,7 +14,7 @@ set(CMAKE_BUILD_TYPE Debug)
 # Source files
 set(SOURCE_FILES
     main.cpp
-    src/MainWindow.cpp src/SpecimenDigitiser.cpp src/DataBase.cpp src/ProSetMenu.cpp
+    src/MainWindow.cpp src/SpecimenDigitiser.cpp src/DataBase.cpp src/ProjectSetMenu.cpp
     src/TemplateDigitiser.cpp src/Registration.cpp
     src/TemplateViewer.cpp src/SuperImpositionThread.cpp src/SuperImposition.cpp
     src/SlidingThread.cpp src/StatusReporterThread.cpp src/PCAWindow.cpp
@@ -24,7 +24,7 @@ set(SOURCE_FILES
     src/SurfaceParameterisationThread.cpp 
 
     include/MainWindow.h include/SpecimenDigitiser.h include/DataBase.h
-    include/MainWindow.fwd.h include/ProSetMenu.h include/ProSetMenu.fwd.h
+    include/MainWindow.fwd.h include/ProjectSetMenu.h include/ProjectSetMenu.fwd.h
     include/TemplateDigitiser.h include/Registration.h
     include/TemplateViewer.h include/SpecimenDigitiser.fwd.h
     include/SuperImpositionThread.h include/SuperImposition.h include/SlidingThread.h

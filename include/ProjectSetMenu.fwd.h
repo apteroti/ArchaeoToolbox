@@ -66,9 +66,9 @@
                       
 ***********************************************************************************************/
 
-#ifndef PROSETMENU_FWD_H
-#define PROSETMENU_FWD_H
-class ProSetMenu;
+#ifndef PROJECTSETMENU_FWD_H
+#define PROJECTSETMENU_FWD_H
+class ProjectSetMenu;
 
 
 #endif

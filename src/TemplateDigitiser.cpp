@@ -68,9 +68,9 @@
 
 #include "include/TemplateDigitiser.h"
 
-#include "include/ProSetMenu.h"
+#include "include/ProjectSetMenu.h"
 
-TemplateDigitiser::TemplateDigitiser(ProSetMenu* parent) : m_parent(parent) {
+TemplateDigitiser::TemplateDigitiser(ProjectSetMenu* parent) : m_parent(parent) {
     this->setWindowTitle("Template");
     this->resize(600, 500);
     m_mutex = new QMutex();
