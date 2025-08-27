@@ -136,7 +136,6 @@ Registration::Registration(vtkPolyData* data, vtkPolyData* templateMesh,
     m_overlayTemplateActor = vtkSmartPointer<vtkActor>::New();
     m_sliderPointActor = vtkSmartPointer<vtkActor>::New();
     m_sliderPointActor->GetProperty()->SetOpacity(1);
-    // m_sliderPointsPoly = vtkSmartPointer<vtkPolyData>::New();
     m_sliderVertexFilter = vtkSmartPointer<vtkVertexGlyphFilter>::New();
     m_preSliderHighlightPoints = vtkSmartPointer<vtkPoints>::New();
     m_overlaidMesh = vtkSmartPointer<vtkPolyData>::New();
@@ -146,22 +145,37 @@ Registration::Registration(vtkPolyData* data, vtkPolyData* templateMesh,
     // Set layout
     this->setWindowTitle("Registration");
     this->resize(800, 300);
-    QGridLayout* layout = new QGridLayout;
+    m_layout = new QGridLayout;
+    QWidget* window = new QWidget();
     m_templateRenderWidget = new QVTKOpenGLWidget();
+    m_templateRenderWidget->hide();
     m_overlayRenderWidget = new QVTKOpenGLWidget();
+    m_overlayRenderWidget->hide();
     m_targetRenderWidget = new QVTKOpenGLWidget();
+    m_targetRenderWidget->hide();
     QLabel* templateLabel = new QLabel(tr("Template"));
     overlayLabel = new QLabel(tr("Registration Overlay"));
     QLabel* targetLabel = new QLabel(tr("Specimen"));
-    layout->addWidget(templateLabel, 0, 0, 1, 1);
-    layout->addWidget(overlayLabel, 0, 1, 1, 1);
-    layout->addWidget(targetLabel, 0, 2, 1, 1);
-    layout->addWidget(m_templateRenderWidget, 1, 0, 10, 1);
-    layout->addWidget(m_overlayRenderWidget, 1, 1, 10, 1);
-    layout->addWidget(m_targetRenderWidget, 1, 2, 10, 1);
+
+    m_templatePlaceholder = new QFrame();
+    m_templatePlaceholder->setStyleSheet("background-color: rgb(112, 128, 144);");
+    m_templatePlaceholder->setMinimumSize(100,100);
+
+    m_overlayPlaceholder = new QFrame();
+    m_overlayPlaceholder->setStyleSheet("background-color: rgb(112, 128, 144);");
+
+    m_targetPlaceholder = new QFrame();
+    m_targetPlaceholder->setStyleSheet("background-color: rgb(112, 128, 144);");
+
+    m_layout->addWidget(templateLabel, 0, 0, 1, 1);
+    m_layout->addWidget(overlayLabel, 0, 1, 1, 1);
+    m_layout->addWidget(targetLabel, 0, 2, 1, 1);
+    m_layout->addWidget(m_templatePlaceholder, 1, 0, 10, 1);
+    m_layout->addWidget(m_overlayPlaceholder, 1, 1, 10, 1);
+    m_layout->addWidget(m_targetPlaceholder, 1, 2, 10, 1);
     // Set layout in QWidget
-    QWidget* window = new QWidget();
-    window->setLayout(layout);
+    
+    window->setLayout(m_layout);
     // Set QWidget as the central layout of the main window
     this->setCentralWidget(window);
     // Setting up Toolbars
@@ -235,10 +249,6 @@ Registration::Registration(vtkPolyData* data, vtkPolyData* templateMesh,
 
     this->statusBar()->addPermanentWidget(statusLabel, 0);
     this->statusBar()->addPermanentWidget(progressLabel, 0);
-
-    SetTemplateScene();
-    SetTargetScene();
-    Register();
 
     this->hide();
 }
@@ -1265,6 +1275,30 @@ bool Registration::IsRunning() {
         status = true;
     }
     return status;
+}
+
+void Registration::DelayedPlotter(){
+    QTimer::singleShot(1000, this, [this](){
+        this->SetTemplateScene();
+        this->SetTargetScene();
+        this->Register();
+        m_templateRenderWidget->show();
+        m_overlayRenderWidget->show();
+        m_targetRenderWidget->show();
+
+        m_layout->removeWidget(m_templatePlaceholder);
+        m_templatePlaceholder->deleteLater();
+
+        m_layout->removeWidget(m_overlayPlaceholder);
+        m_overlayPlaceholder->deleteLater();
+
+        m_layout->removeWidget(m_targetPlaceholder);
+        m_targetPlaceholder->deleteLater();
+
+        m_layout->addWidget(m_templateRenderWidget, 1, 0, 10, 1);
+        m_layout->addWidget(m_overlayRenderWidget, 1, 1, 10, 1);
+        m_layout->addWidget(m_targetRenderWidget, 1, 2, 10, 1);
+    });
 }
 
 void Registration::SetAnchors(vtkPoints* sourceAnchor,

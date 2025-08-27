@@ -173,7 +173,8 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QTableWidget>
-#include <QtWidgets/QToolBar>
+
+
 #include <algorithm>
 #include <cmath>
 #include <functional>

@@ -143,6 +143,7 @@
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QSpinBox>
+#include <QtWidgets/QFrame>
 
 #include <cpd/gauss_transform.hpp>
 #include <iostream>
@@ -181,6 +182,11 @@ class Registration : public QMainWindow {
     int m_smoothness = 3; //Lambda
     StatusReporterThread* m_morphingStatThread = nullptr;
     RegistrationThread* m_regThread = nullptr;
+    //Layout
+    QGridLayout* m_layout;
+    QFrame* m_templatePlaceholder;
+    QFrame* m_overlayPlaceholder;
+    QFrame* m_targetPlaceholder;
     // Toolbar
     QToolBar* mainToolbar;
     QComboBox* registerTypeComboBox;
@@ -285,8 +291,9 @@ class Registration : public QMainWindow {
     void SetLambda(int lambda);
     void FinalizeDigitization(Eigen::MatrixXd& Lndmrks, bool sendOffData);
     void PCA(Eigen::MatrixXd& data, Eigen::MatrixXd& out);
+    void DelayedPlotter();
     ~Registration();
-   public Q_SLOTS:
+   public slots:
     void OnCoordinateChanged(Eigen::MatrixXd sendOffData);
     void OnCoordinateNotChanged(Eigen::MatrixXd sendOffData);
     void OnMeshMorphed();

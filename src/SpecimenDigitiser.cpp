@@ -1072,12 +1072,15 @@ void SpecimenDigitiser::SurfaceTool() {
                             this->show();
                         }
                     }
-
                     delete m_regPlot;
                     m_regPlot =
                         new Registration(m_meshData, m_templateMesh,
                                          m_templateSurfaceSliders, this);
+                
                     m_regPlot->show();
+                    m_regPlot->DelayedPlotter();
+                    
+                    
                 } else {
                     surfaceSliderButton->setChecked(false);
                     SurfaceTool();
@@ -1140,7 +1143,10 @@ void SpecimenDigitiser::SurfaceTool() {
                 delete m_regPlot;
                 m_regPlot = new Registration(m_meshData, m_templateMesh,
                                              m_templateSurfaceSliders, this);
+                
                 m_regPlot->show();
+                m_regPlot->DelayedPlotter();
+                
                 m_regPlot->SetAnchors(totalSource, totalTamplate);
                 if (m_typeINOL == 0 && m_curveNOS == 0) {
                     m_regPlot->SetAccuracy(0);
