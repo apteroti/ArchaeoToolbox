@@ -1,6 +1,6 @@
 # ArchaeoToolbox
 
-**ArchaeoToolbox** is a cross-platform application for performing **3D geometric morphometrics**, tailored for archaeozoology, palaeontology, and related fields. It provides tools for landmark digitisation, sliding semilandmarks, PCA, strain analysis, and modern methods like Laplace-Beltrami operators—all in an interactive Qt-based interface.
+**ArchaeoToolbox** is a cross-platform application for performing **3D geometric morphometrics**, tailored for archaeozoology, palaeontology, and related fields. It provides innovative tools for landmark digitisation, sliding curve and surface semilandmarks and PCA —all in an interactive Qt-based interface.
 
 ---
 
@@ -8,10 +8,10 @@
 
 If you wish to build from source, ensure the following libraries are available on your system:
 
-- [Qt 5.15.2](https://doc.qt.io/qt-5.15/index.html) (Widgets, GUI, Help, Charts, Test modules)
+- [Qt 5.15.2](https://doc.qt.io/qt-5.15/index.html)
 - [VTK 8.2+](https://vtk.org/)
-- [Eigen3](https://eigen.tuxfamily.org/)
-- [VCGLib](http://vcglib.net)
+- [Eigen 3](https://eigen.tuxfamily.org/)
+- [VCGLib 2025.07](http://vcglib.net)
 - CMake 3.16 or newer
 - C++17 compatible compiler
 
