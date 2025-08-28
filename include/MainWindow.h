@@ -156,6 +156,7 @@
 #include "VCGDefinitions.h"
 #include "DecimateThread.h"
 #include "SpinnerDialog.h"
+#include "LoadMeshThread.h"
 
 #include <iostream>
 #include <tuple> 
@@ -234,7 +235,6 @@ private:
     StatusReporterThread* m_statThread = nullptr;
     RecoverLMThread* m_recoveryThread = nullptr;
     ImportThread* m_importThread = nullptr;
-    
     //Menus
     QMenu *fileMenu;
     QMenu *helpMenu;

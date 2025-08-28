@@ -154,16 +154,16 @@ ProjectSetMenu::ProjectSetMenu(MainWindow* parent) : m_parent(parent) {
     QLabel* cpuLabel = new QLabel(tr("Number of CPU Cores:"));
     cpuComboBox = new QComboBox(this);
     m_numCores = QThread::idealThreadCount();
-    if (m_numCores < 1){
-        m_numCores = 1; // fallback
+    if (m_numCores < 1) {
+        m_numCores = 1;  // fallback
     }
     for (int i = 1; i <= m_numCores; ++i) {
-        cpuComboBox->addItem(QString::number(i), i); 
+        cpuComboBox->addItem(QString::number(i), i);
     }
 
     // Select maximum by default
     cpuComboBox->setCurrentIndex(m_numCores - 1);
-    
+
     //--------------------------------------------------------------------
     QGroupBox* registerGroup = new QGroupBox();
     registerGroup->setStyleSheet(style);
@@ -243,8 +243,10 @@ ProjectSetMenu::ProjectSetMenu(MainWindow* parent) : m_parent(parent) {
     connect(curveLineEditNOC, &QLineEdit::textChanged, this,
             &ProjectSetMenu::SetCurveNOC);
     connect(resetButton, &QPushButton::clicked, this, &ProjectSetMenu::Reset);
-    connect(registerButton, &QPushButton::clicked, this, &ProjectSetMenu::Register);
-    connect(saveButton, &QPushButton::clicked, this, &ProjectSetMenu::SaveTemplate);
+    connect(registerButton, &QPushButton::clicked, this,
+            &ProjectSetMenu::Register);
+    connect(saveButton, &QPushButton::clicked, this,
+            &ProjectSetMenu::SaveTemplate);
     connect(importButton, &QPushButton::clicked, this,
             &ProjectSetMenu::ImportTemplate);
     void (QComboBox ::*fp)(int) = &QComboBox::currentIndexChanged;
@@ -393,7 +395,8 @@ void ProjectSetMenu::SaveTemplate() {
     }
     auto filter = "att(*.att)";
     QString filename =
-        QFileDialog::getSaveFileName(this, "Save file", "", filter, nullptr, QFileDialog::DontUseNativeDialog);
+        QFileDialog::getSaveFileName(this, "Save file", "", filter, nullptr,
+                                     QFileDialog::DontUseNativeDialog);
     QFileInfo fi(filename);
     QString ext = fi.completeSuffix();
     if (filename.isEmpty()) {
@@ -563,7 +566,8 @@ void ProjectSetMenu::SaveTemplate() {
 void ProjectSetMenu::ImportTemplate() {
     QString fileName = QFileDialog::getOpenFileName(
         this, "ToolBox Template Files", QDir::homePath(),
-        "ATT Files (*.att);;All Files (*)", nullptr, QFileDialog::DontUseNativeDialog);
+        "ATT Files (*.att);;All Files (*)", nullptr,
+        QFileDialog::DontUseNativeDialog);
     if (fileName.isEmpty()) {
     } else {
         if (fileName.endsWith(".att")) {
@@ -814,7 +818,7 @@ void ProjectSetMenu::ImportTemplate() {
     }
 }
 
-void ProjectSetMenu::SetCPUCores(int index){
+void ProjectSetMenu::SetCPUCores(int index) {
     m_parent->SetNumberOfCPUCores(index);
 }
 
@@ -912,101 +916,106 @@ void ProjectSetMenu::LoadTemplate() {
             "OBJ Files (*.obj);;PLY Files (*.ply);;All Files (*)", nullptr,
             QFileDialog::DontUseNativeDialog);
         if (fileName.isEmpty()) {
+            return;
         } else {
-            if (fileName.endsWith(".obj") || fileName.endsWith(".ply")) {
-                    vtkNew<vtkCleanPolyData> cleanFilter;
-                    cleanFilter->PointMergingOn();
-                    cleanFilter->SetTolerance(0.0001);
-                    cleanFilter->ConvertLinesToPointsOn();
-                    cleanFilter->ConvertPolysToLinesOn();
-                    cleanFilter->ConvertStripsToPolysOn();
-                if (fileName.endsWith(".obj")) {
-                    vtkNew<vtkOBJReader> objReader;
-                    objReader->SetFileName(fileName.toLocal8Bit().data());
-                    objReader->Update();
-                    cleanFilter->SetInputData(objReader->GetOutput());
-                    cleanFilter->Update();
-                } else if (fileName.endsWith(".ply")) {
-                    vtkNew <vtkPLYReader> plyReader;
-                    plyReader->SetFileName(fileName.toLocal8Bit().data());
-                    plyReader->Update();
-                    cleanFilter->SetInputData(plyReader->GetOutput());
-                    cleanFilter->Update();
-                }
-                if (cleanFilter->GetOutput()->GetNumberOfPoints() > 0){
-                    vtkNew <vtkTriangleFilter> triangleFilter;
-                    triangleFilter->SetInputConnection(cleanFilter->GetOutputPort());
-                    triangleFilter->Update();
-                    
-                    MyMesh vcgMesh;
-                    ConvertVTKToVCG(triangleFilter->GetOutput(), vcgMesh);
-                    vtkNew<vtkPolyData> tempPoly;
-                    DecimationDialog dialog(this);
-                    if (dialog.exec() == QDialog::Accepted) {
-                        float percent = dialog.GetSelectedPercentage()/100.0;
-                        DecimateWithAnimatedDialog(vcgMesh, percent);
-                        ConvertVCGToVTK(vcgMesh, tempPoly);
-                    }
-                    else{
-                        vcg::tri::Clean<MyMesh>::RemoveDegenerateFace(vcgMesh);
-                        vcg::tri::Clean<MyMesh>::RemoveDuplicateFace(vcgMesh);
-                        vcg::tri::Clean<MyMesh>::RemoveDuplicateVertex(vcgMesh);
-                        vcg::tri::Clean<MyMesh>::RemoveUnreferencedVertex(vcgMesh);
-                        vcg::tri::UpdateTopology<MyMesh>::FaceFace(vcgMesh);
-                        vcg::tri::Clean<MyMesh>::RemoveNonManifoldFace(vcgMesh);
-                        vcg::tri::UpdateTopology<MyMesh>::FaceFace(vcgMesh);
-                        vcg::tri::Clean<MyMesh>::RemoveNonManifoldVertex(vcgMesh);
-                        vcg::tri::UpdateTopology<MyMesh>::FaceFace(vcgMesh);
-                        vcg::tri::UpdateBounding<MyMesh>::Box (vcgMesh);
-                        vcg::tri::UpdateTopology<MyMesh>::VertexFace(vcgMesh);
-                        vcg::tri::UpdateFlags<MyMesh>::VertexBorderFromNone(vcgMesh);
-                        ConvertVCGToVTK(vcgMesh, tempPoly);
-                    }
+            WaitDialog waitDialog(this);
+            waitDialog.setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+            waitDialog.setModal(true);
+            waitDialog.setFixedSize(200, 150);
 
-                    m_geometryType = "Mesh";
-                    m_templatePoly = triangleFilter->GetOutput();
-                    loadTemplateButton->setEnabled(false);
-                    importButton->setEnabled(false);
-                    registerButton->setEnabled(false);
-                    saveButton->setEnabled(false);
-                    resetButton->setEnabled(false);
-                    surfaceComboBox->setEnabled(false);
-                    surfaceLineEditNOS->setReadOnly(true);
-                    surfaceLineEditPatchUNOS->setReadOnly(true);
-                    surfaceLineEditPatchVNOS->setReadOnly(true);
-                    surfaceLineEditPatchNOP->setReadOnly(true);
-                    typeILineEdit->setReadOnly(true);
-                    curveLineEditNOS->setReadOnly(true);
-                    curveLineEditNOC->setReadOnly(true);
-                    m_templatePlot->SetPoly(m_templatePoly);
-                    m_templatePlot->show();
+            QVBoxLayout layout(&waitDialog);
+
+            QLabel msg("Importing...");
+            msg.setAlignment(Qt::AlignCenter);
+            SpinnerWidget spinner;
+            layout.addWidget(&msg);
+            layout.addWidget(&spinner, 0, Qt::AlignCenter);
+
+            // Spinner thread
+            SpinnerThread spinThread(&spinner);
+            QObject::connect(&spinThread, &SpinnerThread::updateAngle, &spinner,
+                             &SpinnerWidget::setAngle);
+
+            // Importing thread
+            m_templatePoly->Initialize();
+            QThread importingThread;
+            LoadMeshThread* worker =
+                new LoadMeshThread(fileName, m_templatePoly);
+            worker->moveToThread(&importingThread);
+
+            QObject::connect(&importingThread, &QThread::started, worker,
+                             &LoadMeshThread::run);
+            // Cleanup for *success*
+            QObject::connect(worker, &LoadMeshThread::finished,
+                             &importingThread, &QThread::quit);
+            QObject::connect(worker, &LoadMeshThread::finished, &spinThread,
+                             &QThread::quit);
+            QObject::connect(worker, &LoadMeshThread::finished, &waitDialog,
+                             &QDialog::accept);
+            // Cleanup for *failure*
+            QObject::connect(worker, &LoadMeshThread::failed, &importingThread,
+                             &QThread::quit);
+            QObject::connect(worker, &LoadMeshThread::failed, &spinThread,
+                             &QThread::quit);
+            QObject::connect(worker, &LoadMeshThread::failed, &waitDialog,
+                             &QDialog::accept);
+            // Ensure worker is deleted after the thread stops
+            QObject::connect(&importingThread, &QThread::finished, worker,
+                             &QObject::deleteLater);
+            connect(worker, &LoadMeshThread::failed, this,
+                    [this](const QString& reason) {
+                        QMessageBox::warning(this, "Loading Mesh Failed!",
+                                             reason);
+                    });
+
+            // Start both threads
+            spinThread.start();
+            importingThread.start();
+
+            waitDialog.exec();  // Blocks UI
+
+            // Cleanup
+            spinThread.wait();
+            importingThread.wait();
+            if (m_templatePoly->GetNumberOfPoints() > 0) {
+                DecimationDialog dialog(this);
+                if (dialog.exec() == QDialog::Accepted) {
+                    MyMesh vcgMesh;
+                    ConvertVTKToVCG(m_templatePoly, vcgMesh);
+                    float percent = dialog.GetSelectedPercentage() / 100.0;
+                    DecimateWithAnimatedDialog(vcgMesh, percent);
+                    m_templatePoly->Initialize();
+                    ConvertVCGToVTK(vcgMesh, m_templatePoly);
                 }
-                else{
-                    auto errorDialogue = QMessageBox(this);
-                    errorDialogue.setIcon(QMessageBox::Critical);
-                    errorDialogue.setWindowTitle("Error");
-                    errorDialogue.setText("The file is empty!");
-                    errorDialogue.exec();
-                }
-            }
-            if (!fileName.endsWith(".obj") && !fileName.endsWith(".ply")) {
-                auto errorDialogue = QMessageBox(this);
-                errorDialogue.setIcon(QMessageBox::Critical);
-                errorDialogue.setWindowTitle("Error");
-                errorDialogue.setText("No Suitable file was Selected");
-                errorDialogue.exec();
+                m_geometryType = "Mesh";
+                loadTemplateButton->setEnabled(false);
+                importButton->setEnabled(false);
+                registerButton->setEnabled(false);
+                saveButton->setEnabled(false);
+                resetButton->setEnabled(false);
+                surfaceComboBox->setEnabled(false);
+                surfaceLineEditNOS->setReadOnly(true);
+                surfaceLineEditPatchUNOS->setReadOnly(true);
+                surfaceLineEditPatchVNOS->setReadOnly(true);
+                surfaceLineEditPatchNOP->setReadOnly(true);
+                typeILineEdit->setReadOnly(true);
+                curveLineEditNOS->setReadOnly(true);
+                curveLineEditNOC->setReadOnly(true);
+                m_templatePlot->SetPoly(m_templatePoly);
+                m_templatePlot->show();
             }
         }
     }
 }
 
-void ProjectSetMenu::DecimateWithAnimatedDialog(MyMesh& m, float reductionRatio) {
+void ProjectSetMenu::DecimateWithAnimatedDialog(MyMesh& m,
+                                                float reductionRatio) {
     // Modal dialog
     WaitDialog waitDialog(this);
     waitDialog.setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     waitDialog.setModal(true);
     waitDialog.setFixedSize(200, 150);
-    
+
     QVBoxLayout layout(&waitDialog);
 
     QLabel msg("Decimating mesh...");
@@ -1017,7 +1026,8 @@ void ProjectSetMenu::DecimateWithAnimatedDialog(MyMesh& m, float reductionRatio)
 
     // Spinner thread
     SpinnerThread spinThread(&spinner);
-    QObject::connect(&spinThread, &SpinnerThread::updateAngle, &spinner, &SpinnerWidget::setAngle);
+    QObject::connect(&spinThread, &SpinnerThread::updateAngle, &spinner,
+                     &SpinnerWidget::setAngle);
 
     // Decimation thread
     QThread decThread;
@@ -1026,17 +1036,22 @@ void ProjectSetMenu::DecimateWithAnimatedDialog(MyMesh& m, float reductionRatio)
     worker->ratio = reductionRatio;
     worker->moveToThread(&decThread);
 
-    QObject::connect(&decThread, &QThread::started, worker, &DecimateWorker::run);
-    QObject::connect(worker, &DecimateWorker::finished, &decThread, &QThread::quit);
-    QObject::connect(worker, &DecimateWorker::finished, &spinThread, &QThread::quit);
-    QObject::connect(worker, &DecimateWorker::finished, &waitDialog, &QDialog::accept);
-    QObject::connect(&decThread, &QThread::finished, worker, &QObject::deleteLater);
+    QObject::connect(&decThread, &QThread::started, worker,
+                     &DecimateWorker::run);
+    QObject::connect(worker, &DecimateWorker::finished, &decThread,
+                     &QThread::quit);
+    QObject::connect(worker, &DecimateWorker::finished, &spinThread,
+                     &QThread::quit);
+    QObject::connect(worker, &DecimateWorker::finished, &waitDialog,
+                     &QDialog::accept);
+    QObject::connect(&decThread, &QThread::finished, worker,
+                     &QObject::deleteLater);
 
     // Start both threads
     spinThread.start();
     decThread.start();
 
-    waitDialog.exec(); // Blocks UI
+    waitDialog.exec();  // Blocks UI
 
     // Cleanup
     spinThread.wait();
@@ -1055,29 +1070,27 @@ void ProjectSetMenu::ConvertVTKToVCG(vtkPolyData* polyData, MyMesh& vcgMesh) {
 
     vtkPoints* points = polyData->GetPoints();
     vtkIdType numPoints = points->GetNumberOfPoints();
-    
+
     // Add vertices
     for (vtkIdType i = 0; i < numPoints; ++i) {
         double p[3];
         points->GetPoint(i, p);
-        vcg::tri::Allocator<MyMesh>::AddVertex(vcgMesh, vcg::Point3f(p[0], p[1], p[2]));
+        vcg::tri::Allocator<MyMesh>::AddVertex(vcgMesh,
+                                               vcg::Point3f(p[0], p[1], p[2]));
     }
 
-    // Add faces 
+    // Add faces
     vtkCellArray* polys = polyData->GetPolys();
     polys->InitTraversal();
     vtkIdType npts, *pts;
-    
+
     while (polys->GetNextCell(npts, pts)) {
         if (npts != 3) continue;  // Only triangles
-        
+
         // Pass vertex pointers to AddFace
-        vcg::tri::Allocator<MyMesh>::AddFace(
-            vcgMesh,
-            &vcgMesh.vert[pts[0]],
-            &vcgMesh.vert[pts[1]],
-            &vcgMesh.vert[pts[2]]
-        );
+        vcg::tri::Allocator<MyMesh>::AddFace(vcgMesh, &vcgMesh.vert[pts[0]],
+                                             &vcgMesh.vert[pts[1]],
+                                             &vcgMesh.vert[pts[2]]);
     }
 
     // Transfer normals if available
@@ -1120,7 +1133,7 @@ void ProjectSetMenu::ConvertVTKToVCG(vtkPolyData* polyData, MyMesh& vcgMesh) {
     vcg::tri::UpdateTopology<MyMesh>::VertexFace(vcgMesh);
     vcg::tri::UpdateTopology<MyMesh>::FaceFace(vcgMesh);
     vcg::tri::UpdateFlags<MyMesh>::VertexBorderFromNone(vcgMesh);
-    
+
     // Update normals and bounding box
     vcg::tri::UpdateNormal<MyMesh>::PerVertexNormalized(vcgMesh);
     vcg::tri::UpdateBounding<MyMesh>::Box(vcgMesh);
@@ -1134,13 +1147,14 @@ void ProjectSetMenu::ConvertVCGToVTK(MyMesh& vcgMesh, vtkPolyData* polyData) {
     vcg::tri::Allocator<MyMesh>::CompactFaceVector(vcgMesh);
 
     auto points = vtkSmartPointer<vtkPoints>::New();
-    auto polys  = vtkSmartPointer<vtkCellArray>::New();
+    auto polys = vtkSmartPointer<vtkCellArray>::New();
 
     // Add vertices
     points->SetNumberOfPoints(vcgMesh.vert.size());
     for (size_t i = 0; i < vcgMesh.vert.size(); ++i) {
         auto& v = vcgMesh.vert[i];
-        points->SetPoint(static_cast<vtkIdType>(i), v.P()[0], v.P()[1], v.P()[2]);
+        points->SetPoint(static_cast<vtkIdType>(i), v.P()[0], v.P()[1],
+                         v.P()[2]);
     }
 
     // Add faces
@@ -1151,7 +1165,7 @@ void ProjectSetMenu::ConvertVCGToVTK(MyMesh& vcgMesh, vtkPolyData* polyData) {
             static_cast<vtkIdType>(vcg::tri::Index(vcgMesh, f.V(1))),
             static_cast<vtkIdType>(vcg::tri::Index(vcgMesh, f.V(2)))};
 
-        if (pts[0] < 0 || pts[1] < 0 || pts[2] < 0) continue; // skip invalid
+        if (pts[0] < 0 || pts[1] < 0 || pts[2] < 0) continue;  // skip invalid
         polys->InsertNextCell(3, pts);
     }
 
@@ -1167,7 +1181,7 @@ void ProjectSetMenu::ConvertVCGToVTK(MyMesh& vcgMesh, vtkPolyData* polyData) {
         groupIds->SetValue(i, 0.0f);
     }
     polyData->GetCellData()->AddArray(groupIds);
-    
+
     // Normals
     if (!vcgMesh.vert.empty() && vcgMesh.vert[0].IsNormalEnabled()) {
         auto normals = vtkSmartPointer<vtkFloatArray>::New();
@@ -1207,7 +1221,7 @@ void ProjectSetMenu::ConvertVCGToVTK(MyMesh& vcgMesh, vtkPolyData* polyData) {
         }
         polyData->GetPointData()->SetTCoords(texCoords);
     }
-   polyData->Modified();
+    polyData->Modified();
 }
 
 void ProjectSetMenu::SetSurfaceNOS() {
@@ -1364,8 +1378,7 @@ void ProjectSetMenu::Refresh(bool condition) {
     if (condition == 1) {
         registerButton->setEnabled(true);
         saveButton->setEnabled(true);
-    }
-    else{
+    } else {
         m_resetAnimation->start();
     }
     resetButton->setEnabled(true);
