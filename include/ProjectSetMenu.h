@@ -120,7 +120,7 @@ private:
     int curveSliderLimit = 10;
     int m_numCores = 1;
     std::string m_geometryType = "";
-    QGridLayout *layout;
+    QGridLayout *m_layout;
     QLineEdit *typeILineEdit;
     QLineEdit *surfaceLineEditNOS;
     QLineEdit *surfaceLineEditPatchUNOS;
@@ -130,7 +130,7 @@ private:
     QLineEdit *curveLineEditNOC;
     QComboBox *cpuComboBox;
     QLineEdit *registerLineEdit;
-    QGroupBox *resolutionGroup;
+    QGroupBox *m_resolutionGroup;
     
     QComboBox *surfaceComboBox;
     MainWindow* m_parent;
@@ -152,8 +152,8 @@ private:
     QPushButton *importButton;
     QPushButton *registerButton;
     //Layout
-    QGridLayout *surfaceLayout;
-    QGridLayout *resolutionLayout;
+    QGridLayout *m_surfaceLayout;
+    QGridLayout *m_resolutionLayout;
 public:
     ProjectSetMenu(MainWindow* parent);
     int GetTypeINOL();

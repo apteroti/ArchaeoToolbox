@@ -80,6 +80,17 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
     }
     int numSpecimen = m_nameList.size();
     if (numSpecimen >= 2) {
+        m_meshRenderer = vtkSmartPointer<vtkRenderer>::New();
+        m_style = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
+        m_meshIren = vtkSmartPointer<vtkGenericRenderWindowInteractor>::New();
+        m_meshActor = vtkSmartPointer<vtkActor>::New();
+        m_meshMapper = vtkSmartPointer<vtkDataSetMapper>::New();
+
+        m_graphLabelArray = vtkSmartPointer<vtkStringArray>::New();
+        m_lmLabelActor = vtkSmartPointer<vtkActor2D>::New();
+        m_scatterChartView = vtkSmartPointer<vtkContextView>::New();
+        m_scatterChart = vtkSmartPointer<vtkChartXY>::New();
+
         m_meshData = m_parentDataBase->GetPolyNode("Template");
         m_landmarksPoly = m_parentDataBase->GetTotalLandmarks("Template");
         int numLM = m_landmarksPoly->GetNumberOfPoints();
@@ -98,9 +109,11 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         // Now GUI stuff
         this->setWindowTitle("Principal Component Results");
         this->resize(1400, 600);
-        QGridLayout *layout = new QGridLayout;
+        m_layout = new QGridLayout;
         m_meshRenderWidget = new QVTKOpenGLWidget();
+        m_meshRenderWidget->hide();
         m_graphRenderWidget = new QVTKOpenGLWidget();
+        m_graphRenderWidget->hide();
         m_dockedToolbar = new QDockWidget;
         m_dockedToolbar->setFeatures(QDockWidget::DockWidgetFloatable |
                                      QDockWidget::DockWidgetMovable);
@@ -122,14 +135,20 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         m_meshRenLabel = new QLabel(QString::fromStdString(renLabelTitle));
         QLabel *graphRenLabel = new QLabel(tr("PCA Plot"));
 
-        layout->addWidget(m_meshRenLabel, 0, 2, 1, 3);
-        layout->addWidget(graphRenLabel, 0, 8, 1, 9);
-        layout->addWidget(m_meshRenderWidget, 1, 2, 10, 7);
-        layout->addWidget(m_graphRenderWidget, 1, 9, 10, 10);
+        m_meshPlaceholder = new QFrame();
+        m_meshPlaceholder->setStyleSheet("background-color: rgb(112, 128, 144);");
+
+        m_plotPlaceholder = new QFrame();
+        m_plotPlaceholder->setStyleSheet("background-color: rgb(112, 128, 144);");
+
+        m_layout->addWidget(m_meshRenLabel, 0, 2, 1, 3);
+        m_layout->addWidget(graphRenLabel, 0, 8, 1, 9);
+        m_layout->addWidget(m_meshPlaceholder, 1, 2, 10, 7);
+        m_layout->addWidget(m_plotPlaceholder, 1, 9, 10, 10);
 
         // Set layout in QWidget
         QWidget *window = new QWidget();
-        window->setLayout(layout);
+        window->setLayout(m_layout);
         // Set QWidget as the central layout of the main window
         this->setCentralWidget(window);
 
@@ -141,7 +160,6 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         select1stPCsSpinBox = new QSpinBox();
         select1stPCsSpinBox->setRange(1, m_eigenVectors.cols());
         select1stPCsSpinBox->setValue(m_x);
-        
 
         select2ndPCsSpinBox = new QSpinBox();
         select2ndPCsSpinBox->setRange(1, m_eigenVectors.cols());
@@ -155,7 +173,6 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         milLineEdit->setPlaceholderText("0");
         milLineEdit->setReadOnly(1);
         milLineEdit->setMaximumWidth(50);
-        
 
         QLabel *showPtsIdsLabel = new QLabel();
         showPtsIdsLabel->setText(tr("  Show Landmark ids"));
@@ -194,121 +211,9 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         connect(showPtsIdsBox, &QCheckBox::stateChanged, this,
                 &PCAWindow::ShowPtsIds);
         //--------------------------
-        vtkNew<vtkNamedColors> colors;
-        m_ctf = vtkSmartPointer<vtkColorTransferFunction>::New();
-        m_ctf->SetColorSpaceToDiverging();
-        m_ctf->AddRGBPoint(0, 0.231373, 0.298039, 0.752941);
-        m_ctf->AddRGBPoint(0.5, 0.865003, 0.865003, 0.865003);
-        m_ctf->AddRGBPoint(1, 0.705882, 0.0156863, 0.14902);
 
-        m_meshRenderer = vtkSmartPointer<vtkRenderer>::New();
-        m_meshRenWin = m_meshRenderWidget->GetRenderWindow();
-        m_style = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
-        m_meshIren = vtkSmartPointer<vtkGenericRenderWindowInteractor>::New();
-        m_meshActor = vtkSmartPointer<vtkActor>::New();
-        m_meshMapper = vtkSmartPointer<vtkDataSetMapper>::New();
-        m_meshRenWin->AddRenderer(m_meshRenderer);
-        m_style->SetCurrentRenderer(m_meshRenderer);
-        m_meshIren->SetInteractorStyle(m_style);
-        m_meshIren->SetRenderWindow(m_meshRenWin);
-
-        
-
-        // Mesh properties and color etc
-        m_meshMapper->SetInputData(m_meshData);
-        m_meshMapper->SetResolveCoincidentTopologyToOff();
-        m_meshActor->SetMapper(m_meshMapper);
-        m_meshActor->GetProperty()->SetColor(1, 0.992, 0.815);
-        m_meshActor->GetProperty()->SetOpacity(0.5);
-        m_meshRenderer->AddActor(m_meshActor);
-
-        // LM properties
-        // Point properties and color etc
-        vtkNew<vtkMassProperties> prop;
-        prop->SetInputData(m_meshData);
-        prop->Update();
-        const double area = prop->GetSurfaceArea();
-        const double diagonal = std::sqrt(area); // Approximate characteristic length
-        // Compute size factor based on application-specific parameters
-        // Normalized between 0-1 range first, then scaled
-        double sizeFactor = (numLM * 0.025);
-
-        // Apply sigmoid function for smooth clamping
-        sizeFactor = 1.0 / (1.0 + std::exp(-0.1*(sizeFactor - 50.0))); // Sigmoid normalization
-
-        // Map to reasonable visual range (1%-5% of characteristic length)
-        const double minSize = 0.01 * diagonal;
-        const double maxSize = 0.05 * diagonal;
-        double landmarkSize = minSize + sizeFactor * (maxSize - minSize);
-        // Apply to sphere source
-        vtkNew<vtkSphereSource> sphereSource;
-        sphereSource->SetRadius(landmarkSize);
-        m_lmVertexFilter = vtkSmartPointer<vtkVertexGlyphFilter>::New();
-        m_lmActor = vtkSmartPointer<vtkActor>::New();
-        m_lmMapper = vtkSmartPointer<vtkGlyph3DMapper>::New();
-        double windowWidth = 800;
-        double windowHeight = 800;
-        m_scalarBar = vtkSmartPointer<vtkScalarBarActor>::New();
-        m_scalarBar->SetTitle("Contribution");
-        m_scalarBar->UnconstrainedFontSizeOn();
-        m_scalarBar->SetNumberOfLabels(5);
-        m_scalarBar->SetMaximumWidthInPixels(windowWidth / 10);
-        m_scalarBar->SetMaximumHeightInPixels(windowHeight / 3);
-        UpdateContribution(m_x);
-        m_lmMapper->SetInputData(m_lmVertexFilter->GetOutput());
-        m_lmMapper->SetSourceConnection(sphereSource->GetOutputPort());
-        m_lmMapper->ScalingOff();
-        m_lmMapper->ScalarVisibilityOn();
-        m_lmMapper->SetColorModeToMapScalars();
-        // m_lmActor->GetProperty()->SetColor(1.0, 0.0, 0.0);
-        m_lmActor->GetProperty()->SetDiffuse(0.8);
-        m_lmActor->GetProperty()->SetSpecular(0.5);
-        m_lmActor->GetProperty()->SetSpecularPower(30);
-        m_lmActor->SetMapper(m_lmMapper);
-        m_meshRenderer->AddActor(m_lmActor);
-        m_meshRenderer->AddActor(m_scalarBar);
-
-        // Labels
-        m_lmLabelActor = vtkSmartPointer<vtkActor2D>::New();
-        vtkNew<vtkLabeledDataMapper> lmLabelMapper;
-        vtkNew<vtkVertexGlyphFilter> lmLabelVertexFilter;
-        lmLabelVertexFilter->SetInputData(m_landmarksPoly);
-        lmLabelVertexFilter->Update();
-        lmLabelMapper->SetInputData(lmLabelVertexFilter->GetOutput());
-        lmLabelMapper->GetLabelTextProperty()->SetFontSize(15);
-        m_lmLabelActor->SetMapper(lmLabelMapper);
-        m_lmLabelActor->GetProperty()->SetColor(
-            colors->GetColor3d("black").GetData());
-        m_lmLabelActor->SetPickable(0);
-        
-        m_meshRenderer->AddActor(m_MILLabelActor[0]);
-        
-        //----------scatter chart
-        m_graphLabelArray = vtkSmartPointer<vtkStringArray>::New();
-        m_graphLabelArray->SetName("Names");
-        for (int i = 0; i < m_nameList.size(); i++) {
-            m_graphLabelArray->InsertNextValue(m_nameList[i]);
-        }
-        m_scatterChartView = vtkSmartPointer<vtkContextView>::New();
-        m_scatterChart = vtkSmartPointer<vtkChartXY>::New();
-
-        m_graphRenWin = m_graphRenderWidget->GetRenderWindow();
-        m_scatterChartView->SetRenderWindow(m_graphRenWin);
-        m_scatterChartView->GetScene()->AddItem(m_scatterChart);
-        m_graphRenderWidget->SetRenderWindow(
-            m_scatterChartView->GetRenderWindow());
-        UpdateScatter(m_x, m_y);
-        // bg color
-        m_meshRenderer->SetBackground(
-            colors->GetColor3d("SlateGray").GetData());
-
-        m_meshRenWin->Render();
-        m_meshIren->Initialize();
-
-        m_graphRenderWidget->show();
-        m_scatterChartView->Render();
-
-        this->hide();
+        this->show();
+        this->DelayedPlotter();
     } else {
         auto errorDialogue = QMessageBox(this);
         errorDialogue.setIcon(QMessageBox::Critical);
@@ -318,6 +223,128 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
             "try again!");
         errorDialogue.exec();
     }
+}
+
+void PCAWindow::Plot() {
+    int numLM = m_landmarksPoly->GetNumberOfPoints();
+    vtkNew<vtkNamedColors> colors;
+    m_ctf = vtkSmartPointer<vtkColorTransferFunction>::New();
+    m_ctf->SetColorSpaceToDiverging();
+    m_ctf->AddRGBPoint(0, 0.231373, 0.298039, 0.752941);
+    m_ctf->AddRGBPoint(0.5, 0.865003, 0.865003, 0.865003);
+    m_ctf->AddRGBPoint(1, 0.705882, 0.0156863, 0.14902);
+    auto meshRenWin = m_meshRenderWidget->GetRenderWindow();
+    meshRenWin->AddRenderer(m_meshRenderer);
+    m_style->SetCurrentRenderer(m_meshRenderer);
+    m_meshIren->SetInteractorStyle(m_style);
+    m_meshIren->SetRenderWindow(meshRenWin);
+
+    // Mesh properties and color etc
+    m_meshMapper->SetInputData(m_meshData);
+    m_meshMapper->SetResolveCoincidentTopologyToOff();
+    m_meshActor->SetMapper(m_meshMapper);
+    m_meshActor->GetProperty()->SetColor(1, 0.992, 0.815);
+    m_meshActor->GetProperty()->SetOpacity(0.5);
+    m_meshRenderer->AddActor(m_meshActor);
+
+    // LM properties
+    // Point properties and color etc
+    vtkNew<vtkMassProperties> prop;
+    prop->SetInputData(m_meshData);
+    prop->Update();
+    const double area = prop->GetSurfaceArea();
+    const double diagonal =
+        std::sqrt(area);  // Approximate characteristic length
+    // Compute size factor based on application-specific parameters
+    // Normalized between 0-1 range first, then scaled
+    double sizeFactor = (numLM * 0.025);
+
+    // Apply sigmoid function for smooth clamping
+    sizeFactor =
+        1.0 /
+        (1.0 + std::exp(-0.1 * (sizeFactor - 50.0)));  // Sigmoid normalization
+
+    // Map to reasonable visual range (1%-5% of characteristic length)
+    const double minSize = 0.01 * diagonal;
+    const double maxSize = 0.05 * diagonal;
+    double landmarkSize = minSize + sizeFactor * (maxSize - minSize);
+    // Apply to sphere source
+    vtkNew<vtkSphereSource> sphereSource;
+    sphereSource->SetRadius(landmarkSize);
+    m_lmVertexFilter = vtkSmartPointer<vtkVertexGlyphFilter>::New();
+    m_lmActor = vtkSmartPointer<vtkActor>::New();
+    m_lmMapper = vtkSmartPointer<vtkGlyph3DMapper>::New();
+    double windowWidth = 800;
+    double windowHeight = 800;
+    m_scalarBar = vtkSmartPointer<vtkScalarBarActor>::New();
+    m_scalarBar->SetTitle("Contribution");
+    m_scalarBar->UnconstrainedFontSizeOn();
+    m_scalarBar->SetNumberOfLabels(5);
+    m_scalarBar->SetMaximumWidthInPixels(windowWidth / 10);
+    m_scalarBar->SetMaximumHeightInPixels(windowHeight / 3);
+    UpdateContribution(m_x);
+    m_lmMapper->SetInputData(m_lmVertexFilter->GetOutput());
+    m_lmMapper->SetSourceConnection(sphereSource->GetOutputPort());
+    m_lmMapper->ScalingOff();
+    m_lmMapper->ScalarVisibilityOn();
+    m_lmMapper->SetColorModeToMapScalars();
+    // m_lmActor->GetProperty()->SetColor(1.0, 0.0, 0.0);
+    m_lmActor->GetProperty()->SetDiffuse(0.8);
+    m_lmActor->GetProperty()->SetSpecular(0.5);
+    m_lmActor->GetProperty()->SetSpecularPower(30);
+    m_lmActor->SetMapper(m_lmMapper);
+    m_meshRenderer->AddActor(m_lmActor);
+    m_meshRenderer->AddActor(m_scalarBar);
+
+    // Labels
+    vtkNew<vtkLabeledDataMapper> lmLabelMapper;
+    vtkNew<vtkVertexGlyphFilter> lmLabelVertexFilter;
+    lmLabelVertexFilter->SetInputData(m_landmarksPoly);
+    lmLabelVertexFilter->Update();
+    lmLabelMapper->SetInputData(lmLabelVertexFilter->GetOutput());
+    lmLabelMapper->GetLabelTextProperty()->SetFontSize(15);
+    m_lmLabelActor->SetMapper(lmLabelMapper);
+    m_lmLabelActor->GetProperty()->SetColor(
+        colors->GetColor3d("black").GetData());
+    m_lmLabelActor->SetPickable(0);
+
+    m_meshRenderer->AddActor(m_MILLabelActor[0]);
+
+    //----------scatter chart
+    m_graphLabelArray->SetName("Names");
+    for (int i = 0; i < m_nameList.size(); i++) {
+        m_graphLabelArray->InsertNextValue(m_nameList[i]);
+    }
+    m_graphRenWin = m_graphRenderWidget->GetRenderWindow();
+    m_scatterChartView->SetRenderWindow(m_graphRenWin);
+    m_scatterChartView->GetScene()->AddItem(m_scatterChart);
+    m_graphRenderWidget->SetRenderWindow(m_scatterChartView->GetRenderWindow());
+    UpdateScatter(m_x, m_y);
+    // bg color
+    m_meshRenderer->SetBackground(colors->GetColor3d("SlateGray").GetData());
+
+    meshRenWin->Render();
+    m_meshIren->Initialize();
+
+    m_scatterChartView->Render();
+}
+
+void PCAWindow::DelayedPlotter() {
+    QTimer::singleShot(1000, this, [this](){
+        this->Plot();
+        m_meshRenderWidget->show();
+        m_graphRenderWidget->show();
+
+        m_layout->removeWidget(m_plotPlaceholder);
+        m_plotPlaceholder->deleteLater();
+
+        m_layout->removeWidget(m_meshPlaceholder);
+        m_meshPlaceholder->deleteLater();
+
+        m_layout->addWidget(m_meshRenderWidget, 1, 2, 10, 7);
+        m_layout->addWidget(m_graphRenderWidget, 1, 9, 10, 10);
+        
+    });
 }
 
 void PCAWindow::UpdateScatter(int x, int y) {
@@ -383,14 +410,14 @@ void PCAWindow::UpdateContribution(int pc) {
 
     double maxContr = scalars->GetRange()[1];
     vtkIdType maxIndex = 0;
-    double* scalarArray = static_cast<double*>(scalars->GetVoidPointer(0));
+    double *scalarArray = static_cast<double *>(scalars->GetVoidPointer(0));
     for (vtkIdType i = 1; i < scalars->GetNumberOfTuples(); ++i) {
         if (scalarArray[i] == maxContr) {
             maxIndex = i;
             break;
         }
     }
-    
+
     milLineEdit->setText(QString::number(maxIndex));
     QString milText = QString("MIL (%1)").arg(maxContr, 0, 'g', 3);
 
@@ -402,11 +429,10 @@ void PCAWindow::UpdateContribution(int pc) {
     tempActor->GetTextProperty()->SetFontSize(20);
     tempActor->GetTextProperty()->SetBold(1);
     tempActor->GetTextProperty()->SetColor(
-            colors->GetColor3d("Black").GetData()); 
+        colors->GetColor3d("Black").GetData());
     m_MILLabelActor[0] = tempActor;
     m_meshRenderer->AddActor(m_MILLabelActor[0]);
-    
-    
+
     vtkNew<vtkLookupTable> lut;
     lut->SetNumberOfTableValues(512);
     lut->SetTableRange(scalars->GetRange());
@@ -429,7 +455,7 @@ void PCAWindow::UpdateContribution(int pc) {
     InterpolateTPSContributionToMesh(scalars);
 }
 
-void PCAWindow::InterpolateTPSContributionToMesh(vtkDoubleArray* scalars) {
+void PCAWindow::InterpolateTPSContributionToMesh(vtkDoubleArray *scalars) {
     if (!m_landmarksPoly || !m_meshData || !scalars) return;
 
     vtkIdType N = m_landmarksPoly->GetNumberOfPoints();
@@ -491,8 +517,7 @@ void PCAWindow::InterpolateTPSContributionToMesh(vtkDoubleArray* scalars) {
         double value = a(0) + a.tail(3).dot(x);
         for (vtkIdType j = 0; j < N; ++j) {
             double r = (x - X.row(j).transpose()).norm();
-            if (r > 1e-10)
-                value += w(j) * r * r * std::log(r);
+            if (r > 1e-10) value += w(j) * r * r * std::log(r);
         }
         interpolatedScalars->SetTuple1(i, value);
     }
@@ -507,7 +532,8 @@ void PCAWindow::InterpolateTPSContributionToMesh(vtkDoubleArray* scalars) {
     interpolatedScalars->GetRange(range);
     lut->SetTableRange(range);
     for (int i = 0; i < lut->GetNumberOfTableValues(); ++i) {
-        double val = static_cast<double>(i) / (lut->GetNumberOfTableValues() - 1);
+        double val =
+            static_cast<double>(i) / (lut->GetNumberOfTableValues() - 1);
         double rgb[3];
         m_ctf->GetColor(val, rgb);
         lut->SetTableValue(i, rgb[0], rgb[1], rgb[2], 1.0);
@@ -585,14 +611,16 @@ void PCAWindow::Calculate(Eigen::MatrixXd &data, bool standardise) {
         variance.array().sqrt();
     // Center the data by subtracting the mean from each feature
     centeredMatrix = data.rowwise() - mean.transpose();
-    // If standardization requested, scale each feature by its standard deviation
+    // If standardization requested, scale each feature by its standard
+    // deviation
     if (standardise) {
         centeredMatrix.array().rowwise() /=
-            std.transpose().array();  // Standardize data (z-score normalization)
+            std.transpose()
+                .array();  // Standardize data (z-score normalization)
     }
 
-    // Compute covariance matrix of the centered (and possibly standardized) data
-    // Formula: cov(X) = (Xᵀ * X)/(n-1)
+    // Compute covariance matrix of the centered (and possibly standardized)
+    // data Formula: cov(X) = (Xᵀ * X)/(n-1)
     covarianceMatrix = (centeredMatrix.adjoint().operator*(centeredMatrix)) /
                        (data.rows() - 1);
     // Perform eigendecomposition of the covariance matrix
@@ -601,8 +629,8 @@ void PCAWindow::Calculate(Eigen::MatrixXd &data, bool standardise) {
     // Get eigenvalues and eigenvectors from the decomposition
     auto eigen_values = es.eigenvalues();
     auto eigen_vectors = es.eigenvectors();
-    //DebugPrintMatrix(eigen_vectors);
-    // Pair eigenvalues with their original indices for sorting
+    // DebugPrintMatrix(eigen_vectors);
+    //  Pair eigenvalues with their original indices for sorting
     typedef std::pair<double, int> eigen_pair;
     std::vector<eigen_pair> ep;
     for (int i = 0; i < data.cols(); ++i) {
@@ -615,17 +643,19 @@ void PCAWindow::Calculate(Eigen::MatrixXd &data, bool standardise) {
         Eigen::MatrixXd::Zero(eigen_vectors.rows(), eigen_vectors.cols());
     m_eigenValues = Eigen::VectorXd::Zero(data.cols());
     m_expVariance = Eigen::VectorXd::Zero(data.cols());
-    // Store eigenvalues and vectors in descending order (most significant first)
+    // Store eigenvalues and vectors in descending order (most significant
+    // first)
     int colnum = 0;
     for (int i = ep.size() - 1; i > -1; i--) {
-        m_eigenValues(colnum) = ep[i].first;    // Store sorted eigenvalues
-        m_eigenVectors.col(colnum) += eigen_vectors.col(ep[i].second);  // Store corresponding eigenvectors
+        m_eigenValues(colnum) = ep[i].first;  // Store sorted eigenvalues
+        m_eigenVectors.col(colnum) += eigen_vectors.col(
+            ep[i].second);  // Store corresponding eigenvectors
         colnum++;
     }
     // Calculate principal component scores (projected data)
     // Formula: scores = centered_data * eigenvectors
     m_eigenScores = centeredMatrix.operator*(m_eigenVectors);
-    
+
     // each column of eigenvector correlates with PCs, and each row with
     // variables e.g. for pc1, we separate column 0, and check the loading
     // DebugPrintMatrix(m_eigenVectors);
@@ -667,8 +697,8 @@ void PCAWindow::Export2Csv() {
     auto filter = "csv(*.csv)";
     std::string name;
     QString filename =
-        QFileDialog::getSaveFileName(this, "Save file", "", filter, 
-            nullptr, QFileDialog::DontUseNativeDialog);
+        QFileDialog::getSaveFileName(this, "Save file", "", filter, nullptr,
+                                     QFileDialog::DontUseNativeDialog);
     QFileInfo fi(filename);
     QString ext = fi.completeSuffix();
     if (filename.isEmpty()) {

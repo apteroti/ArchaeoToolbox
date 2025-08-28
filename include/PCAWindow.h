@@ -193,6 +193,8 @@
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QLineEdit>
 #include <QVTKOpenGLWidget.h>
+#include <QtCore/QTimer>
+#include <QtWidgets/QFrame>
 
 #include <Eigen/Eigen>
 #include <Eigen/Dense>
@@ -218,11 +220,13 @@ private:
     std::vector<std::string> m_nameList;
     int m_x = 1;
     int m_y = 2;
-    
+    QFrame* m_plotPlaceholder;
+    QFrame* m_meshPlaceholder;
+    QGridLayout* m_layout;
+
 
     //Rendering
     QVTKOpenGLWidget *m_meshRenderWidget;
-    vtkRenderWindow *m_meshRenWin;
     vtkSmartPointer<vtkRenderer> m_meshRenderer;
     vtkSmartPointer<vtkInteractorStyleTrackballCamera> m_style;
     vtkSmartPointer<vtkGenericRenderWindowInteractor> m_meshIren;
@@ -265,6 +269,8 @@ public:
     M LoadCSV(const std::string &path); //For debugging
     void DebugPrintMatrix(Eigen::MatrixXd matrix); //For debugging
     void InterpolateTPSContributionToMesh(vtkDoubleArray* scalars);
+    void Plot();
+    void DelayedPlotter();
     ~PCAWindow();
 public slots:
     void Export2Csv();

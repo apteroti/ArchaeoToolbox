@@ -86,7 +86,7 @@ ProjectSetMenu::ProjectSetMenu(MainWindow* parent) : m_parent(parent) {
     m_templatePatchSurfaceCurve = vtkSmartPointer<vtkMultiBlockDataSet>::New();
     m_templateCurvePtsPoly = vtkSmartPointer<vtkMultiBlockDataSet>::New();
     m_templatePlot = new TemplateDigitiser(this);
-    layout = new QGridLayout();
+    m_layout = new QGridLayout();
     QString style =
         "QGroupBox {"
         "font: bold;"
@@ -108,19 +108,25 @@ ProjectSetMenu::ProjectSetMenu(MainWindow* parent) : m_parent(parent) {
     typeILineEdit->setPlaceholderText(QString::fromStdString(typeIQuery));
     typeILineEdit->setValidator(new QIntValidator(0, 10000, this));
     //----------------------------------------------------------------------
+    m_surfaceLayout = new QGridLayout();
+    m_resolutionLayout = new QGridLayout();
     QGroupBox* surfaceGroup = new QGroupBox(tr("Surface"));
-    resolutionGroup = new QGroupBox();
+    m_resolutionGroup = new QGroupBox();
     surfaceGroup->setStyleSheet(style);
     QLabel* surfaceLabel = new QLabel(tr("Surface Type"));
     surfacePatchLabel = new QLabel(tr("Number of Patches"));
+    surfacePatchLabel->setParent(m_resolutionGroup);
     surfaceNOSLabel = new QLabel(tr("Number of Sliders:"));
+    surfaceNOSLabel->setParent(surfaceGroup);
     surfaceResolutionLabel = new QLabel(tr("Resolution(UV):"));
+    surfaceResolutionLabel->setParent(m_resolutionGroup);
+
     surfaceComboBox = new QComboBox();
     surfaceComboBox->addItem(tr("Whole geometry"));
     surfaceComboBox->addItem(tr("Patches"));
-    surfaceLineEditNOS = new QLineEdit();
-    surfaceLineEditPatchUNOS = new QLineEdit();
-    surfaceLineEditPatchVNOS = new QLineEdit();
+    surfaceLineEditNOS = new QLineEdit(surfaceGroup);
+    surfaceLineEditPatchUNOS = new QLineEdit(m_resolutionGroup);
+    surfaceLineEditPatchVNOS = new QLineEdit(m_resolutionGroup);
     std::string surfaceQuery("Number >=" + std::to_string(surfaceSliderLimit));
     std::string surfacePatchQuery("Number >=" +
                                   std::to_string(surfaceResolutionLimit));
@@ -133,7 +139,7 @@ ProjectSetMenu::ProjectSetMenu(MainWindow* parent) : m_parent(parent) {
     surfaceLineEditPatchVNOS->setPlaceholderText(
         QString::fromStdString(surfacePatchQuery));
     surfaceLineEditPatchVNOS->setValidator(new QIntValidator(0, 10000, this));
-    surfaceLineEditPatchNOP = new QLineEdit();
+    surfaceLineEditPatchNOP = new QLineEdit(m_resolutionGroup);
     surfaceLineEditPatchNOP->setPlaceholderText("1");
     surfaceLineEditPatchNOP->setValidator(new QIntValidator(1, 10000, this));
     //--------------------------------------------------------------------
@@ -194,17 +200,15 @@ ProjectSetMenu::ProjectSetMenu(MainWindow* parent) : m_parent(parent) {
     typeILayout->addWidget(typeILineEdit, 0, 1);
     typeIGroup->setLayout(typeILayout);
 
-    surfaceLayout = new QGridLayout();
-    surfaceLayout->addWidget(surfaceLabel, 0, 0);
-    surfaceLayout->addWidget(surfaceComboBox, 0, 1);
-    surfaceLayout->addWidget(surfaceNOSLabel, 1, 0);
-    surfaceLayout->addWidget(surfaceLineEditNOS, 1, 1);
-    surfaceGroup->setLayout(surfaceLayout);
+    m_surfaceLayout->addWidget(surfaceLabel, 0, 0);
+    m_surfaceLayout->addWidget(surfaceComboBox, 0, 1);
+    m_surfaceLayout->addWidget(surfaceNOSLabel, 1, 0);
+    m_surfaceLayout->addWidget(surfaceLineEditNOS, 1, 1);
+    surfaceGroup->setLayout(m_surfaceLayout);
 
-    resolutionLayout = new QGridLayout();
-    resolutionLayout->addWidget(surfaceLineEditPatchUNOS, 0, 0);
-    resolutionLayout->addWidget(surfaceLineEditPatchVNOS, 0, 1);
-    resolutionGroup->setLayout(resolutionLayout);
+    m_resolutionLayout->addWidget(surfaceLineEditPatchUNOS, 0, 0);
+    m_resolutionLayout->addWidget(surfaceLineEditPatchVNOS, 0, 1);
+    m_resolutionGroup->setLayout(m_resolutionLayout);
 
     QGridLayout* curveLayout = new QGridLayout();
     curveLayout->addWidget(curveLabel, 0, 0);
@@ -253,14 +257,14 @@ ProjectSetMenu::ProjectSetMenu(MainWindow* parent) : m_parent(parent) {
     connect(surfaceComboBox, fp, this, &ProjectSetMenu::ChangeSurfaceMode);
     connect(cpuComboBox, fp, this, &ProjectSetMenu::SetCPUCores);
 
-    layout->addWidget(curveGroup, 0, 0);
-    layout->addWidget(surfaceGroup, 0, 1);
-    layout->addWidget(typeIGroup, 1, 0);
-    layout->addWidget(cpuGroup, 1, 1);
-    layout->addWidget(registerGroup, 2, 0, 1, 2);
+    m_layout->addWidget(curveGroup, 0, 0);
+    m_layout->addWidget(surfaceGroup, 0, 1);
+    m_layout->addWidget(typeIGroup, 1, 0);
+    m_layout->addWidget(cpuGroup, 1, 1);
+    m_layout->addWidget(registerGroup, 2, 0, 1, 2);
 
     this->setWindowTitle("Project Setting");
-    this->setLayout(layout);
+    this->setLayout(m_layout);
 }
 
 void ProjectSetMenu::SetTypeINOL() {
@@ -825,18 +829,18 @@ void ProjectSetMenu::SetCPUCores(int index) {
 void ProjectSetMenu::ChangeSurfaceMode(int index) {
     switch (index) {
         case 0:
-            surfaceLayout->removeWidget(surfacePatchLabel);
-            surfaceLayout->removeWidget(surfaceLineEditPatchNOP);
-            surfaceLayout->removeWidget(resolutionGroup);
-            surfaceLayout->removeWidget(surfaceResolutionLabel);
+            m_surfaceLayout->removeWidget(surfacePatchLabel);
+            m_surfaceLayout->removeWidget(surfaceLineEditPatchNOP);
+            m_surfaceLayout->removeWidget(m_resolutionGroup);
+            m_surfaceLayout->removeWidget(surfaceResolutionLabel);
             surfaceResolutionLabel->setVisible(false);
             surfacePatchLabel->setVisible(false);
             surfaceLineEditPatchNOP->setVisible(false);
-            resolutionGroup->setVisible(false);
+            m_resolutionGroup->setVisible(false);
             surfaceNOSLabel->setVisible(true);
             surfaceLineEditNOS->setVisible(true);
-            surfaceLayout->addWidget(surfaceNOSLabel, 1, 0);
-            surfaceLayout->addWidget(surfaceLineEditNOS, 1, 1);
+            m_surfaceLayout->addWidget(surfaceNOSLabel, 1, 0);
+            m_surfaceLayout->addWidget(surfaceLineEditNOS, 1, 1);
             surfaceLineEditNOS->setVisible(true);
             surfaceLineEditPatchNOP->clear();
             surfaceLineEditPatchUNOS->clear();
@@ -846,18 +850,18 @@ void ProjectSetMenu::ChangeSurfaceMode(int index) {
             surfacePatchVNOS = 0;
             break;
         case 1:
-            surfaceLayout->removeWidget(surfaceLineEditNOS);
-            surfaceLayout->removeWidget(surfaceNOSLabel);
+            m_surfaceLayout->removeWidget(surfaceLineEditNOS);
+            m_surfaceLayout->removeWidget(surfaceNOSLabel);
             surfaceNOSLabel->setVisible(false);
             surfaceLineEditNOS->setVisible(false);
             surfaceResolutionLabel->setVisible(true);
             surfacePatchLabel->setVisible(true);
             surfaceLineEditPatchNOP->setVisible(true);
-            resolutionGroup->setVisible(true);
-            surfaceLayout->addWidget(surfacePatchLabel, 2, 0);
-            surfaceLayout->addWidget(surfaceLineEditPatchNOP, 2, 1);
-            surfaceLayout->addWidget(surfaceResolutionLabel, 1, 0);
-            surfaceLayout->addWidget(resolutionGroup, 1, 1);
+            m_resolutionGroup->setVisible(true);
+            m_surfaceLayout->addWidget(surfacePatchLabel, 2, 0);
+            m_surfaceLayout->addWidget(surfaceLineEditPatchNOP, 2, 1);
+            m_surfaceLayout->addWidget(surfaceResolutionLabel, 1, 0);
+            m_surfaceLayout->addWidget(m_resolutionGroup, 1, 1);
             surfaceLineEditNOS->clear();
             surfaceNOS = 0;
             break;
@@ -1389,6 +1393,11 @@ void ProjectSetMenu::SetIgnorInternals(bool option) { m_ignoreInside = option; }
 bool ProjectSetMenu::GetIgnorInternals() { return m_ignoreInside; }
 
 ProjectSetMenu::~ProjectSetMenu() {
-    delete layout;
+    if(m_layout){
+        delete m_layout;
+    }
+    if(m_resolutionGroup){
+        delete m_resolutionGroup;
+    }
     delete m_templatePlot;
 }

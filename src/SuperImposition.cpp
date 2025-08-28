@@ -76,6 +76,7 @@ SuperImposition::SuperImposition(DataBase *dataBase, MainWindow *parent,
     m_numLm = m_dataBase->GetTotalLandmarks("Template")->GetNumberOfPoints();
     this->setWindowTitle("SuperImposition");
     this->resize(800, 500);
+    
     m_vtkRenderWidget = new QVTKOpenGLWidget();
     m_renderer = vtkSmartPointer<vtkRenderer>::New();
     m_renWin = vtkSmartPointer<vtkRenderWindow>::New();
@@ -89,24 +90,17 @@ SuperImposition::SuperImposition(DataBase *dataBase, MainWindow *parent,
     m_surfaceLmData = vtkSmartPointer<vtkPoints>::New();
     m_totalLmData = vtkSmartPointer<vtkPolyData>::New();
     m_lmIdList = new std::vector<int>;
-
-    m_renWin = m_vtkRenderWidget->GetRenderWindow();
-    m_renWin->AddRenderer(m_renderer);
-    m_style->SetCurrentRenderer(m_renderer);
-    m_iren->SetInteractorStyle(m_style);
-    m_iren->SetRenderWindow(m_renWin);
-    // Setting up render scene
-    vtkNew<vtkNamedColors> colors;
-    m_renderer->SetBackground(colors->GetColor3d("SlateGray").GetData());
-    m_renWin->Render();
-    m_iren->Initialize();
-
-    this->setCentralWidget(m_vtkRenderWidget);
+    QFrame* plotPlaceholder = new QFrame();
+    plotPlaceholder->setStyleSheet("background-color: rgb(112, 128, 144);");
+    
+    this->setCentralWidget(plotPlaceholder);
 
     auto landmarkListDockedWidg = new QDockWidget(tr("Landmarks"));
+    landmarkListDockedWidg->setMaximumWidth(325);
     this->addDockWidget(Qt::LeftDockWidgetArea, landmarkListDockedWidg);
 
     auto nameListDockedWidg = new QDockWidget(tr("Specimens"));
+    nameListDockedWidg->setMaximumWidth(325);
     this->addDockWidget(Qt::LeftDockWidgetArea, nameListDockedWidg);
 
     //---------------
@@ -211,10 +205,8 @@ SuperImposition::SuperImposition(DataBase *dataBase, MainWindow *parent,
 
     this->statusBar()->addPermanentWidget(statusLabel, 0);
     this->statusBar()->addPermanentWidget(progressLabel, 0);
-
     Populate();
-    Plot();
-
+   
     this->hide();
     if (m_nameList.size() == 0) {
         auto errorDialogue = QMessageBox(this);
@@ -223,6 +215,10 @@ SuperImposition::SuperImposition(DataBase *dataBase, MainWindow *parent,
         errorDialogue.setText(
             "No Landmark to SuperImpose: digitize your specimen!");
         errorDialogue.exec();
+    }
+    else{
+        this->show();
+        this->DelayedPlotter();
     }
 }
 
@@ -346,8 +342,13 @@ void SuperImposition::Populate() {
 }
 
 void SuperImposition::Plot() {
-    vtkNew<vtkNamedColors> colors;
+    m_renWin = m_vtkRenderWidget->GetRenderWindow();
+    m_renWin->AddRenderer(m_renderer);
+    m_style->SetCurrentRenderer(m_renderer);
+    m_iren->SetInteractorStyle(m_style);
+    m_iren->SetRenderWindow(m_renWin);
 
+    vtkNew<vtkNamedColors> colors;
     // Mesh properties and color etc
     vtkNew<vtkDataSetMapper> mapper;
     mapper->ScalarVisibilityOff();  // <- disables scalar-based coloring
@@ -456,9 +457,24 @@ void SuperImposition::Plot() {
         colors->GetColor3d("Black").GetData());
     m_labelActor->SetPickable(0);
     
+    // Setting up render scene
+    m_renderer->SetBackground(colors->GetColor3d("SlateGray").GetData());
+    
 
     m_renderer->ResetCamera();
-    m_renderer->GetRenderWindow()->Render();
+    m_renWin->Render();
+    m_iren->Initialize();
+}
+
+void SuperImposition::DelayedPlotter(){
+    QTimer::singleShot(1000, this, [this](){
+        this->Plot();
+        QWidget* placeHolder = this->takeCentralWidget();
+        if (placeHolder) {
+            placeHolder->deleteLater();
+        }
+        this->setCentralWidget(m_vtkRenderWidget);
+    });
 }
 
 void SuperImposition::ShowIds() {

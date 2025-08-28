@@ -1129,7 +1129,6 @@ void MainWindow::SuperImpose() {
                 QPixmap(":/icons/graphics/icons/vBusy.svg"));
             delete m_SIMP;
             m_SIMP = new SuperImposition(m_dataBase, this, m_mutex);
-            m_SIMP->show();
         } else {
             auto errorDialogue = QMessageBox(this);
             errorDialogue.setIcon(QMessageBox::Critical);
@@ -2395,10 +2394,9 @@ void MainWindow::PlotLandmarks(vtkPoints* fixedLandmarks,
 
 void MainWindow::PCA() {
     if (TemplateIsSet) {
-        if (m_dataBase->GetNodeNames().size() >= 3) {
+        if (m_dataBase->GetNodeNames().size() >= 3) {// 1 Template + 2 specimens
             delete m_pcaWindow;
             m_pcaWindow = new PCAWindow(m_dataBase);
-            m_pcaWindow->show();
         } else {
             auto errorDialogue = QMessageBox(this);
             errorDialogue.setIcon(QMessageBox::Critical);

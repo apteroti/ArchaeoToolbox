@@ -125,6 +125,7 @@
 #include <Eigen/Eigen>
 #include <Eigen/Eigenvalues>
 #include <Eigen/Sparse>
+
 #include <QtGui/QCloseEvent>
 #include <QtGui/QSurfaceFormat>
 #include <QtWidgets/QAction>
@@ -144,6 +145,7 @@
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QFrame>
+#include <QtCore/QTimer>
 
 #include <cpd/gauss_transform.hpp>
 #include <iostream>

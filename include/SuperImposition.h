@@ -149,6 +149,7 @@
 #include <Eigen/Eigenvalues>
 #include <Eigen/Geometry>
 #include <Eigen/Sparse>
+
 #include <QFuture>
 #include <QGroupBox>
 #include <QThread>
@@ -175,6 +176,7 @@
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QToolButton>
+#include <QtCore/QTimer>
 
 #include "DataBase.h"
 #include "MainWindow.fwd.h"
@@ -232,6 +234,7 @@ class SuperImposition : public QMainWindow {
     void Populate();
     void Plot();
     void ImposingStatus();
+    void DelayedPlotter();
     ~SuperImposition();
    public slots:
     void OnCoordinateChanged(std::string name);

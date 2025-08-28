@@ -159,7 +159,6 @@ Registration::Registration(vtkPolyData* data, vtkPolyData* templateMesh,
 
     m_templatePlaceholder = new QFrame();
     m_templatePlaceholder->setStyleSheet("background-color: rgb(112, 128, 144);");
-    m_templatePlaceholder->setMinimumSize(100,100);
 
     m_overlayPlaceholder = new QFrame();
     m_overlayPlaceholder->setStyleSheet("background-color: rgb(112, 128, 144);");
