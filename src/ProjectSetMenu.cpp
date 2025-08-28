@@ -179,7 +179,7 @@ ProjectSetMenu::ProjectSetMenu(MainWindow* parent) : m_parent(parent) {
     registerButton->setEnabled(false);
     saveButton = new QPushButton("Save Template");
     saveButton->setEnabled(false);
-    importButton = new QPushButton("Import Template");
+    importButton = new QPushButton("Open an Existing Template");
     resetButton = new QPushButton("Reset");
     // Create opacity effect
     QGraphicsOpacityEffect* effectForReset =

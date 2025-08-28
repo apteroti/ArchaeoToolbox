@@ -203,6 +203,8 @@
 #include <array>
 
 #include "DataBase.h"
+#include "UpdateContributionThread.h"
+#include "SpinnerDialog.h"
 
 using namespace Eigen;
 

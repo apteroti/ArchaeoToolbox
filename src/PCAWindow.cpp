@@ -1,69 +1,68 @@
 /***********************************************************************************************
-                                                                    
-************************************************************************************************                                                                                       
-* ArchaeoToolbox                                                                               *
-* Geometric Morphometrics Software                                                             *
-*                                                                                              *
-* Copyright(C) 2023                                                                            *
-* Kaveh Yousef Pouran                                                                          *
-* Laboratori d’Arqueozoologia, Universitat Autònoma de Barcelona                               *
-*                                                                                              *
-* All rights reserved.                                                                         *
-*                                                                                              *
-* This program is free software; you can redistribute it and/or modify                         *   
-* it under the terms of the GNU General Public License as published by                         *
-* the Free Software Foundation; either version 2 of the License, or                            *
-* (at your option) any later version.                                                          *
-*                                                                                              *
-* This program is distributed in the hope that it will be useful,                              *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of                               *
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                                *
-* GNU General Public License (http://www.gnu.org/licenses/gpl.txt)                             *
-* for more details.                                                                            *
-*                                                                                              *
 
- ***********************************************************************************************                                                                                                                                                               
-                                                                               .          
-                                                  .                            =:         
-                                                  #                            +*         
-                                                 ##                            %@.        
-                                                =@@                            #@%        
-                                               .@@*                            @@@:       
-                                               %@@*                           #@@@=       
-                                               =@@@#-                     .:+#@@@#        
-                                                *@@@@@*=::.:=-=+*%%%+-=*%@@@@@@@=         
-                                                 -%@@@@@@@@@@@@@@@@@@@@@@@@%#+-           
-                                                   .-=+*#@@@@@@@@@@@@@@@@+.               
-                                                       =@@@@@@@@@@@@@@@@@@@@*.            
-                                                    .=%@@@@@@@@@@@@@@@@@@@@@@*            
-                                              -****%@@@@@@@@@@@@@@@@@@@@@%@@@=            
-                                             .@@@@@@@@@@@@@@@@@@@@@@@@@@%  -.             
-                                              -@@@@@@@@@@@@@@@@@@@@@@@@@*.                
-                                              %@@@@@@@@@@@@@@@@@@@@@@@@@@+                
-                                            :%@@@@@@@@@@@@@@@@@@@@@@@@@@%                 
-                                    .:=*#%%%@@@@@@@@@@@@@@@@@@@@@@@@@%-=.                 
-                                -+%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*                     
-                           .-+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                     
-                     .--=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                     
-                  :*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=                     
-                .#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+                     
-               :@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+                     
-               %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.                     
-               +@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-                      
-                #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+.                       
-           .-+*@@@+:@@@@@@@@@@@@@@@%**+==-------===+@@@@@@@@@@@@@-                        
-         :#@@@%%%+ .@@@@@@@@@@@*-:                 +@@@@@@@@@@@@@@%+:                     
-       +%@@*.      -@@@@@@@@@=                    =@@@@**#*=--*%@@@@@@*                   
-       -*=.       :@@@@@@@@=                       @@@@         .-#@@@@.                  
-                 #@@@@@*@@@:                       *@@+            +@@%                   
-                 %@@@%  *%@@+                      @@@.            -@@@                   
-                 =@@@:    +@@%                    -@@@.            :@@@:                  
-                 *@@@      *@@%                   *@@@=            :@@@-                  
-                -@@@#      =@@@#                 :@@@@@            #@@@@.                 
-                #@@@@.     .###=                 .++++-           .*%%##:                 
-                %@@@@.                                                                    
-               .*%%%*                                                                     
-                      
+************************************************************************************************
+* ArchaeoToolbox *
+* Geometric Morphometrics Software *
+* *
+* Copyright(C) 2023 *
+* Kaveh Yousef Pouran *
+* Laboratori d’Arqueozoologia, Universitat Autònoma de Barcelona *
+* *
+* All rights reserved. *
+* *
+* This program is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by *
+* the Free Software Foundation; either version 2 of the License, or *
+* (at your option) any later version. *
+* *
+* This program is distributed in the hope that it will be useful, *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the *
+* GNU General Public License (http://www.gnu.org/licenses/gpl.txt) *
+* for more details. *
+* *
+
+ ***********************************************************************************************
+                                                                               .
+                                                  . =: # +*
+                                                 ## %@.
+                                                =@@ #@%
+                                               .@@* @@@:
+                                               %@@* #@@@=
+                                               =@@@#- .:+#@@@#
+                                                *@@@@@*=::.:=-=+*%%%+-=*%@@@@@@@=
+                                                 -%@@@@@@@@@@@@@@@@@@@@@@@@%#+-
+                                                   .-=+*#@@@@@@@@@@@@@@@@+.
+                                                       =@@@@@@@@@@@@@@@@@@@@*.
+                                                    .=%@@@@@@@@@@@@@@@@@@@@@@*
+                                              -****%@@@@@@@@@@@@@@@@@@@@@%@@@=
+                                             .@@@@@@@@@@@@@@@@@@@@@@@@@@%  -.
+                                              -@@@@@@@@@@@@@@@@@@@@@@@@@*.
+                                              %@@@@@@@@@@@@@@@@@@@@@@@@@@+
+                                            :%@@@@@@@@@@@@@@@@@@@@@@@@@@%
+                                    .:=*#%%%@@@@@@@@@@@@@@@@@@@@@@@@@%-=.
+                                -+%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@*
+                           .-+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
+                     .--=*%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
+                  :*@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@=
+                .#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+
+               :@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+
+               %@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.
+               +@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@-
+                #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@+.
+           .-+*@@@+:@@@@@@@@@@@@@@@%**+==-------===+@@@@@@@@@@@@@-
+         :#@@@%%%+ .@@@@@@@@@@@*-:                 +@@@@@@@@@@@@@@%+:
+       +%@@*.      -@@@@@@@@@=                    =@@@@**#*=--*%@@@@@@*
+       -*=.       :@@@@@@@@=                       @@@@         .-#@@@@.
+                 #@@@@@*@@@:                       *@@+            +@@%
+                 %@@@%  *%@@+                      @@@.            -@@@
+                 =@@@:    +@@%                    -@@@.            :@@@:
+                 *@@@      *@@%                   *@@@=            :@@@-
+                -@@@#      =@@@#                 :@@@@@            #@@@@.
+                #@@@@.     .###=                 .++++-           .*%%##:
+                %@@@@.
+               .*%%%*
+
 ***********************************************************************************************/
 
 #include "include/PCAWindow.h"
@@ -136,10 +135,12 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         QLabel *graphRenLabel = new QLabel(tr("PCA Plot"));
 
         m_meshPlaceholder = new QFrame();
-        m_meshPlaceholder->setStyleSheet("background-color: rgb(112, 128, 144);");
+        m_meshPlaceholder->setStyleSheet(
+            "background-color: rgb(112, 128, 144);");
 
         m_plotPlaceholder = new QFrame();
-        m_plotPlaceholder->setStyleSheet("background-color: rgb(112, 128, 144);");
+        m_plotPlaceholder->setStyleSheet(
+            "background-color: rgb(112, 128, 144);");
 
         m_layout->addWidget(m_meshRenLabel, 0, 2, 1, 3);
         m_layout->addWidget(graphRenLabel, 0, 8, 1, 9);
@@ -330,7 +331,7 @@ void PCAWindow::Plot() {
 }
 
 void PCAWindow::DelayedPlotter() {
-    QTimer::singleShot(1000, this, [this](){
+    QTimer::singleShot(1000, this, [this]() {
         this->Plot();
         m_meshRenderWidget->show();
         m_graphRenderWidget->show();
@@ -343,7 +344,6 @@ void PCAWindow::DelayedPlotter() {
 
         m_layout->addWidget(m_meshRenderWidget, 1, 2, 10, 7);
         m_layout->addWidget(m_graphRenderWidget, 1, 9, 10, 10);
-        
     });
 }
 
@@ -456,101 +456,102 @@ void PCAWindow::UpdateContribution(int pc) {
 }
 
 void PCAWindow::InterpolateTPSContributionToMesh(vtkDoubleArray *scalars) {
-    if (!m_landmarksPoly || !m_meshData || !scalars) return;
-
-    vtkIdType N = m_landmarksPoly->GetNumberOfPoints();
-    vtkIdType M = m_meshData->GetNumberOfPoints();
-    if (scalars->GetNumberOfTuples() != N) return;
-
-    // Step 1: Extract landmark positions and scalar values
-    Eigen::MatrixXd X(N, 3);  // Landmark positions
-    Eigen::VectorXd Y(N);     // Scalar values
-    for (vtkIdType i = 0; i < N; ++i) {
-        double p[3];
-        m_landmarksPoly->GetPoint(i, p);
-        X.row(i) << p[0], p[1], p[2];
-        Y(i) = scalars->GetTuple1(i);
-    }
-
-    // Step 2: Build TPS kernel matrix K
-    Eigen::MatrixXd K(N, N);
-    for (vtkIdType i = 0; i < N; ++i) {
-        for (vtkIdType j = 0; j < N; ++j) {
-            double r = (X.row(i) - X.row(j)).norm();
-            K(i, j) = (r > 1e-10) ? (r * r * std::log(r)) : 0.0;
-        }
-    }
-
-    // Step 3: Build matrix P (affine part)
-    Eigen::MatrixXd P(N, 4);
-    P.col(0) = Eigen::VectorXd::Ones(N);
-    P.block(0, 1, N, 3) = X;
-
-    // Step 4: Build linear system to solve weights
-    Eigen::MatrixXd L(N + 4, N + 4);
-    L.setZero();
-    L.block(0, 0, N, N) = K;
-    L.block(0, N, N, 4) = P;
-    L.block(N, 0, 4, N) = P.transpose();
-
-    Eigen::VectorXd rhs(N + 4);
-    rhs.setZero();
-    rhs.head(N) = Y;
-
-    // Solve system
-    Eigen::VectorXd coeffs = L.fullPivLu().solve(rhs);
-    Eigen::VectorXd w = coeffs.head(N);
-    Eigen::VectorXd a = coeffs.tail(4);
-
-    // Step 5: Interpolate over mesh vertices
     vtkNew<vtkDoubleArray> interpolatedScalars;
-    interpolatedScalars->SetName("Contribution");
-    interpolatedScalars->SetNumberOfComponents(1);
-    interpolatedScalars->SetNumberOfTuples(M);
+    // Modal dialog
+    WaitDialog waitDialog(this);
+    waitDialog.setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+    waitDialog.setModal(true);
+    waitDialog.setFixedSize(200, 150);
 
-    for (vtkIdType i = 0; i < M; ++i) {
-        double p[3];
-        m_meshData->GetPoint(i, p);
-        Eigen::Vector3d x(p[0], p[1], p[2]);
+    QVBoxLayout layout(&waitDialog);
 
-        // Evaluate TPS
-        double value = a(0) + a.tail(3).dot(x);
-        for (vtkIdType j = 0; j < N; ++j) {
-            double r = (x - X.row(j).transpose()).norm();
-            if (r > 1e-10) value += w(j) * r * r * std::log(r);
+    QLabel msg("Updating...");
+    msg.setAlignment(Qt::AlignCenter);
+    SpinnerWidget spinner;
+    layout.addWidget(&msg);
+    layout.addWidget(&spinner, 0, Qt::AlignCenter);
+
+    // Spinner thread
+    SpinnerThread spinThread(&spinner);
+    QObject::connect(&spinThread, &SpinnerThread::updateAngle, &spinner,
+                     &SpinnerWidget::setAngle);
+
+    // Decimation thread
+    QThread updateThread;
+    UpdateContributionThread *worker = new UpdateContributionThread(
+        m_landmarksPoly, m_meshData, scalars, interpolatedScalars);
+
+    worker->moveToThread(&updateThread);
+    // Cleanup for *success*
+    QObject::connect(&updateThread, &QThread::started, worker,
+                     &UpdateContributionThread::run);
+    QObject::connect(worker, &UpdateContributionThread::finished, &updateThread,
+                     &QThread::quit);
+    QObject::connect(worker, &UpdateContributionThread::finished, &spinThread,
+                     &QThread::quit);
+    QObject::connect(worker, &UpdateContributionThread::finished, &waitDialog,
+                     &QDialog::accept);
+    // Cleanup for *failure*
+    QObject::connect(worker, &UpdateContributionThread::failed, &updateThread,
+                     &QThread::quit);
+    QObject::connect(worker, &UpdateContributionThread::failed, &spinThread,
+                     &QThread::quit);
+    QObject::connect(worker, &UpdateContributionThread::failed, &waitDialog,
+                     &QDialog::accept);
+
+    QObject::connect(&updateThread, &QThread::finished, worker,
+                     &QObject::deleteLater);
+
+    connect(worker, &UpdateContributionThread::failed, this,
+            [this](const QString &reason) {
+                QMessageBox::warning(this, "Updating Contribution Failed!",
+                                     reason);
+            });
+
+    // Start both threads
+    spinThread.start();
+    updateThread.start();
+
+    waitDialog.exec();  // Blocks UI
+
+    // Cleanup
+    spinThread.wait();
+    updateThread.wait();
+
+    if (interpolatedScalars->GetNumberOfTuples() > 0) {
+        // Assign to mesh and render
+        m_meshData->GetPointData()->SetScalars(interpolatedScalars);
+        m_meshData->Modified();
+
+        vtkNew<vtkLookupTable> lut;
+        lut->SetNumberOfTableValues(512);
+        double range[2];
+        interpolatedScalars->GetRange(range);
+        lut->SetTableRange(range);
+        for (int i = 0; i < lut->GetNumberOfTableValues(); ++i) {
+            double val =
+                static_cast<double>(i) / (lut->GetNumberOfTableValues() - 1);
+            double rgb[3];
+            m_ctf->GetColor(val, rgb);
+            lut->SetTableValue(i, rgb[0], rgb[1], rgb[2], 1.0);
         }
-        interpolatedScalars->SetTuple1(i, value);
+        lut->Build();
+
+        m_meshMapper->SetInputData(m_meshData);
+        m_meshMapper->SetScalarModeToUsePointData();
+        m_meshMapper->SelectColorArray("Contribution");
+        m_meshMapper->SetScalarRange(range);
+        m_meshMapper->SetLookupTable(lut);
+        m_meshMapper->Update();
+
+        m_scalarBar->SetLookupTable(lut);
+        m_scalarBar->Modified();
+
+        m_meshRenderer->GetRenderWindow()->Render();
+    } else {
+        std::cerr << "TPS interpolation failed to update contributions"
+                  << std::endl;
     }
-
-    // Step 6: Assign to mesh and render
-    m_meshData->GetPointData()->SetScalars(interpolatedScalars);
-    m_meshData->Modified();
-
-    vtkNew<vtkLookupTable> lut;
-    lut->SetNumberOfTableValues(512);
-    double range[2];
-    interpolatedScalars->GetRange(range);
-    lut->SetTableRange(range);
-    for (int i = 0; i < lut->GetNumberOfTableValues(); ++i) {
-        double val =
-            static_cast<double>(i) / (lut->GetNumberOfTableValues() - 1);
-        double rgb[3];
-        m_ctf->GetColor(val, rgb);
-        lut->SetTableValue(i, rgb[0], rgb[1], rgb[2], 1.0);
-    }
-    lut->Build();
-
-    m_meshMapper->SetInputData(m_meshData);
-    m_meshMapper->SetScalarModeToUsePointData();
-    m_meshMapper->SelectColorArray("Contribution");
-    m_meshMapper->SetScalarRange(range);
-    m_meshMapper->SetLookupTable(lut);
-    m_meshMapper->Update();
-
-    m_scalarBar->SetLookupTable(lut);
-    m_scalarBar->Modified();
-
-    m_meshRenderer->GetRenderWindow()->Render();
 }
 
 void PCAWindow::Update1stPC(int PC1) {

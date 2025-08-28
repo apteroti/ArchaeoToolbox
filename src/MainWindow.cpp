@@ -160,7 +160,7 @@ MainWindow::MainWindow() {
 
     double windowWidth = 800;
     double windowHeight = 800;
-    m_scalarBar->SetTitle("Procrustes Residuals (Extrapolated)");
+    m_scalarBar->SetTitle("Procrustes Residuals\n(Extrapolated)");
     m_scalarBar->UnconstrainedFontSizeOn();
     m_scalarBar->SetNumberOfLabels(5);
     m_scalarBar->SetMaximumWidthInPixels(windowWidth / 10);
@@ -299,6 +299,7 @@ MainWindow::MainWindow() {
 
     openProjectAction = new QAction("Open", this);
     openProjectAction->setStatusTip("Open a saved project");
+    openProjectAction->setShortcut(QKeySequence("Ctrl+O"));
 
     saveProjectAction = new QAction("Save the Project", this);
     saveProjectAction->setStatusTip("Save the Project");
@@ -356,7 +357,7 @@ MainWindow::MainWindow() {
                            "Principal Component Analysis");
     pcaToolbarAction->setEnabled(0);
     templatePlotToolbarAction = toolbar->addAction(
-        QIcon(":/icons/graphics/icons/template_plot.png"), "Plot the Template");
+        QIcon(":/icons/graphics/icons/template_plot.svg"), "Plot the Template");
     templatePlotToolbarAction->setEnabled(0);
 
     helpToolbarAction =
@@ -650,7 +651,7 @@ void MainWindow::ConvertVTKToVCG(vtkPolyData* polyData, MyMesh& vcgMesh) {
 
     // Validate input
     if (!polyData || !polyData->GetPoints()) {
-        qWarning() << "Invalid VTK polydata input";
+        std::cerr << "Invalid VTK polydata input"<<std::endl;
         return;
     }
 
@@ -2659,6 +2660,8 @@ void MainWindow::SaveProject() {
         }
 
         f.close();
+        QMessageBox::warning(this, "Attention!",
+                                 "This action doesn't save the template");
     }
 }
 
