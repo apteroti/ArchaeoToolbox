@@ -36,5 +36,6 @@
     <file>graphics/icons/Bspline.png</file>
     <file>graphics/icons/openHand.svg</file>
     <file>graphics/icons/grabbedHand.svg</file>
+    <file>graphics/icons/color_palette.svg</file>
 </qresource>
 </RCC>

@@ -2660,7 +2660,7 @@ void MainWindow::SaveProject() {
         }
 
         f.close();
-        QMessageBox::warning(this, "Attention!",
+        QMessageBox::warning(this, "Reminder!",
                                  "This action doesn't save the template");
     }
 }

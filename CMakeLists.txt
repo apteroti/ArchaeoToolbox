@@ -99,6 +99,8 @@ find_package(VTK REQUIRED COMPONENTS
     vtkViewsContext2D
     vtkRenderingContext2D
     vtkRenderingVolumeOpenGL2
+    vtkIOExport
+    vtkIOExportOpenGL2
 )
 
 # Add executable

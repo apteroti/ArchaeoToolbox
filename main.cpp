@@ -79,7 +79,8 @@ VTK_MODULE_INIT(vtkRenderingOpenGL2) // VTK was built with vtkRenderingOpenGL2
 VTK_MODULE_INIT(vtkRenderingContextOpenGL2)
 VTK_MODULE_INIT(vtkInteractionStyle)
 VTK_MODULE_INIT(vtkRenderingFreeType)
-
+VTK_MODULE_INIT(vtkIOExportOpenGL2);       
+VTK_MODULE_INIT(vtkRenderingGL2PSOpenGL2); 
 
 int main(int argc, char *argv[]){
 	//omp_set_num_threads(4);

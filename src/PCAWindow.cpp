@@ -103,7 +103,7 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
             }
             counter += 1;
         }
-        Calculate(m_dataMatrix);
+        Calculate(m_dataMatrix);  // calculating PCA
 
         // Now GUI stuff
         this->setWindowTitle("Principal Component Results");
@@ -112,22 +112,38 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         m_meshRenderWidget = new QVTKOpenGLWidget();
         m_meshRenderWidget->hide();
         m_graphRenderWidget = new QVTKOpenGLWidget();
+        m_graphRenderWidget->setMinimumSize(100, 100);
         m_graphRenderWidget->hide();
         m_dockedToolbar = new QDockWidget;
         m_dockedToolbar->setFeatures(QDockWidget::DockWidgetFloatable |
                                      QDockWidget::DockWidgetMovable);
         this->addDockWidget(Qt::LeftDockWidgetArea, m_dockedToolbar);
-        specimenTreeWidget = new QTreeWidget();
-        specimenTreeWidget->setHeaderLabels(QStringList{"Specimen"});
-        specimenTreeWidget->setSelectionMode(
-            QAbstractItemView::SingleSelection);
-        for (std::string names : m_nameList) {
-            QTreeWidgetItem *tempItem = new QTreeWidgetItem();
-            tempItem->setText(0, QString::fromStdString(names));
-            specimenTreeWidget->addTopLevelItem(tempItem);
+
+        for (const auto &name : m_nameList) {
+            m_pairedList.emplace_back(name, "");  // category empty for now
         }
 
-        m_dockedToolbar->setWidget(specimenTreeWidget);
+        // Create table
+        m_specimenTable = new QTableWidget(this);
+        m_specimenTable->setColumnCount(2);
+        m_specimenTable->setHorizontalHeaderLabels(
+            QStringList{"Specimen", "Category"});
+
+        // Number of rows = number of specimens
+        m_specimenTable->setRowCount(static_cast<int>(m_nameList.size()));
+
+        // Fill table
+        UpdateTableFromPairedList();
+
+        // Make it look nice
+        m_specimenTable->horizontalHeader()->setStretchLastSection(true);
+        m_specimenTable->horizontalHeader()->setSectionResizeMode(
+            QHeaderView::Stretch);
+        m_specimenTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+        m_specimenTable->setSelectionMode(QAbstractItemView::SingleSelection);
+
+        // Set widget inside dock
+        m_dockedToolbar->setWidget(m_specimenTable);
 
         std::string renLabelTitle =
             "Contribution Plot of PC " + std::to_string(m_x);
@@ -142,10 +158,10 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         m_plotPlaceholder->setStyleSheet(
             "background-color: rgb(112, 128, 144);");
 
-        m_layout->addWidget(m_meshRenLabel, 0, 2, 1, 3);
-        m_layout->addWidget(graphRenLabel, 0, 8, 1, 9);
-        m_layout->addWidget(m_meshPlaceholder, 1, 2, 10, 7);
-        m_layout->addWidget(m_plotPlaceholder, 1, 9, 10, 10);
+        m_layout->addWidget(m_meshRenLabel, 0, 0, 1, 3);
+        m_layout->addWidget(graphRenLabel, 0, 3, 1, 3);
+        m_layout->addWidget(m_meshPlaceholder, 1, 0, 10, 3);
+        m_layout->addWidget(m_plotPlaceholder, 1, 3, 10, 3);
 
         // Set layout in QWidget
         QWidget *window = new QWidget();
@@ -186,6 +202,18 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         showPtsIdsBox = new QCheckBox();
         showPtsIdsBox->setChecked(false);
 
+        m_importCatBtn = new QPushButton();
+        m_importCatBtn->setToolTip("Import Categorical Data");
+        m_importCatBtn->setText("Add Data");
+
+        m_canvasBtn = new QPushButton();
+        m_canvasBtn->setToolTip("Modify the PCA Plot Colors and Shapes");
+        m_canvasBtn->setIcon(QIcon(":/icons/graphics/icons/color_palette.svg"));
+
+        m_saveScatterBtn = new QPushButton();
+        m_saveScatterBtn->setToolTip("Save the Scatter Plot");
+        m_saveScatterBtn->setIcon(QIcon(":/icons/graphics/icons/save.svg"));
+
         mainToolbar->addWidget(selectPCsLabel1);
         mainToolbar->addWidget(select1stPCsSpinBox);
 
@@ -196,10 +224,20 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
 
         mainToolbar->addWidget(showPtsIdsLabel);
         mainToolbar->addWidget(showPtsIdsBox);
-        this->statusBar()->addPermanentWidget(exportButton, 0);
+        mainToolbar->addSeparator();
+        QWidget *spacer = new QWidget();
+        spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+        mainToolbar->addWidget(spacer);
+        mainToolbar->addWidget(exportButton);
+        mainToolbar->addWidget(m_importCatBtn);
+        mainToolbar->addWidget(m_canvasBtn);
+        mainToolbar->addWidget(m_saveScatterBtn);
 
         connect(exportButton, &QPushButton::clicked, this,
                 &PCAWindow::Export2Csv);
+
+        connect(m_importCatBtn, &QPushButton::clicked, this,
+                &PCAWindow::ImportCategories);
 
         void (QSpinBox ::*change1stPCFp)(int) = &QSpinBox ::valueChanged;
         connect(select1stPCsSpinBox, change1stPCFp, this,
@@ -211,6 +249,15 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
 
         connect(showPtsIdsBox, &QCheckBox::stateChanged, this,
                 &PCAWindow::ShowPtsIds);
+
+        connect(m_specimenTable, &QTableWidget::itemChanged, this,
+                &PCAWindow::OnCategoryEdited);
+
+        connect(m_canvasBtn, &QPushButton::clicked, this,
+                &PCAWindow::SetShapeColor);
+
+        connect(m_saveScatterBtn, &QPushButton::clicked, this,
+                &PCAWindow::SaveScatter);
         //--------------------------
 
         this->show();
@@ -342,48 +389,101 @@ void PCAWindow::DelayedPlotter() {
         m_layout->removeWidget(m_meshPlaceholder);
         m_meshPlaceholder->deleteLater();
 
-        m_layout->addWidget(m_meshRenderWidget, 1, 2, 10, 7);
-        m_layout->addWidget(m_graphRenderWidget, 1, 9, 10, 10);
+        m_layout->addWidget(m_meshRenderWidget, 1, 0, 10, 3);
+        m_layout->addWidget(m_graphRenderWidget, 1, 3, 10, 3);
     });
 }
 
 void PCAWindow::UpdateScatter(int x, int y) {
     auto firstPc = m_eigenScores.col(x - 1);
-    auto secondtPc = m_eigenScores.col(y - 1);
-    /* DebugPrintMatrix(firstPc);
-    DebugPrintMatrix(secondtPc); */
+    auto secondPc = m_eigenScores.col(y - 1);
     int numSpecimen = m_eigenScores.rows();
-    vtkNew<vtkTable> table;
-    vtkNew<vtkFloatArray> arrX;
+
+    // Clear old plots
+    m_scatterChart->ClearPlots();
+
+    // Group specimens by category
+    std::map<QString, std::vector<int>> categoryIndices;
+    for (int i = 0; i < numSpecimen; i++) {
+        QString cat = QString::fromStdString(m_pairedList[i].second);
+        categoryIndices[cat].push_back(i);
+    }
+
+    // Add a vtkPlotPoints per category
+    for (auto &entry : categoryIndices) {
+        const QString &category = entry.first;
+        const std::vector<int> &indices = entry.second;
+
+        // Create a table for this category
+        vtkNew<vtkTable> catTable;
+        vtkNew<vtkFloatArray> catX;
+        catX->SetName("X");
+        catTable->AddColumn(catX);
+        vtkNew<vtkFloatArray> catY;
+        catY->SetName("Y");
+        catTable->AddColumn(catY);
+
+        catTable->SetNumberOfRows(indices.size());
+        for (size_t j = 0; j < indices.size(); j++) {
+            int idx = indices[j];
+            catTable->SetValue(j, 0, firstPc[idx]);
+            catTable->SetValue(j, 1, secondPc[idx]);
+        }
+        catTable->Modified();
+
+        // Get color & shape from m_categoryStyles
+        QColor color;
+        int shape;
+        if (m_categoryStyles.find(category) != m_categoryStyles.end()) {
+            std::tie(color, shape) = m_categoryStyles[category];
+        } else {
+            std::tie(color, shape) =
+                std::make_pair(QColor(0, 0, 255), vtkPlotPoints::CIRCLE);
+        }
+
+        // Add plot
+        vtkPlot *scatterPoints = m_scatterChart->AddPlot(vtkChart::POINTS);
+        scatterPoints->SetInputData(catTable, 0, 1);
+        scatterPoints->SetWidth(1.5);
+
+        vtkPlotPoints *points = dynamic_cast<vtkPlotPoints *>(scatterPoints);
+        if (points) {
+            points->SetMarkerStyle(shape);
+        }
+
+        scatterPoints->SetColor(color.red(), color.green(), color.blue(), 255);
+
+        vtkNew<vtkStringArray> catLabels;
+        catLabels->SetNumberOfValues(indices.size());
+        for (size_t j = 0; j < indices.size(); ++j) {
+            int idx = indices[j];
+            catLabels->SetValue(j, m_pairedList[idx].first);
+        }
+
+        // Show only specimen name in tooltip
+        scatterPoints->SetIndexedLabels(catLabels);
+        scatterPoints->SetTooltipLabelFormat("%i");
+
+        // Display empty categories as "NA" in legend
+        QString displayCategory = category.isEmpty() ? "NA" : category;
+        scatterPoints->SetLabel(displayCategory.toStdString());
+    }
+
+    // Axis titles
     std::string xAxLabel = "PC " + std::to_string(x);
     std::string yAxLabel = "PC " + std::to_string(y);
-    arrX->SetName("X");
-    table->AddColumn(arrX);
+    m_scatterChart->GetAxis(vtkAxis::BOTTOM)->SetTitle(xAxLabel);
+    m_scatterChart->GetAxis(vtkAxis::LEFT)->SetTitle(yAxLabel);
 
-    vtkNew<vtkFloatArray> arrY;
-    arrY->SetName("Y");
-    table->AddColumn(arrY);
-    table->SetNumberOfRows(numSpecimen);
-
-    for (int i = 0; i < numSpecimen; i++) {
-        table->SetValue(i, 0, firstPc[i]);
-        table->SetValue(i, 1, secondtPc[i]);
+    // Show legend after all plots are added
+    vtkChartLegend *legend = m_scatterChart->GetLegend();
+    if (legend) {
+        legend->SetVisible(true);
+        legend->SetHorizontalAlignment(vtkChartLegend::RIGHT);
+        legend->SetVerticalAlignment(vtkChartLegend::TOP);
     }
-    table->Modified();
 
-    m_scatterChart->ClearPlots();
-    vtkPlot *scatterPoints = m_scatterChart->AddPlot(vtkChart::POINTS);
-    scatterPoints->SetInputData(table, 0, 1);
-    scatterPoints->SetColor(0, 0, 0, 255);
-    scatterPoints->SetWidth(1.0);
-    scatterPoints->SetIndexedLabels(m_graphLabelArray);
-    scatterPoints->SetTooltipLabelFormat("%i");
-    dynamic_cast<vtkPlotPoints *>(scatterPoints)
-        ->SetMarkerStyle(vtkPlotPoints::CROSS);
-    vtkAxis *xAxis = m_scatterChart->GetAxis(vtkAxis::BOTTOM);
-    xAxis->SetTitle(xAxLabel);
-    vtkAxis *yAxis = m_scatterChart->GetAxis(vtkAxis::LEFT);
-    yAxis->SetTitle(yAxLabel);
+    // Refresh view
     m_scatterChart->Update();
     m_scatterChart->Modified();
     m_scatterChartView->Update();
@@ -688,8 +788,6 @@ void PCAWindow::ShowPtsIds() {
     }
 }
 
-// void PCAWindow::ShowSpecimenIds(){}
-
 void PCAWindow::Export2Csv() {
     // const static Eigen::IOFormat CSVFormat(Eigen::StreamPrecision,
     // Eigen::DontAlignCols, ", ", "\n");
@@ -730,6 +828,309 @@ void PCAWindow::Export2Csv() {
     /* file << "\n";
     file << m_eigenScores.format(CSVFormat); */
     file.close();
+}
+
+void PCAWindow::ImportCategories() {
+    // Select CSV file
+    QString fileName = QFileDialog::getOpenFileName(
+        this, "Open Categories CSV", QDir::homePath(), "CSV Files (*.csv)",
+        nullptr, QFileDialog::DontUseNativeDialog);
+
+    if (fileName.isEmpty()) return;  // user canceled
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;  // couldn't open
+
+    QTextStream in(&file);
+    if (in.atEnd()) return;  // empty file
+
+    // Parse headers (first line)
+    QString headerLine = in.readLine();
+    QStringList headers = headerLine.split(",", QString::KeepEmptyParts);
+
+    // Create a dialog for choosing columns
+    QDialog dialog(this);
+    dialog.setWindowTitle("Choose Columns");
+    QVBoxLayout layout(&dialog);
+
+    QLabel specimenLabel("Specimen Column:");
+    QComboBox specimenBox;
+    specimenBox.addItems(headers);
+
+    QLabel categoryLabel("Category Column:");
+    QComboBox categoryBox;
+    categoryBox.addItems(headers);
+
+    layout.addWidget(&specimenLabel);
+    layout.addWidget(&specimenBox);
+    layout.addWidget(&categoryLabel);
+    layout.addWidget(&categoryBox);
+
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                               this);
+    layout.addWidget(&buttonBox);
+
+    connect(&buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    connect(&buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+
+    if (dialog.exec() != QDialog::Accepted) return;  // user canceled
+
+    int specimenCol = specimenBox.currentIndex();
+    int categoryCol = categoryBox.currentIndex();
+
+    if (specimenCol < 0 || categoryCol < 0)
+        return;  // user didn’t select properly
+
+    // Process CSV rows
+    bool foundMatch = false;
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        QStringList cols = line.split(",", QString::KeepEmptyParts);
+        if (cols.size() <= std::max(specimenCol, categoryCol)) continue;
+
+        std::string specimen = cols[specimenCol].trimmed().toStdString();
+        std::string category = cols[categoryCol].trimmed().toStdString();
+
+        // Match against m_pairedList
+        for (auto &pair : m_pairedList) {
+            if (pair.first == specimen) {
+                pair.second = category;
+                foundMatch = true;
+            }
+        }
+    }
+
+    if (!foundMatch) {
+        QMessageBox::warning(this, "Warning",
+                             "Couldn't find specimens from CSV!");
+    } else {
+        UpdateTableFromPairedList();  // update table to reflect new categories
+    }
+}
+
+void PCAWindow::UpdateTableFromPairedList() {
+    if (!m_specimenTable) {
+        return;
+    }
+
+    m_specimenTable->setRowCount(static_cast<int>(m_pairedList.size()));
+
+    for (int i = 0; i < m_pairedList.size(); ++i) {
+        // Column 0: Specimen
+        QTableWidgetItem *specimenItem =
+            new QTableWidgetItem(QString::fromStdString(m_pairedList[i].first));
+        specimenItem->setFlags(
+            specimenItem->flags() &
+            ~Qt::ItemIsEditable);  // optional: make specimen read-only
+        m_specimenTable->setItem(i, 0, specimenItem);
+
+        // Column 1: Category
+        QTableWidgetItem *categoryItem = new QTableWidgetItem(
+            QString::fromStdString(m_pairedList[i].second));
+        m_specimenTable->setItem(i, 1, categoryItem);
+    }
+}
+
+void PCAWindow::OnCategoryEdited(QTableWidgetItem *item) {
+    int row = item->row();
+    int col = item->column();
+    if (col != 1 || row < 0 || row >= static_cast<int>(m_pairedList.size()))
+        return;
+
+    // --- Step 0: update m_pairedList ---
+    m_pairedList[row].second = item->text().toStdString();
+
+    // --- Default color palette (ggplot-like) ---
+    QVector<QColor> defaultColors = {
+        QColor(0, 114, 178),   // blue
+        QColor(213, 94, 0),    // red
+        QColor(0, 158, 115),   // green
+        QColor(230, 159, 0),   // orange
+        QColor(86, 180, 233),  // light blue
+        QColor(240, 228, 66),  // yellow
+        QColor(204, 121, 167)  // pink/purple
+    };
+    int paletteSize = defaultColors.size();
+
+    // --- Step 1: collect all used categories from m_pairedList ---
+    QSet<QString> usedCategories;
+    for (auto &p : m_pairedList) {
+        QString cat = QString::fromStdString(p.second).trimmed();
+        usedCategories.insert(cat);
+    }
+
+    // --- Step 2: remove unused categories from m_categoryStyles ---
+    for (auto it = m_categoryStyles.begin(); it != m_categoryStyles.end();) {
+        if (!usedCategories.contains(it->first)) {
+            it = m_categoryStyles.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    // --- Step 3: assign defaults to new categories only ---
+    static int persistentNextColorIndex = 0;
+    bool newCategoryAdded = false;
+
+    QStringList newCats;
+    for (const QString &cat : usedCategories) {
+        if (!m_categoryStyles.count(cat)) {
+            newCats << cat;
+        }
+    }
+    newCats.sort();
+
+    for (const QString &cat : newCats) {
+        QColor color;
+        if (cat.compare("NA", Qt::CaseInsensitive) == 0) {
+            color = defaultColors[0];  // always blue for NA
+        } else {
+            color = defaultColors[persistentNextColorIndex % paletteSize];
+            ++persistentNextColorIndex;
+        }
+        // Only set shape/color for brand-new categories
+        m_categoryStyles.insert({cat, {color, vtkPlotPoints::CIRCLE}});
+        newCategoryAdded = true;
+    }
+
+    // --- Step 4: update scatter plot if anything changed ---
+    if (newCategoryAdded || !usedCategories.empty()) {
+        UpdateScatter(m_x, m_y);
+    }
+}
+
+void PCAWindow::SetShapeColor() {
+    // Build list of categories for combo
+    QStringList categories;
+    QSet<QString> seen;
+    for (auto &p : m_pairedList) {
+        QString cat = QString::fromStdString(p.second);
+        if (!seen.contains(cat)) {
+            categories << (cat.isEmpty() ? "NA" : cat);
+            seen.insert(cat);
+        }
+    }
+
+    QDialog dlg(this);
+    dlg.setWindowTitle("Category Shape/Color");
+
+    QVBoxLayout *layout = new QVBoxLayout(&dlg);
+    QComboBox *comboCategory = new QComboBox();
+    comboCategory->addItems(categories);
+    layout->addWidget(comboCategory);
+
+    // Color picker button
+    QPushButton *colorBtn = new QPushButton("Choose Color");
+    layout->addWidget(colorBtn);
+
+    // Helper to update button background
+    auto updateButtonColor = [&](const QColor &col) {
+        colorBtn->setStyleSheet(QString("background-color: %1;").arg(col.name()));
+    };
+
+    // Initialise from m_categoryStyles if present, else blue
+    auto getStoredColor = [&](const QString &cat) -> QColor {
+        QString internalCat = (cat == "NA") ? "" : cat;
+        auto it = m_categoryStyles.find(internalCat);
+        if (it != m_categoryStyles.end()) {
+            return it->second.first; // stored QColor
+        }
+        return Qt::blue;
+    };
+
+    QColor selectedColor = getStoredColor(comboCategory->currentText());
+    updateButtonColor(selectedColor);
+
+    // Non-native QColorDialog to avoid GTK warning
+    QColorDialog *cd = new QColorDialog(&dlg);
+    cd->setOption(QColorDialog::DontUseNativeDialog, true);
+    cd->setOption(QColorDialog::ShowAlphaChannel, true);
+
+    // Live preview: update button + selectedColor
+    connect(cd, &QColorDialog::currentColorChanged, [&](const QColor &col) {
+        selectedColor = col;
+        updateButtonColor(selectedColor);
+    });
+
+    // Open dialog with current category's stored color
+    connect(colorBtn, &QPushButton::clicked, [&]() {
+        cd->setCurrentColor(getStoredColor(comboCategory->currentText()));
+        cd->open();
+    });
+
+    // When category changes, update button to stored color
+    connect(comboCategory, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            [&](int) {
+        selectedColor = getStoredColor(comboCategory->currentText());
+        updateButtonColor(selectedColor);
+    });
+
+    // Shape combo
+    QComboBox *comboShape = new QComboBox();
+    comboShape->addItem("Circle", vtkPlotPoints::CIRCLE);
+    comboShape->addItem("Square", vtkPlotPoints::SQUARE);
+    comboShape->addItem("Diamond", vtkPlotPoints::DIAMOND);
+    comboShape->addItem("Plus", vtkPlotPoints::PLUS);
+    comboShape->addItem("Cross", vtkPlotPoints::CROSS);
+    layout->addWidget(comboShape);
+
+    // OK / Cancel
+    QDialogButtonBox *buttonBox =
+        new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    layout->addWidget(buttonBox);
+    connect(buttonBox, &QDialogButtonBox::accepted, &dlg, &QDialog::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, &dlg, &QDialog::reject);
+
+    // Show dialog
+    if (dlg.exec() == QDialog::Accepted) {
+        QString displayCat = comboCategory->currentText();
+        QString internalCat = (displayCat == "NA") ? "" : displayCat;
+
+        int shape = comboShape->currentData().toInt();
+        m_categoryStyles[internalCat] = {selectedColor, shape};
+
+        // Redraw scatter plot
+        UpdateScatter(m_x, m_y);
+    }
+}
+
+void PCAWindow::SaveScatter() {
+    // Ask the user where to save the PDF
+    QString filePath = QFileDialog::getSaveFileName(
+        this, "Save Scatter Plot as PDF", "", "PDF(*.pdf)", nullptr,
+        QFileDialog::DontUseNativeDialog);
+
+    if (filePath.isEmpty()) {
+        return;  // user cancelled
+    }
+
+    // Ensure the file has a .pdf extension
+    if (!filePath.endsWith(".pdf", Qt::CaseInsensitive)) {
+        filePath += ".pdf";
+    }
+    m_scatterChartView->Update();
+    m_scatterChartView->Modified();
+    auto *renWin =
+        m_scatterChartView ? m_scatterChartView->GetRenderWindow() : nullptr;
+    if (!renWin) {
+        return;
+    }
+    renWin->Render();
+
+    vtkNew<vtkGL2PSExporter> exporter;
+    exporter->SetRenderWindow(renWin);
+    exporter->SetActiveRenderer(m_scatterChartView->GetRenderer());
+    exporter->SetFileFormatToPDF();
+    exporter->CompressOff();
+    exporter->SetSortToSimple();
+    exporter->DrawBackgroundOn();
+
+    // vtkGL2PSExporter uses a file prefix (no extension)
+    QString prefix = filePath;
+    prefix.chop(4);  // remove ".pdf"
+    exporter->SetFilePrefix(prefix.toUtf8().constData());
+    exporter->Write();
 }
 
 PCAWindow::~PCAWindow() {}
