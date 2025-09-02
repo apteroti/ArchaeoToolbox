@@ -475,7 +475,7 @@ void MainWindow::about() {
     QMessageBox::about(
         this, tr("About ArchaeoToolbox"),
         tr("<p align='center'> <b>ArchaeoToolbox</b> <br> 2.2"
-           "<br> <b>Reference:</b> <br> Kaveh Yousef Pouran, Maria Saña, Juan "
+           "<br> <b>Reference:</b> <br> Kaveh Yousef-Pouran, Maria Saña, Juan "
            "Anton Barceló, 2023. Biomechanics, behaviour dynamics and "
            "archaeology: Integrative attempts to study animal domestication "
            "and husbandry. Universitat Autònoma de Barcelona. <br> "

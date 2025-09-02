@@ -169,7 +169,7 @@ Probabilities Nonrigid::compute_probabilities(const Matrix& fixed,
 
     // Compute outlier weight factor for probability normalization
     double outlier_tmp =
-        (m_outliers * moving.rows() * std::pow(-ksig * M_PI, 0.5 * cols)) /
+        (m_outliers * moving.rows() * std::pow(-ksig * PI, 0.5 * cols)) /
         ((1 - m_outliers) * fixed.rows());
 
     // Initialize vectors and matrices for probability computations

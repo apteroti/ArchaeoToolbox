@@ -147,7 +147,6 @@
 #include <QtWidgets/QFrame>
 #include <QtCore/QTimer>
 
-#include <cpd/gauss_transform.hpp>
 #include <iostream>
 
 #include "SpecimenDigitiser.fwd.h"

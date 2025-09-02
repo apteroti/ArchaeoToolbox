@@ -32,7 +32,7 @@ namespace CPD {
 using Matrix = Eigen::MatrixXd;
 using Vector = Eigen::VectorXd;
 using IndexVector = Eigen::Matrix<Matrix::Index, Eigen::Dynamic, 1>;
-
+constexpr double PI = 3.14159265358979323846;
 struct Normalization {
     Vector fixed_mean;
     Matrix fixed;

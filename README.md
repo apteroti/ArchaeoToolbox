@@ -44,4 +44,9 @@ If you wish to build from source, ensure the following libraries are available o
 - ├── README.md             # This file
 
 ## 📃 License
-This software is licensed under the GPLv3, which means you are free to use, modify, and distribute it — but any derivative work must also be released under the same license. This ensures that the software and any improvements remain free and open for everyone. For more information, please read the licence file.
+This software is licensed under the GPLv3, which means you are free to use, modify, and distribute it — but any derivative work must also be released under the same license. This ensures that the software and any improvements remain free and open for everyone. For more information, please read the licence file. 
+
+## Citation
+To cite this software, please use the following reference:
+
+Yousef-Pouran, Kaveh. 2023. Biomechanics, Behaviour Dynamics and Archaeology: Integrative Attempts to Study Animal Domestication and Husbandry. PhD diss., Universitat Autònoma de Barcelona.
