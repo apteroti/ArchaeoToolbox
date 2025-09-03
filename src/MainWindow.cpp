@@ -109,10 +109,21 @@ MainWindow::MainWindow() {
     helpWindow = new QMainWindow(this);
     helpWindow->setCentralWidget(horizSplitter);
     helpWindow->hide();
-
+    
+    const QString headerStyle = R"(
+        QHeaderView::section {
+            background-color: gainsboro;
+            color: black;
+            padding: 4px;
+            border: 1px solid #d0d0d0;
+        }
+    )";
     mainTable = new QTableWidget();
+    mainTable->setStyleSheet(headerStyle);
     supImposedTable = new QTableWidget();
+    supImposedTable->setStyleSheet(headerStyle);
     procResTable = new QTableWidget();
+    procResTable->setStyleSheet(headerStyle);
     mainTabWidget = new QTabWidget();
     mainTabWidget->tabBar()->setDocumentMode(0);
     mainTabWidget->tabBar()->setExpanding(0);
@@ -447,6 +458,14 @@ void MainWindow::closeEvent(QCloseEvent* event) {
 }
 
 void MainWindow::ContentTree(QDockWidget* parent) {
+    m_treeWidget->setStyleSheet(
+        "QHeaderView::section { "
+        "background-color: gainsboro; "
+        "color: black; "
+        "padding: 4px; "
+        "border: 1px solid #d0d0d0; "
+        "}"
+    );
     m_treeWidget->setHeaderLabels(QStringList{"Name", "Type"});
     parent->setWidget(m_treeWidget);
     m_treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);

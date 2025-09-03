@@ -104,7 +104,11 @@ find_package(VTK REQUIRED COMPONENTS
 )
 
 # Add executable
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+if(WIN32 AND NOT WITH_CONSOLE)
+    add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILES})
+else()
+    add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+endif()
 
 # Find and enable OpenMP
 find_package(OpenMP)

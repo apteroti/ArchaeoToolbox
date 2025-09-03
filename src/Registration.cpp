@@ -1281,9 +1281,6 @@ void Registration::DelayedPlotter(){
         this->SetTemplateScene();
         this->SetTargetScene();
         this->Register();
-        m_templateRenderWidget->show();
-        m_overlayRenderWidget->show();
-        m_targetRenderWidget->show();
 
         m_layout->removeWidget(m_templatePlaceholder);
         m_templatePlaceholder->deleteLater();
@@ -1297,6 +1294,9 @@ void Registration::DelayedPlotter(){
         m_layout->addWidget(m_templateRenderWidget, 1, 0, 10, 1);
         m_layout->addWidget(m_overlayRenderWidget, 1, 1, 10, 1);
         m_layout->addWidget(m_targetRenderWidget, 1, 2, 10, 1);
+        m_templateRenderWidget->show();
+        m_overlayRenderWidget->show();
+        m_targetRenderWidget->show();
     });
 }
 
