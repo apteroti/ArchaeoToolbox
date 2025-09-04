@@ -75,8 +75,7 @@ SuperImposition::SuperImposition(DataBase *dataBase, MainWindow *parent,
     : m_dataBase(dataBase), m_parent(parent), m_mutex(mutex) {
     m_numLm = m_dataBase->GetTotalLandmarks("Template")->GetNumberOfPoints();
     this->setWindowTitle("SuperImposition");
-    this->resize(800, 500);
-    
+    WindowUtils::restoreWindowGeometry(this, "SuperImpositionWindow", QSize(800, 500));
     m_vtkRenderWidget = new QVTKOpenGLWidget();
     m_renderer = vtkSmartPointer<vtkRenderer>::New();
     m_renWin = vtkSmartPointer<vtkRenderWindow>::New();

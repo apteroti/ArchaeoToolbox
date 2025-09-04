@@ -108,7 +108,7 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
 
         // Now GUI stuff
         this->setWindowTitle("Principal Component Results");
-        this->resize(1400, 600);
+        WindowUtils::restoreWindowGeometry(this, "PCAWindow", QSize(1400, 600));
         m_layout = new QGridLayout;
         m_meshRenderWidget = new QVTKOpenGLWidget();
         m_meshRenderWidget->hide();

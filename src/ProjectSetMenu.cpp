@@ -77,6 +77,7 @@
 #endif
 
 ProjectSetMenu::ProjectSetMenu(MainWindow* parent) : m_parent(parent) {
+    WindowUtils::restoreWindowGeometry(this, "ProjectSettingWindow", QSize(750, 300));
     m_templateSurfaceSliders = vtkSmartPointer<vtkPoints>::New();
     m_templateTypeI = vtkSmartPointer<vtkPoints>::New();
     m_templatePoly = vtkSmartPointer<vtkPolyData>::New();
@@ -829,18 +830,17 @@ void ProjectSetMenu::SetCPUCores(int index) {
 void ProjectSetMenu::ChangeSurfaceMode(int index) {
     switch (index) {
         case 0:
-            m_surfaceLayout->removeWidget(surfacePatchLabel);
-            m_surfaceLayout->removeWidget(surfaceLineEditPatchNOP);
-            m_surfaceLayout->removeWidget(m_resolutionGroup);
-            m_surfaceLayout->removeWidget(surfaceResolutionLabel);
             surfaceResolutionLabel->setVisible(false);
             surfacePatchLabel->setVisible(false);
             surfaceLineEditPatchNOP->setVisible(false);
             m_resolutionGroup->setVisible(false);
-            surfaceNOSLabel->setVisible(true);
-            surfaceLineEditNOS->setVisible(true);
+            m_surfaceLayout->removeWidget(surfacePatchLabel);
+            m_surfaceLayout->removeWidget(surfaceLineEditPatchNOP);
+            m_surfaceLayout->removeWidget(m_resolutionGroup);
+            m_surfaceLayout->removeWidget(surfaceResolutionLabel);
             m_surfaceLayout->addWidget(surfaceNOSLabel, 1, 0);
             m_surfaceLayout->addWidget(surfaceLineEditNOS, 1, 1);
+            surfaceNOSLabel->setVisible(true);
             surfaceLineEditNOS->setVisible(true);
             surfaceLineEditPatchNOP->clear();
             surfaceLineEditPatchUNOS->clear();
@@ -850,18 +850,18 @@ void ProjectSetMenu::ChangeSurfaceMode(int index) {
             surfacePatchVNOS = 0;
             break;
         case 1:
-            m_surfaceLayout->removeWidget(surfaceLineEditNOS);
-            m_surfaceLayout->removeWidget(surfaceNOSLabel);
             surfaceNOSLabel->setVisible(false);
             surfaceLineEditNOS->setVisible(false);
             surfaceResolutionLabel->setVisible(true);
-            surfacePatchLabel->setVisible(true);
-            surfaceLineEditPatchNOP->setVisible(true);
-            m_resolutionGroup->setVisible(true);
+            m_surfaceLayout->removeWidget(surfaceLineEditNOS);
+            m_surfaceLayout->removeWidget(surfaceNOSLabel);
             m_surfaceLayout->addWidget(surfacePatchLabel, 2, 0);
             m_surfaceLayout->addWidget(surfaceLineEditPatchNOP, 2, 1);
             m_surfaceLayout->addWidget(surfaceResolutionLabel, 1, 0);
             m_surfaceLayout->addWidget(m_resolutionGroup, 1, 1);
+            surfacePatchLabel->setVisible(true);
+            surfaceLineEditPatchNOP->setVisible(true);
+            m_resolutionGroup->setVisible(true);
             surfaceLineEditNOS->clear();
             surfaceNOS = 0;
             break;
@@ -1392,7 +1392,17 @@ void ProjectSetMenu::SetIgnorInternals(bool option) { m_ignoreInside = option; }
 
 bool ProjectSetMenu::GetIgnorInternals() { return m_ignoreInside; }
 
+void ProjectSetMenu::closeEvent(QCloseEvent* event){
+    WindowUtils::saveWindowGeometry(this, "ProjectSettingWindow");
+    QWidget::closeEvent(event);
+}
+
 ProjectSetMenu::~ProjectSetMenu() {
+    delete surfacePatchLabel;
+    delete surfaceLineEditPatchNOP;        
+    delete surfaceResolutionLabel;
+    delete surfaceLineEditNOS;
+    delete surfaceNOSLabel;
     if(m_layout){
         delete m_layout;
     }

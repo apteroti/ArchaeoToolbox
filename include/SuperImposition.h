@@ -182,6 +182,7 @@
 #include "MainWindow.fwd.h"
 #include "StatusReporterThread.h"
 #include "SuperImpositionThread.h"
+#include "WindowUtils.h"
 
 enum class Progress { neutral = 0, imposed = 1 };
 enum class Method { full = 0, partial = 1 };

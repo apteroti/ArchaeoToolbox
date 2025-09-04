@@ -144,7 +144,7 @@ Registration::Registration(vtkPolyData* data, vtkPolyData* templateMesh,
     m_morphedMesh = vtkSmartPointer<vtkPolyData>::New();
     // Set layout
     this->setWindowTitle("Registration");
-    this->resize(800, 300);
+    WindowUtils::restoreWindowGeometry(this, "RegistrationWindow", QSize(800, 300));
     m_layout = new QGridLayout;
     QWidget* window = new QWidget();
     m_templateRenderWidget = new QVTKOpenGLWidget();

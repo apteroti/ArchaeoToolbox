@@ -96,6 +96,7 @@
 #include "DecimateThread.h"
 #include "SpinnerDialog.h"
 #include "LoadMeshThread.h"
+#include "WindowUtils.h"
 
 #include <iostream>
 #include <string>
@@ -190,7 +191,7 @@ public slots:
     void SetCPUCores(int index);
 
 protected:
-
+    void closeEvent(QCloseEvent* event) override;
 };
 
 

@@ -77,7 +77,7 @@
 #endif
 
 MainWindow::MainWindow() {
-    // qRegisterMetaType<vtkMultiBlockDataSet*>("vtkPolyData*");
+    WindowUtils::restoreWindowGeometry(this, "MainWindow", QSize(800, 500));
     m_mutex = new QMutex();
     m_currentMesh = vtkSmartPointer<vtkPolyData>::New();
     m_currentGrid = vtkSmartPointer<vtkStructuredGrid>::New();
@@ -105,14 +105,16 @@ MainWindow::MainWindow() {
     horizSplitter = new QSplitter(Qt::Horizontal);
     horizSplitter->insertWidget(0, helpTab);
     horizSplitter->insertWidget(1, textViewer);
+   
 
     helpWindow = new QMainWindow(this);
     helpWindow->setCentralWidget(horizSplitter);
+    WindowUtils::restoreWindowGeometry(helpWindow, "HelpWindow", QSize(450, 200));
     helpWindow->hide();
-    
+
     const QString headerStyle = R"(
         QHeaderView::section {
-            background-color: gainsboro;
+            background-color: whitesmoke;
             color: black;
             padding: 4px;
             border: 1px solid #d0d0d0;
@@ -153,7 +155,6 @@ MainWindow::MainWindow() {
     m_templateCurveSliders = vtkSmartPointer<vtkMultiBlockDataSet>::New();
     m_templateCurvePointsPoly = vtkSmartPointer<vtkMultiBlockDataSet>::New();
     setWindowTitle("ArchaeoToolbox");
-    resize(800, 500);
 
     //--------------
     vtkNew<vtkNamedColors> colors;
@@ -460,7 +461,7 @@ void MainWindow::closeEvent(QCloseEvent* event) {
 void MainWindow::ContentTree(QDockWidget* parent) {
     m_treeWidget->setStyleSheet(
         "QHeaderView::section { "
-        "background-color: gainsboro; "
+        "background-color: whitesmoke; "
         "color: black; "
         "padding: 4px; "
         "border: 1px solid #d0d0d0; "
@@ -494,7 +495,7 @@ void MainWindow::about() {
     QMessageBox::about(
         this, tr("About ArchaeoToolbox"),
         tr("<p align='center'> <b>ArchaeoToolbox</b> <br> 2.2"
-           "<br> <b>Reference:</b> <br> Kaveh Yousef-Pouran, Maria Saña, Juan "
+           "<br> <b>Reference:</b> <br> Kaveh Yousef Pouran, Maria Saña, Juan "
            "Anton Barceló, 2023. Biomechanics, behaviour dynamics and "
            "archaeology: Integrative attempts to study animal domestication "
            "and husbandry. Universitat Autònoma de Barcelona. <br> "
@@ -2869,7 +2870,14 @@ bool MainWindow::GetIgnorSetting() {
 
 QMutex* MainWindow::GetMutex() { return m_mutex; }
 
-void MainWindow::PrintHelp() { helpWindow->show(); }
+void MainWindow::PrintHelp() {
+    if (!helpWindow->isVisible()) {
+        WindowUtils::restoreWindowGeometry(helpWindow, "HelpWindow", QSize(450, 200));
+    }
+    helpWindow->show();
+    helpWindow->raise();
+    helpWindow->activateWindow();
+}
 
 void MainWindow::SetLandmarkHeaders(QTableWidget* table) {
     QStringList headers;

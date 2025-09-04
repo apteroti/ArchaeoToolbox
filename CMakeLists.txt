@@ -34,7 +34,7 @@ set(SOURCE_FILES
     include/DecimationDialog.h include/VCGDefinitions.h include/DecimateThread.h
     include/SpinnerDialog.h include/CuttingThread.h include/HarmonicParameteriser.h
     include/SurfaceParameterisationThread.h include/LoadMeshThread.h
-    include/UpdateContributionThread.h
+    include/UpdateContributionThread.h include/WindowUtils.h
 
     Resources/resources.qrc
 )

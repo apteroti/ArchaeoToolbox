@@ -72,7 +72,7 @@
 
 TemplateViewer::TemplateViewer(MainWindow* parent) : m_parent(parent) {
     this->setWindowTitle("Template Viewer");
-    this->resize(600, 500);
+    WindowUtils::restoreWindowGeometry(this, "TemplateViewerWindow", QSize(600, 500));
     m_meshData = vtkSmartPointer<vtkPolyData>::New();
     m_typeI = vtkSmartPointer<vtkPoints>::New();
     m_surfaceSliders = vtkSmartPointer<vtkPoints>::New();
@@ -548,6 +548,11 @@ void TemplateViewer::MakeArrow(vtkPolyData* inputMesh,
     output->SetPoints(curveArrowPts);
     output->GetPointData()->SetVectors(u);
     output->Modified();
+}
+
+void TemplateViewer::closeEvent(QCloseEvent* event){
+    WindowUtils::saveWindowGeometry(this, "TemplateViewerWindow");
+    QMainWindow::closeEvent(event);
 }
 
 TemplateViewer::~TemplateViewer() { delete m_vtkRenderWidget; }

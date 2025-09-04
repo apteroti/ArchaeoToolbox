@@ -74,7 +74,7 @@ SpecimenDigitiser::SpecimenDigitiser(vtkPolyData* data, MainWindow* parent)
     : m_meshData(data), m_parent(parent) {
     m_ignoreInside = m_parent->GetIgnorSetting();
     this->setWindowTitle("Digitizer");
-    this->resize(650, 500);
+    WindowUtils::restoreWindowGeometry(this, "SpecimenDigitisingWindow", QSize(650, 500));
     m_curveType = new std::vector<int>;
     m_vtkRenderWidget = new QVTKOpenGLWidget();
     m_renWin = vtkSmartPointer<vtkRenderWindow>::New();

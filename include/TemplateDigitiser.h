@@ -219,6 +219,7 @@
 #include "SpinnerDialog.h"
 #include "StatusReporterThread.h"
 #include "SurfaceParameterisationThread.h"
+#include "WindowUtils.h"
 
 class TemplateDigitiser : public QMainWindow {
    private:

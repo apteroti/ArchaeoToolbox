@@ -72,7 +72,7 @@
 
 TemplateDigitiser::TemplateDigitiser(ProjectSetMenu* parent) : m_parent(parent) {
     this->setWindowTitle("Template");
-    this->resize(600, 500);
+    WindowUtils::restoreWindowGeometry(this, "TemplateDigitiserWindow", QSize(600, 500));
     m_mutex = new QMutex();
     m_maskArray = vtkSmartPointer<vtkIntArray>::New();
     m_curveType = new std::vector<int>;

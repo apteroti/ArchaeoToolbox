@@ -122,7 +122,7 @@
 #include <QtWidgets/QGraphicsDropShadowEffect>
 #include <QVTKOpenGLWidget.h>
 
-
+#include "WindowUtils.h"
 #include "MainWindow.fwd.h"
 
 class TemplateViewer: public QMainWindow{
@@ -169,7 +169,8 @@ public:
 public slots:
     void ShowIds();
     void CaptureScreen();
-
+protected:
+    void closeEvent(QCloseEvent* event) override;
 
 };
 

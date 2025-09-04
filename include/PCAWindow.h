@@ -207,6 +207,7 @@
 #include "DataBase.h"
 #include "SpinnerDialog.h"
 #include "UpdateContributionThread.h"
+#include "WindowUtils.h"
 
 using namespace Eigen;
 
@@ -294,7 +295,7 @@ class PCAWindow : public QMainWindow {
     void SaveScatter();
 
    protected:
-    // void closeEvent(QCloseEvent *event) override;
+  
 };
 
 #endif

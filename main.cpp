@@ -68,11 +68,13 @@
 
 #include <QtWidgets/QApplication>
 #include <QtGui/QSurfaceFormat>
+#include <QtGui/QIcon>
 #include "vtkGenericOpenGLRenderWindow.h"
 #include "QVTKOpenGLWidget.h"
 #include <omp.h>
-#include "include/MainWindow.h"
+#include "MainWindow.h"
 #include <vtkAutoInit.h>
+
 
 
 VTK_MODULE_INIT(vtkRenderingOpenGL2) // VTK was built with vtkRenderingOpenGL2
@@ -83,18 +85,15 @@ VTK_MODULE_INIT(vtkIOExportOpenGL2);
 VTK_MODULE_INIT(vtkRenderingGL2PSOpenGL2); 
 
 int main(int argc, char *argv[]){
-	//omp_set_num_threads(4);
 	QApplication app(argc, argv);
+	// install ghost-tracker
 	app.setWindowIcon(QIcon(":/icons/graphics/icons/mainIcon.png"));
-	//Q_INIT_RESOURCE(resources);
-	//QCoreApplication::setAttribute(Qt::AA_DontUseNativeMenuBar);
 	auto format = QVTKOpenGLWidget::defaultFormat();
-    format.setProfile(QSurfaceFormat::CompatibilityProfile);
-    QSurfaceFormat::setDefaultFormat(format);
+  format.setProfile(QSurfaceFormat::CompatibilityProfile);
+  QSurfaceFormat::setDefaultFormat(format);
 	setlocale(LC_NUMERIC,"C");
 	MainWindow mainWindow;
 	mainWindow.show();
 	
-
 	return app.exec();
 }

@@ -152,6 +152,7 @@
 #include "SpecimenDigitiser.fwd.h"
 #include "RegistrationThread.h"
 #include "StatusReporterThread.h"
+#include "WindowUtils.h"
 
 enum METHOD { Auto = 0, Semi = 1, Manual = 2 };
 enum ALIGNEDSTATUS { NotAligned = 0, Aligned = 1};
