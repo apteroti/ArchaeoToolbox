@@ -105,12 +105,15 @@ SuperImposition::SuperImposition(DataBase *dataBase, MainWindow *parent,
     //---------------
     lmList = new QListWidget;
     lmAnchorList = new QListWidget;
-    QListWidgetItem *item1 = new QListWidgetItem("Available To Use");
-    item1->setFlags(item1->flags() & ~Qt::ItemIsSelectable);
-    lmList->addItem(item1);
-    QListWidgetItem *item2 = new QListWidgetItem("Already Used");
-    item2->setFlags(item2->flags() & ~Qt::ItemIsSelectable);
-    lmAnchorList->addItem(item2);
+    
+    QListWidgetItem *header1 = new QListWidgetItem("Available To Use");
+    header1->setFlags(Qt::ItemIsEnabled);
+    header1->setBackgroundColor(QColor("#DCDCDC")); 
+    lmList->addItem(header1);
+    QListWidgetItem *header2 = new QListWidgetItem("Already Used");
+    header2->setFlags(Qt::ItemIsEnabled);
+    header2->setBackgroundColor(QColor("#DCDCDC")); 
+    lmAnchorList->addItem(header2);
 
     nameQList = new QListWidget;
 
@@ -232,13 +235,17 @@ void SuperImposition::ChangeImposeMethod(int index) {
 
 void SuperImposition::SelectAll() {
     lmList->clear();
-    QListWidgetItem *item1 = new QListWidgetItem("Available");
-    item1->setFlags(item1->flags() & ~Qt::ItemIsSelectable);
-    lmList->addItem(item1);
+    QListWidgetItem *header1 = new QListWidgetItem("Available To Use");
+    header1->setFlags(Qt::ItemIsEnabled);
+    header1->setBackgroundColor(QColor("#DCDCDC")); 
+    lmList->addItem(header1);
+
+    
     lmAnchorList->clear();
-    QListWidgetItem *item2 = new QListWidgetItem("   Use   ");
-    item2->setFlags(item2->flags() & ~Qt::ItemIsSelectable);
-    lmAnchorList->addItem(item2);
+    QListWidgetItem *header2 = new QListWidgetItem("Already Used");
+    header2->setFlags(Qt::ItemIsEnabled);
+    header2->setBackgroundColor(QColor("#DCDCDC")); 
+    lmAnchorList->addItem(header2);
 
     for (int i = 0; i < m_numLm; i++) {
         lmAnchorList->addItem(QString::number(i));
@@ -250,13 +257,16 @@ void SuperImposition::SelectAll() {
 
 void SuperImposition::DeSelectAll() {
     lmList->clear();
-    QListWidgetItem *item1 = new QListWidgetItem("Available");
-    item1->setFlags(item1->flags() & ~Qt::ItemIsSelectable);
-    lmList->addItem(item1);
+    QListWidgetItem *header1 = new QListWidgetItem("Available To Use");
+    header1->setFlags(Qt::ItemIsEnabled);
+    header1->setBackgroundColor(QColor("#DCDCDC")); 
+    lmList->addItem(header1);
+    
     lmAnchorList->clear();
-    QListWidgetItem *item2 = new QListWidgetItem("   Use   ");
-    item2->setFlags(item2->flags() & ~Qt::ItemIsSelectable);
-    lmAnchorList->addItem(item2);
+    QListWidgetItem *header2 = new QListWidgetItem("Already Used");
+    header2->setFlags(Qt::ItemIsEnabled);
+    header2->setBackgroundColor(QColor("#DCDCDC")); 
+    lmAnchorList->addItem(header2);
 
     for (int i = 0; i < m_numLm; i++) {
         lmList->addItem(QString::number(i));
@@ -276,9 +286,10 @@ void SuperImposition::MoveToAnchor() {
     }
     std::sort(tempList.begin(), tempList.end());
     lmAnchorList->clear();
-    QListWidgetItem *item2 = new QListWidgetItem("   Use   ");
-    item2->setFlags(item2->flags() & ~Qt::ItemIsSelectable);
-    lmAnchorList->addItem(item2);
+    QListWidgetItem *header2 = new QListWidgetItem("Already Used");
+    header2->setFlags(Qt::ItemIsEnabled);
+    header2->setBackgroundColor(QColor("#DCDCDC")); 
+    lmAnchorList->addItem(header2);
     for (int i = 0; i < tempList.size(); i++) {
         lmAnchorList->addItem(QString::number(tempList[i]));
     }
@@ -299,9 +310,10 @@ void SuperImposition::MoveToSource() {
     }
     std::sort(tempList.begin(), tempList.end());
     lmList->clear();
-    QListWidgetItem *item1 = new QListWidgetItem("Available");
-    item1->setFlags(item1->flags() & ~Qt::ItemIsSelectable);
-    lmList->addItem(item1);
+    QListWidgetItem *header1 = new QListWidgetItem("Available To Use");
+    header1->setFlags(Qt::ItemIsEnabled);
+    header1->setBackgroundColor(QColor("#DCDCDC")); 
+    lmList->addItem(header1);
     for (int i = 0; i < tempList.size(); i++) {
         lmList->addItem(QString::number(tempList[i]));
     }

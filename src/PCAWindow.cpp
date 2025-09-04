@@ -123,13 +123,20 @@ PCAWindow::PCAWindow(DataBase *parentDB) : m_parentDataBase(parentDB) {
         for (const auto &name : m_nameList) {
             m_pairedList.emplace_back(name, "");  // category empty for now
         }
-
+        const QString headerStyle = R"(
+            QHeaderView::section {
+                background-color: whitesmoke;
+                color: black;
+                padding: 4px;
+                border: 1px solid #d0d0d0;
+            }
+        )";
         // Create table
         m_specimenTable = new QTableWidget(this);
         m_specimenTable->setColumnCount(2);
         m_specimenTable->setHorizontalHeaderLabels(
             QStringList{"Specimen", "Category"});
-
+        m_specimenTable->setStyleSheet(headerStyle);
         // Number of rows = number of specimens
         m_specimenTable->setRowCount(static_cast<int>(m_nameList.size()));
 
