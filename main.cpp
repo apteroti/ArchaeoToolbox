@@ -71,6 +71,7 @@
 #include <QtGui/QIcon>
 #include <QSplashScreen>
 #include <QtGui/QPixmap>
+#include <QTimer>
 #include "vtkGenericOpenGLRenderWindow.h"
 #include "QVTKOpenGLWidget.h"
 #include <omp.h>
