@@ -214,6 +214,7 @@ class SpecimenDigitiser : public QMainWindow {
     double m_sizeConstant = 0;
     double m_splineTension = 0.5;  // Range: -1.0 to 1.0 (higher = flatter)
     double m_diagonal = 0;
+    int m_maxNoImprovementCount = 5;
     const double m_tubeRadRatio = 0.3 / 170.304;
     const double m_arrowSizeRatio = 10 / 170.304;
     Registration *m_regPlot = nullptr;
@@ -343,6 +344,7 @@ class SpecimenDigitiser : public QMainWindow {
     QLabel *progressLabel;
     QGroupBox *counterGroup;
     QLineEdit *progressLineEdit;
+    QLineEdit* m_improvementLoopLE;
     // box
     QComboBox *curveSelectComboBox;
     QComboBox *surfaceSelectComboBox;
@@ -451,6 +453,7 @@ class SpecimenDigitiser : public QMainWindow {
     void ChangeSurfaceSource(int index);
     void ChangePointSize(int index);
     void ChangeLineSize(int index);
+    void SetImprovementLoop(const QString& text);
 
    protected:
     void keyReleaseEvent(QKeyEvent *event) override;

@@ -194,7 +194,7 @@ public:
         int surfacePatchNOP, vtkMultiBlockDataSet* curvePolyLineBlock,
         vtkMultiBlockDataSet* surfaceMaskBlock,
         const Eigen::Ref<const Eigen::MatrixXd>& templateCoordinates,
-        Eigen::MatrixXd& coordinates, int mode = 0);
+        Eigen::MatrixXd& coordinates, int maxNoImprovementCount, int mode = 0);
     // SlidingThread();
     void run();
     void AssembleU(const Eigen::MatrixXd& targetLndmrks,

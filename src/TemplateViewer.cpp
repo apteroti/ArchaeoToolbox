@@ -355,7 +355,8 @@ void TemplateViewer::Plot() {
     glyphCurveArrow->SetInputData(curveArrowPoly);
     glyphCurveArrow->SetSourceData(curveArrow->GetOutput());
     glyphCurveArrow->SetVectorModeToUseVector();
-    glyphCurveArrow->SetScaleModeToScaleByVector();
+    glyphCurveArrow->OrientOn();
+    glyphCurveArrow->SetScaleModeToDataScalingOff();
     glyphCurveArrow->SetScaleFactor(m_arrowSizeRatio*m_diagonal);
     glyphCurveArrow->Update();
 
@@ -412,7 +413,8 @@ void TemplateViewer::Plot() {
     glyphSurfaceArrow->SetInputData(surfaceArrowPoly);
     glyphSurfaceArrow->SetSourceData(curveArrow->GetOutput());
     glyphSurfaceArrow->SetVectorModeToUseVector();
-    glyphSurfaceArrow->SetScaleModeToScaleByVector();
+    glyphSurfaceArrow->OrientOn();
+    glyphSurfaceArrow->SetScaleModeToDataScalingOff();
     glyphSurfaceArrow->SetScaleFactor(m_arrowSizeRatio*m_diagonal);
     glyphSurfaceArrow->Update();
     vtkNew<vtkPolyDataMapper> glyph3DSurfaceMapper;
@@ -503,47 +505,52 @@ void TemplateViewer::MakeArrow(vtkPolyData* inputMesh,
     vtkNew<vtkPointLocator> ptLocator;
     ptLocator->SetDataSet(inputMesh);
     ptLocator->BuildLocator();
+
     vtkNew<vtkPolyDataNormals> normalFilter;
     normalFilter->SetInputData(inputMesh);
     normalFilter->Update();
+
+    vtkNew<vtkPoints> curveArrowPts;
     vtkNew<vtkDoubleArray> u;
     u->SetName("u");
     u->SetNumberOfComponents(3);
-    u->SetNumberOfTuples(inputCurveBlock->GetNumberOfBlocks());
+
     vtkNew<vtkDataObjectTreeIterator> iterPts;
-    vtkNew<vtkPoints> curveArrowPts;
-    curveArrowPts->SetNumberOfPoints(inputCurveBlock->GetNumberOfBlocks());
     iterPts->SetDataSet(inputCurveBlock);
     iterPts->SkipEmptyNodesOn();
     iterPts->VisitOnlyLeavesOn();
-    int counter = 0;
-    for (iterPts->InitTraversal(); !iterPts->IsDoneWithTraversal();
-         iterPts->GoToNextItem()) {
+
+    for (iterPts->InitTraversal(); !iterPts->IsDoneWithTraversal(); iterPts->GoToNextItem())
+    {
         vtkDataObject* dso = iterPts->GetCurrentDataObject();
-        vtkPolyData* pd = dynamic_cast<vtkPolyData*>(dso);
-        if (pd->GetNumberOfPoints() > 2) {
-            double x1 = pd->GetPoint(1)[0] - pd->GetPoint(0)[0];
-            double y1 = pd->GetPoint(1)[1] - pd->GetPoint(0)[1];
-            double z1 = pd->GetPoint(1)[2] - pd->GetPoint(0)[2];
-            Eigen::VectorXd nromVect(3);
-            nromVect.operator()(0) = x1;
-            nromVect.operator()(1) = y1;
-            nromVect.operator()(2) = z1;
-            nromVect.normalize();
-            u->SetTuple3(counter, nromVect(0), nromVect(1), nromVect(2));
-            vtkIdType id = ptLocator->FindClosestPoint(pd->GetPoint(0));
-            double closestPoint[3];
-            ptLocator->GetDataSet()->GetPoint(id, closestPoint);
-            vtkDataArray* normalArray =
-                normalFilter->GetOutput()->GetPointData()->GetNormals();
-            double* normalVector = normalArray->GetTuple(id);
-            double finalX = pd->GetPoint(0)[0] + (normalVector[0] * liftScale);
-            double finalY = pd->GetPoint(0)[1] + (normalVector[1] * liftScale);
-            double finalZ = pd->GetPoint(0)[2] + (normalVector[2] * liftScale);
-            curveArrowPts->SetPoint(counter, finalX, finalY, finalZ);
-        }
-        counter += 1;
+        vtkPolyData* pd = vtkPolyData::SafeDownCast(dso);
+        if (!pd || pd->GetNumberOfPoints() < 2)
+            continue;
+
+        // Compute direction from point 0 to point 1
+        double p0[3], p1[3];
+        pd->GetPoint(0, p0);
+        pd->GetPoint(1, p1);
+        double dir[3] = { p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2] };
+        vtkMath::Normalize(dir);
+
+        // Lift start point along mesh normal
+        vtkIdType id = ptLocator->FindClosestPoint(p0);
+        vtkDataArray* normalArray = normalFilter->GetOutput()->GetPointData()->GetNormals();
+        double* normalVector = normalArray->GetTuple(id);
+        double lifted[3] = {
+            p0[0] + normalVector[0] * liftScale,
+            p0[1] + normalVector[1] * liftScale,
+            p0[2] + normalVector[2] * liftScale
+        };
+
+        // Add the lifted point to the output points
+        vtkIdType newId = curveArrowPts->InsertNextPoint(lifted);
+
+        // Add the direction vector for this point
+        u->InsertNextTuple(dir);
     }
+
     output->Initialize();
     output->SetPoints(curveArrowPts);
     output->GetPointData()->SetVectors(u);

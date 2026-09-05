@@ -37,5 +37,6 @@
     <file>graphics/icons/openHand.svg</file>
     <file>graphics/icons/grabbedHand.svg</file>
     <file>graphics/icons/color_palette.svg</file>
+    <file>graphics/icons/Splash.png</file>
 </qresource>
 </RCC>

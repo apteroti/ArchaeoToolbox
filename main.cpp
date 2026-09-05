@@ -69,6 +69,8 @@
 #include <QtWidgets/QApplication>
 #include <QtGui/QSurfaceFormat>
 #include <QtGui/QIcon>
+#include <QSplashScreen>
+#include <QtGui/QPixmap>
 #include "vtkGenericOpenGLRenderWindow.h"
 #include "QVTKOpenGLWidget.h"
 #include <omp.h>
@@ -85,15 +87,32 @@ VTK_MODULE_INIT(vtkIOExportOpenGL2);
 VTK_MODULE_INIT(vtkRenderingGL2PSOpenGL2); 
 
 int main(int argc, char *argv[]){
-	QApplication app(argc, argv);
-	// install ghost-tracker
-	app.setWindowIcon(QIcon(":/icons/graphics/icons/mainIcon.png"));
-	auto format = QVTKOpenGLWidget::defaultFormat();
-  format.setProfile(QSurfaceFormat::CompatibilityProfile);
-  QSurfaceFormat::setDefaultFormat(format);
-	setlocale(LC_NUMERIC,"C");
-	MainWindow mainWindow;
-	mainWindow.show();
-	
-	return app.exec();
+    QApplication app(argc, argv);
+
+    // Set app icon
+    app.setWindowIcon(QIcon(":/icons/graphics/icons/mainIcon.png"));
+
+    // Setup VTK OpenGL format
+    auto format = QVTKOpenGLWidget::defaultFormat();
+    format.setProfile(QSurfaceFormat::CompatibilityProfile);
+    QSurfaceFormat::setDefaultFormat(format);
+
+    // Ensure numeric locale is "C"
+    setlocale(LC_NUMERIC, "C");
+
+    // --- Splash Screen ---
+    QPixmap splashImg(":/icons/graphics/icons/Splash.png"); 
+    QPixmap scaledSplash = splashImg.scaled(400, 300, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QSplashScreen splash(scaledSplash);
+    splash.show();
+    app.processEvents(); // ensure splash appears immediately
+
+    // --- Delay showing main window ---
+    QTimer::singleShot(1500, [&]() { // 1500 ms = 1.5 seconds
+        MainWindow* mainWindow = new MainWindow();
+        splash.finish(mainWindow); // closes splash when mainWindow shows
+        mainWindow->show();
+        });
+
+    return app.exec();
 }

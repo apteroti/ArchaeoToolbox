@@ -83,7 +83,7 @@ SlidingThread::SlidingThread(
     vtkMultiBlockDataSet* curvePolyLineBlock,
     vtkMultiBlockDataSet* surfaceMaskBlock,
     const Eigen::Ref<const Eigen::MatrixXd>& templateCoordinates,
-    Eigen::MatrixXd& coordinates, int mode)
+    Eigen::MatrixXd& coordinates, int maxNoImprovementCount, int mode)
     : m_meshData(meshData),
       m_typeINOL(typeINOL),      // Number of fixed landmarks
       m_curveNOS(curveNOS),      // Number of sliding points per curve
@@ -95,13 +95,14 @@ SlidingThread::SlidingThread(
       m_surfacePatchNOP(surfacePatchNOP),        // Number of surface patches
       m_curvePolyLineBlock(curvePolyLineBlock),  // Curves data
       m_surfaceMaskBlock(surfaceMaskBlock),      // Surface patches data
-      m_coordinates(coordinates) {               // Target coordinates
-
+      m_coordinates(coordinates),                // Target coordinates
+      m_maxNoImprovementCount(maxNoImprovementCount){   //Maximum Number of Improvement Loop              
+        
     // Convert points to VTK format for initial alignment
     vtkNew<vtkPoints> tempTargetPts;
     vtkNew<vtkPoints> tempTemplatePts;
     vtkNew<vtkPolyData> tempTemplatePtsPoly;
-
+  
     // Load target points
     for (int i = 0; i < m_coordinates.rows(); i++) {
         tempTargetPts->InsertNextPoint(m_coordinates(i, 0), m_coordinates(i, 1),

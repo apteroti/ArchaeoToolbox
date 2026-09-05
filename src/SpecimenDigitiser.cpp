@@ -323,6 +323,18 @@ SpecimenDigitiser::SpecimenDigitiser(vtkPolyData* data, MainWindow* parent)
     m_slidingAnimation->setEasingCurve(QEasingCurve::InOutQuad);
     m_slidingAnimation->setLoopCount(-1);  // Infinite loop
     m_slidingAnimation->stop();
+
+    QLabel* improvementLoopLabel = new QLabel();
+    improvementLoopLabel->setText(tr("Sliding Improvement Loop"));
+    mainToolbar->addWidget(improvementLoopLabel);
+
+    m_improvementLoopLE = new QLineEdit;
+    m_improvementLoopLE->setValidator(new QIntValidator(1, 1000, this));
+    m_improvementLoopLE->setText("5");
+    m_improvementLoopLE->setFixedWidth(50);
+    mainToolbar->addWidget(m_improvementLoopLE);
+    connect(m_improvementLoopLE, &QLineEdit::textChanged,
+        this, &SpecimenDigitiser::SetImprovementLoop);
     //---------------------------
 
     surfaceAddButton = new QPushButton();
@@ -815,7 +827,8 @@ void SpecimenDigitiser::Plot() {
     m_glyphSurfaceArrow->SetInputData(emptyArrow);
     m_glyphSurfaceArrow->SetSourceData(surfaceArrow->GetOutput());
     m_glyphSurfaceArrow->SetVectorModeToUseVector();
-    m_glyphSurfaceArrow->SetScaleModeToScaleByVector();
+    m_glyphSurfaceArrow->OrientOn();
+    m_glyphSurfaceArrow->SetScaleModeToDataScalingOff();
     m_glyphSurfaceArrow->SetScaleFactor(m_arrowSizeRatio * m_diagonal);
     m_glyphSurfaceArrow->Update();
 
@@ -908,7 +921,8 @@ void SpecimenDigitiser::Plot() {
     m_glyphCurveArrow->SetInputData(emptyArrow);
     m_glyphCurveArrow->SetSourceData(curveArrow->GetOutput());
     m_glyphCurveArrow->SetVectorModeToUseVector();
-    m_glyphCurveArrow->SetScaleModeToScaleByVector();
+    m_glyphCurveArrow->OrientOn();
+    m_glyphCurveArrow->SetScaleModeToDataScalingOff();
     m_glyphCurveArrow->SetScaleFactor(m_arrowSizeRatio * m_diagonal);
     m_glyphCurveArrow->Update();
 
@@ -1286,6 +1300,7 @@ void SpecimenDigitiser::MakeSlide() {
 
     landmarkButton->setEnabled(0);
     surfaceSliderButton->setEnabled(0);
+    m_improvementLoopLE->setEnabled(0);
     curveSliderButton->setEnabled(0);
     slidingButton->setEnabled(0);
     m_slidingAnimation->stop();
@@ -1421,14 +1436,13 @@ void SpecimenDigitiser::MakeSlide() {
     m_surfacePatchPointDeactiveActor->GetProperty()->SetOpacity(0.1);
     m_surfacePointDeactiveActor->GetProperty()->SetOpacity(0.1);
     m_renderer->GetRenderWindow()->Render();
-
     qRegisterMetaType<Eigen::MatrixXd>("Eigen::MatrixXd");
     delete m_slidingThread;
     m_slidingThread = new SlidingThread(
         m_meshData, m_typeINOL, m_curveNOS, m_curveNOC, m_curveType,
         m_surfaceNOS, m_surfacePatchUNOS, m_surfacePatchVNOS, m_surfacePatchNOP,
         m_curvePolyLineBlock, m_surfaceMaskBlock, totalTemplateCoordinates,
-        totalCoordinates);
+        totalCoordinates, m_maxNoImprovementCount);
     m_slidingThread->setParent(this);
 
     connect(m_slidingThread, &SlidingThread::CoordinateChanged, this,
@@ -2987,47 +3001,52 @@ void SpecimenDigitiser::MakeArrow(vtkPolyData* inputMesh,
     vtkNew<vtkPointLocator> ptLocator;
     ptLocator->SetDataSet(inputMesh);
     ptLocator->BuildLocator();
+
     vtkNew<vtkPolyDataNormals> normalFilter;
     normalFilter->SetInputData(inputMesh);
     normalFilter->Update();
+
+    vtkNew<vtkPoints> curveArrowPts;
     vtkNew<vtkDoubleArray> u;
     u->SetName("u");
     u->SetNumberOfComponents(3);
-    u->SetNumberOfTuples(inputCurveBlock->GetNumberOfBlocks());
+
     vtkNew<vtkDataObjectTreeIterator> iterPts;
-    vtkNew<vtkPoints> curveArrowPts;
-    curveArrowPts->SetNumberOfPoints(inputCurveBlock->GetNumberOfBlocks());
     iterPts->SetDataSet(inputCurveBlock);
     iterPts->SkipEmptyNodesOn();
     iterPts->VisitOnlyLeavesOn();
-    int counter = 0;
-    for (iterPts->InitTraversal(); !iterPts->IsDoneWithTraversal();
-         iterPts->GoToNextItem()) {
+
+    for (iterPts->InitTraversal(); !iterPts->IsDoneWithTraversal(); iterPts->GoToNextItem())
+    {
         vtkDataObject* dso = iterPts->GetCurrentDataObject();
-        vtkPolyData* pd = dynamic_cast<vtkPolyData*>(dso);
-        if (pd->GetNumberOfPoints() > 1) {
-            double x1 = pd->GetPoint(1)[0] - pd->GetPoint(0)[0];
-            double y1 = pd->GetPoint(1)[1] - pd->GetPoint(0)[1];
-            double z1 = pd->GetPoint(1)[2] - pd->GetPoint(0)[2];
-            Eigen::VectorXd nromVect(3);
-            nromVect.operator()(0) = x1;
-            nromVect.operator()(1) = y1;
-            nromVect.operator()(2) = z1;
-            nromVect.normalize();
-            u->SetTuple3(counter, nromVect(0), nromVect(1), nromVect(2));
-            vtkIdType id = ptLocator->FindClosestPoint(pd->GetPoint(0));
-            double closestPoint[3];
-            ptLocator->GetDataSet()->GetPoint(id, closestPoint);
-            vtkDataArray* normalArray =
-                normalFilter->GetOutput()->GetPointData()->GetNormals();
-            double* normalVector = normalArray->GetTuple(id);
-            double finalX = pd->GetPoint(0)[0] + (normalVector[0] * liftScale);
-            double finalY = pd->GetPoint(0)[1] + (normalVector[1] * liftScale);
-            double finalZ = pd->GetPoint(0)[2] + (normalVector[2] * liftScale);
-            curveArrowPts->SetPoint(counter, finalX, finalY, finalZ);
-        }
-        counter += 1;
+        vtkPolyData* pd = vtkPolyData::SafeDownCast(dso);
+        if (!pd || pd->GetNumberOfPoints() < 2)
+            continue;
+
+        // Compute direction from point 0 to point 1
+        double p0[3], p1[3];
+        pd->GetPoint(0, p0);
+        pd->GetPoint(1, p1);
+        double dir[3] = { p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2] };
+        vtkMath::Normalize(dir);
+
+        // Lift start point along mesh normal
+        vtkIdType id = ptLocator->FindClosestPoint(p0);
+        vtkDataArray* normalArray = normalFilter->GetOutput()->GetPointData()->GetNormals();
+        double* normalVector = normalArray->GetTuple(id);
+        double lifted[3] = {
+            p0[0] + normalVector[0] * liftScale,
+            p0[1] + normalVector[1] * liftScale,
+            p0[2] + normalVector[2] * liftScale
+        };
+
+        // Add the lifted point to the output points
+        vtkIdType newId = curveArrowPts->InsertNextPoint(lifted);
+
+        // Add the direction vector for this point
+        u->InsertNextTuple(dir);
     }
+
     output->Initialize();
     output->SetPoints(curveArrowPts);
     output->GetPointData()->SetVectors(u);
@@ -3562,6 +3581,7 @@ void SpecimenDigitiser::CoordinateFunc(vtkObject* caller,
                     m_surfaceCurveTubeFilter->SetInputData(m_cosmeticCurvePoly);
                     m_surfaceCurveTubeFilter->Update();
                     m_surfaceCurveTubeFilter->Modified();
+                    UpdateSurfaceDirection();
                     m_renderer->GetRenderWindow()->Render();
                 }
             } 
@@ -4210,6 +4230,29 @@ void SpecimenDigitiser::UpdateSurfaceDirection() {
         m_glyphSurfaceArrow->Update();
         ResetPatch();
     }
+}
+
+void SpecimenDigitiser::SetImprovementLoop(const QString& text){
+    bool ok;
+    int value = text.toInt(&ok);
+
+    if (!ok || value <= 0) {
+        // Invalid number or <= 0
+        QMessageBox::warning(this, "Invalid Input",
+            "Please enter a number bigger than 0.");
+        m_improvementLoopLE->setText("5");  // reset to default
+        m_maxNoImprovementCount = 5;
+        return;
+    }
+
+    if (value > 5) {
+        // Warn about long sliding procedure
+        QMessageBox::warning(this, "Warning",
+            "This number of loops can increase the sliding procedure time drastically.");
+    }
+
+    // Valid value
+    m_maxNoImprovementCount = value;
 }
 
 SpecimenDigitiser::~SpecimenDigitiser() {

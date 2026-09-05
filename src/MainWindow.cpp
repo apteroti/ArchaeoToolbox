@@ -1,36 +1,35 @@
 /***********************************************************************************************
 
 ************************************************************************************************
-* ArchaeoToolbox                                                                               *
-* Geometric Morphometrics Software                                                             *
-*                                                                                              *
-* Copyright(C) 2023                                                                            *
-* Kaveh Yousef Pouran                                                                          *
-* Laboratori d’Arqueozoologia, Universitat Autònoma de Barcelona                               *
-*                                                                                              *
-* All rights reserved.                                                                         *
-*                                                                                              *
-* This program is free software; you can redistribute it and/or modify                         *
-* it under the terms of the GNU General Public License as published by                         *
-* the Free Software Foundation; either version 2 of the License, or                            *
-* (at your option) any later version.                                                          *
-*                                                                                              *
-* This program is distributed in the hope that it will be useful,                              *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of                               *
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                                *
-* GNU General Public License (http://www.gnu.org/licenses/gpl.txt)                             *
-* for more details.                                                                            *
-*                                                                                              *
+* ArchaeoToolbox *
+* Geometric Morphometrics Software *
+* *
+* Copyright(C) 2023 *
+* Kaveh Yousef Pouran *
+* Laboratori d’Arqueozoologia, Universitat Autònoma de Barcelona *
+* *
+* All rights reserved. *
+* *
+* This program is free software; you can redistribute it and/or modify *
+* it under the terms of the GNU General Public License as published by *
+* the Free Software Foundation; either version 2 of the License, or *
+* (at your option) any later version. *
+* *
+* This program is distributed in the hope that it will be useful, *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the *
+* GNU General Public License (http://www.gnu.org/licenses/gpl.txt) *
+* for more details. *
+* *
 
  ***********************************************************************************************
                                                                                .
-                                                  .                            =:
-                                                  #                            +*
-                                                 ##                            %@.
-                                                =@@                            #@%
-                                               .@@*                            @@@:
-                                               %@@*                           #@@@=
-                                               =@@@#-                     .:+#@@@#
+                                                  . =: # +*
+                                                 ## %@.
+                                                =@@ #@%
+                                               .@@* @@@:
+                                               %@@* #@@@=
+                                               =@@@#- .:+#@@@#
                                                 *@@@@@*=::.:=-=+*%%%+-=*%@@@@@@@=
                                                  -%@@@@@@@@@@@@@@@@@@@@@@@@%#+-
                                                    .-=+*#@@@@@@@@@@@@@@@@+.
@@ -105,11 +104,11 @@ MainWindow::MainWindow() {
     horizSplitter = new QSplitter(Qt::Horizontal);
     horizSplitter->insertWidget(0, helpTab);
     horizSplitter->insertWidget(1, textViewer);
-   
 
     helpWindow = new QMainWindow(this);
     helpWindow->setCentralWidget(horizSplitter);
-    WindowUtils::restoreWindowGeometry(helpWindow, "HelpWindow", QSize(450, 200));
+    WindowUtils::restoreWindowGeometry(helpWindow, "HelpWindow",
+                                       QSize(450, 200));
     helpWindow->hide();
 
     const QString headerStyle = R"(
@@ -266,24 +265,21 @@ MainWindow::MainWindow() {
     //--------------
     m_pcaWindow = nullptr;
     //--------------
-    mainTable->setRowCount(TableRowNum);
-    mainTable->setColumnCount(TableColNum);
-    SetLandmarkHeaders(mainTable);
+    mainTable->setRowCount(m_TableRowNum);
+    SetLandmarkHeaders(mainTable, m_TableColNum);
 
     mainTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     mainTable->setFocusPolicy(Qt::NoFocus);
     mainTable->setSelectionMode(QAbstractItemView::NoSelection);
 
-    supImposedTable->setRowCount(TableRowNum);
-    supImposedTable->setColumnCount(TableColNum);
-    SetLandmarkHeaders(supImposedTable);
+    supImposedTable->setRowCount(m_TableRowNum);
+    SetLandmarkHeaders(supImposedTable, m_TableColNum);
     supImposedTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     supImposedTable->setFocusPolicy(Qt::NoFocus);
     supImposedTable->setSelectionMode(QAbstractItemView::NoSelection);
 
-    procResTable->setRowCount(TableRowNum);
-    procResTable->setColumnCount(TableColNum);
-    SetLandmarkHeaders(procResTable);
+    procResTable->setRowCount(m_TableRowNum);
+    SetLandmarkHeaders(procResTable, m_TableColNum);
     procResTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     procResTable->setFocusPolicy(Qt::NoFocus);
     procResTable->setSelectionMode(QAbstractItemView::NoSelection);
@@ -334,6 +330,11 @@ MainWindow::MainWindow() {
     fileMenu->addSeparator();
     fileMenu->addAction(quitAction);
 
+    m_toolMenu = menuBar()->addMenu("&Tools");
+    m_showConsoleAction = new QAction("Show Console", this);
+    m_showConsoleAction->setStatusTip("Show Debugging Console");
+    m_toolMenu->addAction(m_showConsoleAction);
+
     helpMenu = menuBar()->addMenu("&Help");
     aboutAction = new QAction("About", this);
     helpMenu->addAction(aboutAction);
@@ -341,6 +342,7 @@ MainWindow::MainWindow() {
     helpAction = new QAction("Documentation", this);
     helpAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_H));
     helpMenu->addAction(helpAction);
+
     //--------------------------------------------------------
 
     // Setting up Toolbar for content tree
@@ -419,6 +421,8 @@ MainWindow::MainWindow() {
     connect(pcaToolbarAction, &QAction::triggered, this, &MainWindow::PCA);
     connect(helpToolbarAction, &QAction::triggered, this,
             &MainWindow::PrintHelp);
+    connect(m_showConsoleAction, &QAction::triggered, this,
+            &MainWindow::ShowCmdl);
     //-----------------------------------------------------------
     ContentTree(dockedToolbar);
 }
@@ -465,8 +469,7 @@ void MainWindow::ContentTree(QDockWidget* parent) {
         "color: black; "
         "padding: 4px; "
         "border: 1px solid #d0d0d0; "
-        "}"
-    );
+        "}");
     m_treeWidget->setHeaderLabels(QStringList{"Name", "Type"});
     parent->setWidget(m_treeWidget);
     m_treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -671,7 +674,7 @@ void MainWindow::ConvertVTKToVCG(vtkPolyData* polyData, MyMesh& vcgMesh) {
 
     // Validate input
     if (!polyData || !polyData->GetPoints()) {
-        std::cerr << "Invalid VTK polydata input"<<std::endl;
+        std::cerr << "Invalid VTK polydata input" << std::endl;
         return;
     }
 
@@ -1172,14 +1175,17 @@ void MainWindow::SuperImpose() {
 }
 
 void MainWindow::ResetImposition() {
+    int colCount =
+        m_dataBase->GetTotalLandmarks("Template")->GetNumberOfPoints();
+    if (colCount < m_TableColNum) {
+        colCount = m_TableColNum;
+    }
     supImposedTable->clear();
-    supImposedTable->setColumnCount(TableColNum);
-    supImposedTable->setRowCount(TableRowNum);
-    SetLandmarkHeaders(supImposedTable);
+    supImposedTable->setRowCount(m_TableRowNum);
+    SetLandmarkHeaders(supImposedTable, colCount);
     procResTable->clear();
-    procResTable->setColumnCount(TableColNum);
-    procResTable->setRowCount(TableRowNum);
-    SetLandmarkHeaders(procResTable);
+    procResTable->setRowCount(m_TableRowNum);
+    SetLandmarkHeaders(procResTable, colCount);
 }
 
 void MainWindow::FinaliseImposition() {
@@ -1712,12 +1718,6 @@ void MainWindow::SetTypeI(vtkPoints* fixedPts) {
         }
     }
 
-    int colCount = mainTable->horizontalHeader()->count();
-    int diff = colCount - (1 + (fixedPts->GetNumberOfPoints() * 3));
-    if (diff < 0) {
-        mainTable->setColumnCount(colCount + std::abs(diff));
-    }
-
     int freeRow;
     for (int i = 0; i < mainTable->rowCount(); i++) {
         if (!mainTable->item(i, 0) || mainTable->item(i, 0)->text().isEmpty()) {
@@ -1806,11 +1806,7 @@ void MainWindow::SetSliders(vtkPoints* fixedPts, vtkPoints* curveSliderPts,
         }
     }
     totalPts->Modified();
-    int colCount = mainTable->horizontalHeader()->count();
-    int diff = colCount - (1 + (totalPts->GetNumberOfPoints() * 3));
-    if (diff < 0) {
-        mainTable->setColumnCount(colCount + std::abs(diff));
-    }
+
     int freeRow;
     for (int i = 0; i < mainTable->rowCount(); i++) {
         if (!mainTable->item(i, 0) || mainTable->item(i, 0)->text().isEmpty()) {
@@ -1888,11 +1884,7 @@ void MainWindow::SetSliders(vtkPoints* fixedPts, vtkPoints* curveSliderPts,
         m_treeWidget->topLevelItem(itemNum - 1)->setExpanded(1);
     }
     totalPts->Modified();
-    int colCount = mainTable->horizontalHeader()->count();
-    int diff = colCount - (1 + (totalPts->GetNumberOfPoints() * 3));
-    if (diff < 0) {
-        mainTable->setColumnCount(colCount + std::abs(diff));
-    }
+
     int freeRow;
     for (int i = 0; i < mainTable->rowCount(); i++) {
         if (!mainTable->item(i, 0) || mainTable->item(i, 0)->text().isEmpty()) {
@@ -1999,7 +1991,9 @@ void MainWindow::TemplateStatus(bool status) {
         int colCount = mainTable->horizontalHeader()->count();
         int diff = colCount - (1 + (totalPts->GetNumberOfPoints() * 3));
         if (diff < 0) {
-            mainTable->setColumnCount(colCount + std::abs(diff));
+            SetLandmarkHeaders(mainTable, totalPts->GetNumberOfPoints());
+            SetLandmarkHeaders(supImposedTable, totalPts->GetNumberOfPoints());
+            SetLandmarkHeaders(procResTable, totalPts->GetNumberOfPoints());
         }
         int freeRow;
         for (int i = 0; i < mainTable->rowCount(); i++) {
@@ -2128,18 +2122,15 @@ void MainWindow::ResetLandmarks() {
         ++it;
     }
     mainTable->clear();
-    mainTable->setColumnCount(TableColNum);
-    mainTable->setRowCount(TableRowNum);
+    mainTable->setRowCount(m_TableRowNum);
     supImposedTable->clear();
-    supImposedTable->setColumnCount(TableColNum);
-    supImposedTable->setRowCount(TableRowNum);
+    supImposedTable->setRowCount(m_TableRowNum);
     procResTable->clear();
-    procResTable->setColumnCount(TableColNum);
-    procResTable->setRowCount(TableRowNum);
+    procResTable->setRowCount(m_TableRowNum);
 
-    SetLandmarkHeaders(mainTable);
-    SetLandmarkHeaders(supImposedTable);
-    SetLandmarkHeaders(procResTable);
+    SetLandmarkHeaders(mainTable, m_TableColNum);
+    SetLandmarkHeaders(supImposedTable, m_TableColNum);
+    SetLandmarkHeaders(procResTable, m_TableColNum);
     m_mainRenderer->RemoveActor(m_fixedLmActor);
     m_mainRenderer->RemoveActor(m_curveLmActor);
     m_mainRenderer->RemoveActor(m_surfaceLmActor);
@@ -2415,7 +2406,8 @@ void MainWindow::PlotLandmarks(vtkPoints* fixedLandmarks,
 
 void MainWindow::PCA() {
     if (TemplateIsSet) {
-        if (m_dataBase->GetNodeNames().size() >= 3) {// 1 Template + 2 specimens
+        if (m_dataBase->GetNodeNames().size() >=
+            3) {  // 1 Template + 2 specimens
             delete m_pcaWindow;
             m_pcaWindow = new PCAWindow(m_dataBase);
         } else {
@@ -2681,7 +2673,7 @@ void MainWindow::SaveProject() {
 
         f.close();
         QMessageBox::warning(this, "Reminder!",
-                                 "This action doesn't save the template");
+                             "This action doesn't save the template");
     }
 }
 
@@ -2847,6 +2839,8 @@ void MainWindow::RunStatThread(QThread* thread) {
     m_statThread->start();
 }
 
+void MainWindow::ShowCmdl() { std::cout << "Cmdl" << std::endl; }
+
 void MainWindow::SetToExport(bool lm, bool si, bool pv, bool pm) {
     m_lm = lm;
     m_si = si;
@@ -2872,17 +2866,18 @@ QMutex* MainWindow::GetMutex() { return m_mutex; }
 
 void MainWindow::PrintHelp() {
     if (!helpWindow->isVisible()) {
-        WindowUtils::restoreWindowGeometry(helpWindow, "HelpWindow", QSize(450, 200));
+        WindowUtils::restoreWindowGeometry(helpWindow, "HelpWindow",
+                                           QSize(450, 200));
     }
     helpWindow->show();
     helpWindow->raise();
     helpWindow->activateWindow();
 }
 
-void MainWindow::SetLandmarkHeaders(QTableWidget* table) {
+void MainWindow::SetLandmarkHeaders(QTableWidget* table, int colCount) {
     QStringList headers;
     headers << "Specimen";  // First column
-    for (int i = 1; i <= TableColNum - 1; ++i) {
+    for (int i = 0; i < colCount; ++i) {
         headers << QString("LM%1X").arg(i);
         headers << QString("LM%1Y").arg(i);
         headers << QString("LM%1Z").arg(i);
